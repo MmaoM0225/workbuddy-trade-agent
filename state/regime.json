@@ -1,9 +1,18 @@
 {
-  "date": null,
-  "regime": null,
-  "confidence": null,
-  "evidence": [],
-  "sector_signals": [],
-  "risk_level": null,
-  "confirmed_days": 0
+  "date": "20261023",
+  "regime": "neutral",
+  "confidence": 0.6,
+  "evidence": [
+    "五大指数全线上涨且深市领涨：创业板指 +4.16%、深证成指 +2.79%、中证500 +2.39%、沪深300 +1.71%、上证指数 +0.89%",
+    "STOCK_WIDTH_STATUS=普涨(创新高>200只)、SENTIMENT_STATUS=情绪狂热(涨停>50只或涨股比>70%)",
+    "TREND_LONG_DIRECTION_STATUS=暴跌(均线空头排列且距离中间均线以下距离很大)、TECHNICAL_STATUS=偏弱(MACD死叉或RSI恐慌抛售)",
+    "VOLUME_ENERGE_STATUS=缩量震荡(成交额90~110%均值)，当日反弹未获成交量确认",
+    "矛盾信号：SECTOR_WIDTH_STATUS=全面下跌(上涨板块<20%) 与个股普涨相悖，SECTOR_ROTATION_STATUS=分化严重，普涨集中在少数方向；STYLE_ROTATION_STATUS=价值主导 与创业板指领涨亦相悖"
+  ],
+  "sector_signals": [
+    {"sector": "AI算力/消费电子", "direction": "long", "note": "创业板指领涨 +4.16%；快讯：AWS 2027 容量基本售罄(AI 基建需求)、歌尔股份三季报营收净利齐升、上半年全球智能眼镜出货量同比 +70.5%"},
+    {"sector": "黄金", "direction": "short", "note": "现货黄金跌破 4000 美元/盎司，国内品牌金饰克价一个月跌约 100 元"}
+  ],
+  "risk_level": "medium",
+  "confirmed_days": 1
 }
