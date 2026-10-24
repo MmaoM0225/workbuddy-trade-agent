@@ -62,15 +62,25 @@ WorkBuddy 内的多智能体量化交易协同框架。完整闭环：
 
 - [x] **P0 骨架**：目录 + state schema + 校验脚本 + 数据员/总控
 - [x] **P1 编排**：10 个 agent 的 automation 全部配置完成；知识库种子（params_v1.0 默认多因子 / rules.md R-001~R-005）
+- [x] **工程地基**：git 仓库 + 远程推送、业务规则校验、全链路交易日校验（节假日不覆盖报告）、critical 邮件告警
 - [ ] P1 激活：选股链路 4 个任务处于 PAUSED，待确认首发策略方向 + 模拟资金规模后激活
 - [ ] P2 持仓链路激活：卖出交易员（P1 跑出持仓后开启）
 - [x] **P3 复盘闭环**：复盘官 + 档案管理员已激活（周日运转）
 - [ ] P4 优化：参数寻优 + agent 评分
 
+## 运维
+
+- **版本控制**：git 仓库已初始化，远程 `origin` = https://github.com/MmaoM0225/workbuddy-trade-agent.git（main 分支，已推送）。每次框架变更后提交并推送。
+- **故障告警**：总控巡检发现 critical 异常时自动发邮件到 ikdp5836@agent.qq.com（agent-mail，每日最多 1 封，无 critical 不发）。关闭方法：编辑「P0-每日总控巡检」prompt，删掉告警段即可。
+- **节假日行为**：所有 agent 第一步都校验 trade_cal，非交易日只往 `data/skip_log.jsonl` 记一行后退出，不产生报告、不覆盖文件（2026-10-24 数据员首次实跑已验证）。
+- **数据滞后**：Tushare 指数日线每天 19:00 更新；下游 agent 优先用当日数据，取不到自动回退最近数据日并标注 [数据滞后]。
+
 ## 手动校验
 
 ```bash
-C:\Users\19204\.workbuddy\binaries\python\versions\3.13.12\python.exe E:/cashfree/agent/scripts/check_pipeline.py --date 20261023
+C:\Users\19204\.workbuddy\binaries\python\versions\3.13.12\python.exe E:/cashfree/agent/scripts/check_pipeline.py [--date 20261023] [--base <路径>]
 ```
 
-退出码 0 = 全部通过；1 = 存在 FAIL（详见输出）。
+校验内容：state schema 合法性 + trades.jsonl 行合法性 + 数据目录完整性 + **业务规则**（仅检查已 populate 的文件）：regime 枚举与证据数、positions 权重合计与单票 15% cap 与止损止盈 sanity、orders 档数与止损完备性、trades 价格与 pnl 完整性。
+
+退出码 0 = 全部通过；1 = 存在 FAIL（详见输出）。`--base` 可指向测试副本。

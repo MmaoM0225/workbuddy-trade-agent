@@ -36,3 +36,10 @@
 - 每日流水线 19:30 起跑的原因：tushare index_daily 每天 19:00 更新。
 - knowledge/ 种子文件：params_v1.0.json（默认多因子，默认模拟资金 100 万，待用户确认）、params_current.txt、rules.md（R-001~R-005 风控纪律）。
 - 选股链路激活前置：用户确认首发策略方向 + 模拟资金规模。
+
+## 工程地基（2026-10-24）
+- git 仓库：E:/cashfree/agent，远程 origin = https://github.com/MmaoM0225/workbuddy-trade-agent.git（main，凭据用系统已存，推送成功）。变更后记得 commit+push。
+- check_pipeline.py：schema + 数据完整性 + 业务规则（仅查已 populate 文件）；支持 --base/--date；退出码 0/1。总控每日调用。
+- 所有 agent 第一步校验 trade_cal，非交易日只追加 data/skip_log.jsonl 后退出；报告按运行日期命名（daily_<run_date>.md / position_review_<run_date>.md）。
+- 告警：总控发现 critical → mcp__agent-mail__SendMessage 发邮件到 ikdp5836@agent.qq.com（skip_confirmation=true，日限 1 封）；关闭=删 prompt 告警段。
+- automation 执行记忆写在 .workbuddy/memory/automations/<automation_id>/memory.md。
