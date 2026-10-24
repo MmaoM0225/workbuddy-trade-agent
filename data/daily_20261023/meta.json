@@ -1,0 +1,23 @@
+{
+  "date": "20261023",
+  "fetched_at": "2026-10-24T14:00:00+08:00",
+  "trading_day": true,
+  "manual_first_run": true,
+  "sources": {
+    "trade_cal": "tushare:trade_cal",
+    "indices": "tushare:index_daily",
+    "market_overview": "westock-mcp:data_market_overview",
+    "news": "westock-mcp:data_flash_news_search"
+  },
+  "record_counts": {
+    "indices": 5,
+    "market_overview": 1,
+    "news": 14
+  },
+  "degraded": false,
+  "notes": [
+    "tushare:news 接口无权限(错误码40203，积分不足)，已按预案切换至 westock-mcp:data_flash_news_search 兜底",
+    "快讯为24小时滚动窗口(含10-24早间条目)，非严格限定10-23当日；后续如需严格按日归档，在数据员 prompt 中增加按 publish_time 过滤步骤",
+    "本次为 P0 手动首次运行，验证数据管道连通性与文件格式；周一15:35起由 automation 自动运行"
+  ]
+}

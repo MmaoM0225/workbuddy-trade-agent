@@ -1,0 +1,38 @@
+{
+  "version": "v1.0",
+  "created": "2026-10-24",
+  "status": "default_pending_confirmation",
+  "note": "P1 默认多因子参数（动量30/ROE30/低波20/换手20），等待用户确认或指定其他策略方向；确认后 status 改 confirmed。任何修改必须新建 v{n+1}，禁止原地改。",
+  "universe": {
+    "exclude_st": true,
+    "min_list_days": 250,
+    "min_amount_20d_avg_cny": 50000000
+  },
+  "factors": {
+    "momentum_20d": {"weight": 0.3, "direction": "desc"},
+    "roe_ttm": {"weight": 0.3, "direction": "desc"},
+    "vol_20d_inv": {"weight": 0.2, "direction": "desc"},
+    "turnover_rate_20d": {"weight": 0.2, "direction": "desc"}
+  },
+  "pool_size": 50,
+  "capital": {
+    "initial_sim_capital_cny": 1000000,
+    "currency": "CNY",
+    "note": "默认 100 万模拟资金，待用户确认"
+  },
+  "position_limits": {
+    "max_single_weight_pct": 15,
+    "max_sector_weight_pct": 30,
+    "min_order_weight_pct": 2,
+    "first_tranche_max_pct_of_target": 50
+  },
+  "regime_base_position_pct": {"bull": 80, "neutral": 50, "bear": 20},
+  "risk": {
+    "daily_loss_stop_pct": -3,
+    "drawdown_halve_pct": -8,
+    "drawdown_liquidate_pct": -12,
+    "circuit_freeze_days": 5,
+    "single_stop_loss_pct": 8,
+    "single_take_profit_pct": 20
+  }
+}
