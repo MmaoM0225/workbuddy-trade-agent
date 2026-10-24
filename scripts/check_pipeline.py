@@ -1,24 +1,25 @@
 #!/usr/bin/env python3
-"""P0 pipeline integrity checker for the multi-agent trading framework.
+"""Pipeline integrity checker for the multi-agent trading framework.
 
 Usage:
-    python check_pipeline.py            # check state files + latest data dir (if any)
-    python check_pipeline.py --date 20261023
+    python check_pipeline.py [--base E:/cashfree/agent] [--date 20261023]
 
 Checks:
     1. state/*.json parse as JSON and contain required schema keys
     2. state/trades.jsonl every non-empty line is valid JSON
     3. data/daily_<date>/ exists with meta.json and non-empty core files
+    4. business rules on populated state files (weight caps, stop/take sanity,
+       regime enum, evidence count, order tranche rules, trade record sanity)
+
+Business rules only apply to files that have been populated (date/as_of set),
+so the initial empty skeleton passes.
 
 Exit code 0 = all pass, 1 = at least one FAIL.
 """
+import argparse
 import json
 import sys
 from pathlib import Path
-
-BASE = Path("E:/cashfree/agent")
-STATE = BASE / "state"
-DATA = BASE / "data"
 
 STATE_SCHEMAS = {
     "pool.json": ["date", "strategy_version", "count", "stocks"],
@@ -32,7 +33,16 @@ STATE_SCHEMAS = {
 DATA_CORE_FILES = ["indices.json"]
 DATA_OPTIONAL_FILES = ["market_overview.json", "news.json"]
 
+REGIMES = ("bull", "neutral", "bear")
+TOL = 0.5
+
 failures = []
+STATE = None
+DATA = None
+
+
+def load_json(p):
+    return json.loads(p.read_text(encoding="utf-8"))
 
 
 def check_state():
@@ -42,7 +52,7 @@ def check_state():
             failures.append(f"missing state file: {p}")
             continue
         try:
-            data = json.loads(p.read_text(encoding="utf-8"))
+            data = load_json(p)
         except Exception as e:
             failures.append(f"{fname}: invalid JSON ({e})")
             continue
@@ -68,6 +78,87 @@ def check_state():
     print(f"[state] schema check done, {len(STATE_SCHEMAS)} files + trades.jsonl")
 
 
+def check_business():
+    regime = load_json(STATE / "regime.json")
+    if regime.get("date"):
+        if regime.get("regime") not in REGIMES:
+            failures.append(f"regime.json: regime={regime.get('regime')!r} not in {REGIMES}")
+        c = regime.get("confidence")
+        if not (isinstance(c, (int, float)) and 0 <= c <= 1):
+            failures.append(f"regime.json: confidence={c!r} out of [0,1]")
+        if len(regime.get("evidence") or []) < 2:
+            failures.append("regime.json: fewer than 2 evidence items")
+
+    pool = load_json(STATE / "pool.json")
+    if pool.get("date"):
+        stocks = pool.get("stocks") or []
+        if pool.get("count") != len(stocks):
+            failures.append(f"pool.json: count={pool.get('count')} != len(stocks)={len(stocks)}")
+        if not pool.get("strategy_version"):
+            failures.append("pool.json: strategy_version missing")
+
+    wl = load_json(STATE / "watchlist.json")
+    if wl.get("date"):
+        for it in wl.get("items") or []:
+            if it.get("verdict") == "buy_watch":
+                if not it.get("thesis"):
+                    failures.append(f"watchlist.json: {it.get('code')} buy_watch without thesis")
+                if not (it.get("risks") or []):
+                    failures.append(f"watchlist.json: {it.get('code')} buy_watch without risks")
+
+    pos = load_json(STATE / "positions.json")
+    if pos.get("as_of"):
+        holdings = pos.get("holdings") or []
+        total_w = sum(h.get("weight_pct", 0) or 0 for h in holdings)
+        if total_w > 100 + TOL:
+            failures.append(f"positions.json: holdings weight sum {total_w:.1f}% > 100%")
+        cash = pos.get("cash_pct") or 0
+        if abs(cash + total_w - 100) > 1.0:
+            failures.append(f"positions.json: cash {cash:.1f}% + weights {total_w:.1f}% != 100%")
+        for h in holdings:
+            code = h.get("code")
+            w = h.get("weight_pct") or 0
+            if w > 15 + TOL:
+                failures.append(f"positions.json: {code} weight {w:.1f}% exceeds 15% cap")
+            cost, sl, tp = h.get("cost"), h.get("stop_loss"), h.get("take_profit")
+            if cost and sl and sl >= cost:
+                failures.append(f"positions.json: {code} stop_loss {sl} >= cost {cost}")
+            if cost and tp and tp <= cost:
+                failures.append(f"positions.json: {code} take_profit {tp} <= cost {cost}")
+
+    orders = (load_json(STATE / "orders.json")).get("orders") or []
+    for o in orders:
+        oid = o.get("id", "?")
+        if o.get("side") == "buy":
+            trs = o.get("tranches") or []
+            if len(trs) < 2:
+                failures.append(f"orders.json: {oid} has {len(trs)} tranches (<2)")
+            if sum(t.get("pct", 0) or 0 for t in trs) > 15 + TOL:
+                failures.append(f"orders.json: {oid} tranche pct sum exceeds 15% cap")
+            if not (o.get("stop_loss") and o.get("take_profit")):
+                failures.append(f"orders.json: {oid} missing stop_loss/take_profit")
+        elif o.get("side") == "sell":
+            if not (o.get("reason") and o.get("trigger")):
+                failures.append(f"orders.json: {oid} sell order missing reason/trigger")
+
+    for line in (STATE / "trades.jsonl").read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        try:
+            t = json.loads(line)
+        except Exception:
+            continue
+        tid = t.get("trade_id", "?")
+        if (t.get("open") or {}).get("price", 0) <= 0:
+            failures.append(f"trades.jsonl: {tid} open price <= 0")
+        if t.get("close"):
+            if (t["close"] or {}).get("price", 0) <= 0:
+                failures.append(f"trades.jsonl: {tid} close price <= 0")
+            if t.get("pnl_pct") is None:
+                failures.append(f"trades.jsonl: {tid} closed without pnl_pct")
+    print("[state] business rules checked (populated files only)")
+
+
 def latest_data_date():
     if not DATA.exists():
         return None
@@ -85,7 +176,7 @@ def check_data(date_str):
         failures.append(f"{d}/meta.json missing")
         return
     try:
-        meta = json.loads(meta_p.read_text(encoding="utf-8"))
+        meta = load_json(meta_p)
     except Exception as e:
         failures.append(f"meta.json invalid JSON ({e})")
         return
@@ -97,7 +188,7 @@ def check_data(date_str):
             failures.append(f"core data file missing: {f}")
             continue
         try:
-            payload = json.loads(p.read_text(encoding="utf-8"))
+            payload = load_json(p)
         except Exception as e:
             failures.append(f"{f}: invalid JSON ({e})")
             continue
@@ -112,24 +203,27 @@ def check_data(date_str):
             print(f"[data] {f}: absent (non-core)")
             continue
         try:
-            payload = json.loads(p.read_text(encoding="utf-8"))
-            n = len(payload) if isinstance(payload, list) else len(payload.get("records", []))
+            payload = load_json(p)
+            n = len(payload) if isinstance(payload, list) else len(payload.get("records", payload.get("items", [1])))
             print(f"[data] {f}: {n} records")
         except Exception as e:
             failures.append(f"{f}: invalid JSON ({e})")
 
 
 def main():
-    date_str = None
-    args = sys.argv[1:]
-    if "--date" in args:
-        i = args.index("--date")
-        if i + 1 < len(args):
-            date_str = args[i + 1]
-    if date_str is None:
-        date_str = latest_data_date()
+    global STATE, DATA
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--base", default="E:/cashfree/agent")
+    ap.add_argument("--date", default=None)
+    args = ap.parse_args()
+
+    STATE = Path(args.base) / "state"
+    DATA = Path(args.base) / "data"
+
+    date_str = args.date or latest_data_date()
 
     check_state()
+    check_business()
     if date_str:
         check_data(date_str)
     else:
