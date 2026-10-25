@@ -289,13 +289,16 @@ def reasons(c, k=3):
 
 
 OUT = os.path.join(WH, "scores_full.csv")
+# v1.8: 财务指标不参与选股打分，但仍随 CSV 落盘，供研究员计算质量分使用
+FINA_COLS = ["roe_ttm", "gross_margin_ttm", "net_margin_ttm", "tr_yoy"]
 with open(OUT, "w", newline="", encoding="utf-8") as f:
     w = csv.writer(f)
-    w.writerow(["rank", "ts_code", "name", "industry", "score"] + FACTORS)
+    w.writerow(["rank", "ts_code", "name", "industry", "score"] + FACTORS + FINA_COLS)
     for i, c in enumerate(ranked, 1):
         b = basic[c]
         w.writerow([i, c, b["name"], b["industry"], round(scores[c], 4)] +
-                   ["" if F[c][fac] is None else round(F[c][fac], 4) for fac in FACTORS])
+                   ["" if F[c][fac] is None else round(F[c][fac], 4) for fac in FACTORS] +
+                   ["" if F[c].get(k) is None else round(F[c][k], 4) for k in FINA_COLS])
 
 os.makedirs(os.path.dirname(OUT_POOL), exist_ok=True)
 pool = {

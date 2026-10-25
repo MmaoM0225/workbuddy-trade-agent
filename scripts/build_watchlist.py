@@ -170,7 +170,9 @@ for c in cands:
     })
 
 items.sort(key=lambda x: -x["quality_score"])
-buy = [i for i in items if i["verdict"] == "buy_watch"][:20]
+# v1.8: 池内相对排名取前 20 为 buy_watch（新池子由纯量价因子选出，财务绝对分整体偏低，
+# 用固定 55 分门槛会导致 buy_watch 恒为 0，故改为相对排名）
+buy = [dict(i, verdict="buy_watch") for i in items[:20]]
 watch_cnt = len([i for i in items if i["verdict"] == "watch"])
 
 out = {
