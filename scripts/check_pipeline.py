@@ -10,6 +10,8 @@ Checks:
     3. data/daily_<date>/ exists with meta.json and non-empty core files
     4. business rules on populated state files (weight caps, stop/take sanity,
        regime enum, evidence count, order tranche rules, trade record sanity)
+    5. state/tasks/*.json task status files (9 tasks, undo/doing/done enum,
+       single-writer file per task)
 
 Business rules only apply to files that have been populated (date/as_of set),
 so the initial empty skeleton passes.
@@ -159,6 +161,37 @@ def check_business():
     print("[state] business rules checked (populated files only)")
 
 
+TASK_NAMES = [
+    "data_officer", "market_analyst", "position_manager", "inspector",
+    "stock_picker", "researcher", "position_builder", "reviewer", "archivist",
+]
+TASK_STATUSES = ("undo", "doing", "done")
+
+
+def check_tasks():
+    """state/tasks/*.json: one file per task (single-writer), status enum valid."""
+    tasks_dir = STATE / "tasks"
+    if not tasks_dir.exists():
+        failures.append(f"missing tasks dir: {tasks_dir}")
+        return
+    for name in TASK_NAMES:
+        p = tasks_dir / f"{name}.json"
+        if not p.exists():
+            failures.append(f"missing task state: {name}.json")
+            continue
+        try:
+            t = load_json(p)
+        except Exception as e:
+            failures.append(f"tasks/{name}.json: invalid JSON ({e})")
+            continue
+        st = t.get("status")
+        if st not in TASK_STATUSES:
+            failures.append(f"tasks/{name}.json: invalid status {st!r}")
+        if t.get("task") and t.get("task") != name:
+            failures.append(f"tasks/{name}.json: task field mismatch ({t.get('task')})")
+    print("[tasks] %d task states checked" % len(TASK_NAMES))
+
+
 def latest_data_date():
     if not DATA.exists():
         return None
@@ -224,6 +257,7 @@ def main():
 
     check_state()
     check_business()
+    check_tasks()
     if date_str:
         check_data(date_str)
     else:
