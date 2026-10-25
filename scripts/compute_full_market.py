@@ -12,9 +12,12 @@ from datetime import date
 
 ROOT = r"E:\cashfree\agent"
 WH = os.path.join(ROOT, "data", "warehouse")
-BASE_DATE = "20261023"
+# 基准日 = daily_basic 目录里最新的一天
+_db_dates = sorted(os.path.basename(p)[:-4] for p in glob.glob(os.path.join(WH, "daily_basic", "*.csv")))
+BASE_DATE = _db_dates[-1] if _db_dates else "20261023"
 OUT_SCORES = os.path.join(WH, "scores_full.csv")
-OUT_POOL = os.path.join(ROOT, "test", "state", "pool.json")
+# 正式跑写 state/pool.json；彩排时用环境变量 POOL_OUT 指向 test/state/pool.json
+OUT_POOL = os.environ.get("POOL_OUT") or os.path.join(ROOT, "state", "pool.json")
 POOL_SIZE = 50
 
 W = {
@@ -81,27 +84,28 @@ print(f"  codes={len(weekly)}", flush=True)
 # ---------- load fina: Q3 first, H1 fallback ----------
 print("loading fina...", flush=True)
 fina = {}
-for p in ["h1_part3.csv", "h1_all.csv", "q3_all.csv"]:  # later overwrite earlier
-    fp = os.path.join(WH, "fina", p)
+for fn in ("h1_part3.csv", "h1_all.csv", "q3_all.csv"):  # 后者覆盖前者：Q3 优先，H1 兜底
+    fp = os.path.join(WH, "fina", fn)
     if not os.path.exists(fp):
         continue
     n = 0
     for r in read_csv(fp):
         fina[r["ts_code"]] = r
         n += 1
-    print(f"  {p}: {n} rows", flush=True)
+    print(f"  {fn}: {n} rows", flush=True)
 print(f"  fina total codes={len(fina)}", flush=True)
 
 # ---------- universe filter (v1.3) ----------
 cut = date(2025, 10, 23)
-stats = {"all": 0, "BJ": 0, "GEM_STAR": 0, "ST": 0, "NEW": 0, "SUSPEND": 0, "NO_QUOTE": 0, "ILLIQ": 0}
+stats = {"all": 0, "BJ": 0, "GEM_STAR": 0, "ST": 0, "NEW": 0, "SUSPEND": 0,
+         "NO_FINA": 0, "NO_QUOTE": 0, "ILLIQ": 0}
 universe = []
 for code, b in basic.items():
     stats["all"] += 1
     if code.endswith(".BJ"):
         stats["BJ"] += 1
         continue
-    if code.startswith("300") or code.startswith("688"):
+    if code.startswith(("300", "301", "688", "689")):  # 创业板 300/301，科创板 688/689
         stats["GEM_STAR"] += 1
         continue
     if "ST" in b["name"].upper():
@@ -117,12 +121,16 @@ for code, b in basic.items():
     if code in suspend:
         stats["SUSPEND"] += 1
         continue
+    # 财务数据缺失 = 信息不透明，直接出局（同时避免质量因子因缺失被整体剔除）
+    if code not in fina:
+        stats["NO_FINA"] += 1
+        continue
     rows = daily.get(code, [])
     if not rows:
         stats["NO_QUOTE"] += 1
         continue
     amts = [r[4] for r in rows if r[4] is not None]
-    if amts and statistics.fmean(amts) < 50_000_000:  # 5000万 = 50,000 千元
+    if amts and statistics.fmean(amts) < 50_000:  # tushare amount 单位为千元：5000万元 = 50,000 千元
         stats["ILLIQ"] += 1
         continue
     universe.append(code)

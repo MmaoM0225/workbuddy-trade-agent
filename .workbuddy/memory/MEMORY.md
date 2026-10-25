@@ -65,6 +65,19 @@
 - 接口权限备忘：stk_factor / tushare news 无权限（40203）。
 - 数据落盘习惯：全市场原始数据先写 CSV 再计算（demo 数据在 data/demo_20261025/）。
 
+## 数据仓库架构（2026-10-25，全市场筛选的正解）
+- **全市场筛选必须走本地仓库**，不能 API 逐批取证：5500 只 × 4 类数据 ≈ 900 次调用，上下文必爆；fina_indicator 有 200 次/分钟硬限流。
+- 仓库 data/warehouse/（已 .gitignore 排除）：daily/<交易日>.csv（21 天）、weekly/、daily_basic/、fina/（q3_all + h1_all + h1_part3）、meta/（stock_basic 含 market 字段、suspend_<date>）。
+- 四个脚本（全部 MCP 直连 JSON-RPC，落盘不进上下文，限速 0.45s/批）：update_warehouse.py（周增量）、compute_full_market.py（17 因子全市场打分，POOL_OUT 环境变量控制输出，默认 state/pool.json）、research_check_mcp.py（逐只排雷）、build_watchlist.py + build_orders.py。
+- 选股师 prompt 已改仓库模式（v4）：跑 update_warehouse.py → compute_full_market.py → 校验 pool.json，禁止 MCP 逐批取证。
+- **接口批量能力实测**：daily / weekly / fina_indicator 支持 ts_code 逗号批量（25 只/批）；**balancesheet / stk_holdertrade / fina_audit 不支持批量，必须逐只**。
+
+## 因子与规则关键修正（2026-10-25）
+- **双创排除必须含 301/689**：创业板 = 300+301（合计 1411 只），科创板 = 688+689（618 只）。只排 300/688 会漏 476 只。
+- **财务数据缺失 = 股票出局，不是剔除因子**：否则质量组（20% 权重）因覆盖率 69% 被整体剔除，小盘垃圾股涌入 Top。
+- **Tushare daily amount 单位是千元**：5000 万元日成交额门槛 = 50,000（不是 5,000 万）。
+- 全市场 universe 漏斗（2026-10-23 实测）：5577 → 剔北交所 353 → 剔双创 2029 → 剔 ST 141 → 剔次新 32 → 剔停牌 2 → 剔无财务 859 → 剔流动性 359 → **1802 只**。
+
 ## Universe 收紧（2026-10-25，params v1.3）
 - 用户要求默认全开三个排除：北交所（.BJ）、双创板（300 创业板/688 科创板）、ST。params 升至 v1.3，universe 段新增 exclude_bj/exclude_gem_star/exclude_st + rules_detail，选股师 prompt 3b 同步显式化。
 - 池子规模实测（2026-10-25 全市场 5577 只）：剔北交所 353 → 5224；剔双创 1553（创业板936+科创板617）→ 3671；剔 ST 143 → 3528；再加原有 250 日次新过滤 → 3469。市值 top300 门槛 437 亿。

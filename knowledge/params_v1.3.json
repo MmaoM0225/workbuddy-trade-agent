@@ -12,7 +12,7 @@
       "exclude_st": true,
       "min_list_days": 250,
       "min_amount_20d_avg_cny": 50000000,
-      "rules_detail": "exclude_bj: ts_code 以 .BJ 结尾; exclude_gem_star: 300 开头(创业板)或 688 开头(科创板); exclude_st: 名称含 ST(含 *ST)"
+      "rules_detail": "exclude_bj: ts_code 以 .BJ 结尾; exclude_gem_star: 300/301 开头(创业板) 或 688/689 开头(科创板); exclude_st: 名称含 ST(含 *ST); exclude_no_fina: 无财务指标的股票视为信息不透明直接出局（避免质量因子因缺失被整体剔除）"
     },
     "scoring_pipeline": {
       "cross_section_rank": true,
