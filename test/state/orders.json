@@ -1,398 +1,411 @@
 {
   "date": "20261023",
-  "mode": "rehearsal",
+  "params_version": "v1.4",
   "regime": "neutral",
-  "base_position_pct": 50,
-  "planned_total_weight_pct": 49.99,
-  "planned_total_amount_cny": 499900.0,
-  "cash_reserve_pct": 50.01,
+  "regime_base_position_pct": 50,
+  "planned_holdings": 10,
+  "planned_total_weight_pct": 50.0,
+  "cash_reserved_pct": 50.0,
   "orders": [
     {
-      "id": "ORD-20261023-001",
+      "id": "ORD-20261023-01",
       "side": "buy",
       "code": "002832.SZ",
       "name": "比音勒芬",
-      "industry": "服饰",
-      "target_weight_pct": 5.44,
-      "target_amount_cny": 54426.0,
+      "sector": "服饰",
+      "quality_score": 89.8,
+      "target_weight_pct": 5.51,
       "tranches": [
         {
-          "pct": 40,
+          "seq": 1,
+          "pct": 2.75,
           "price_zone": [
-            24.65,
-            26.08
+            24.66,
+            26.09
           ],
-          "ref_price": 25.36
+          "status": "planned"
         },
         {
-          "pct": 60,
+          "seq": 2,
+          "pct": 2.76,
           "price_zone": [
-            26.08,
-            27.52
+            26.09,
+            28.95
           ],
-          "ref_price": 26.8
+          "status": "planned"
         }
       ],
-      "stop_loss": 23.34,
-      "take_profit": 28.95,
+      "stop_loss": 24.0,
+      "take_profit": 31.31,
+      "ref_price": 26.09,
       "last_close": 26.47,
-      "quality_score": 88.9,
-      "rationale": "ROE 13.5%（横截面93%分位）；营收同比 +27.4%；EP 百分位 63%；因子总分 0.730（池内 #40）",
+      "rationale": "毛利率 分位 98%；ROE(TTM) 分位 93%；20日动量 分位 87%",
       "risks": [
-        "商誉数据缺失，未能排查"
+        "未发现明显瑕疵，但需跟踪三季报与行业景气变化"
       ],
-      "status": "planned_demo",
-      "notes": "彩排订单，禁止执行；行情基准 20261023"
+      "status": "planned",
+      "notes": "首档位于 20 日区间下三分位 [24.66, 26.09]，10-23 收盘 26.47；金额与股数由持仓管家执行时按总资产计算"
     },
     {
-      "id": "ORD-20261023-002",
+      "id": "ORD-20261023-02",
       "side": "buy",
       "code": "002315.SZ",
       "name": "焦点科技",
-      "industry": "互联网",
-      "target_weight_pct": 5.31,
-      "target_amount_cny": 53079.0,
+      "sector": "互联网",
+      "quality_score": 88.4,
+      "target_weight_pct": 5.43,
       "tranches": [
         {
-          "pct": 40,
+          "seq": 1,
+          "pct": 2.71,
           "price_zone": [
             23.66,
             24.64
           ],
-          "ref_price": 24.15
+          "status": "planned"
         },
         {
-          "pct": 60,
+          "seq": 2,
+          "pct": 2.72,
           "price_zone": [
             24.64,
-            25.61
+            26.59
           ],
-          "ref_price": 25.12
+          "status": "planned"
         }
       ],
-      "stop_loss": 22.22,
-      "take_profit": 26.59,
+      "stop_loss": 22.67,
+      "take_profit": 29.57,
+      "ref_price": 24.64,
       "last_close": 26.4,
-      "quality_score": 86.7,
-      "rationale": "ROE 15.3%（横截面95%分位）；营收同比 +13.9%；EP 百分位 61%；因子总分 0.777（池内 #11）",
+      "rationale": "毛利率 分位 99%；ROE(TTM) 分位 95%；20日动量 分位 94%",
       "risks": [
-        "商誉数据缺失，未能排查"
+        "5 日涨幅居前（分位 94%），短期追高风险"
       ],
-      "status": "planned_demo",
-      "notes": "彩排订单，禁止执行；行情基准 20261023"
+      "status": "planned",
+      "notes": "首档位于 20 日区间下三分位 [23.66, 24.64]，10-23 收盘 26.40；金额与股数由持仓管家执行时按总资产计算"
     },
     {
-      "id": "ORD-20261023-003",
+      "id": "ORD-20261023-03",
       "side": "buy",
       "code": "600323.SH",
       "name": "瀚蓝环境",
-      "industry": "环境保护",
-      "target_weight_pct": 5.23,
-      "target_amount_cny": 52284.0,
+      "sector": "环境保护",
+      "quality_score": 84.7,
+      "target_weight_pct": 5.2,
       "tranches": [
         {
-          "pct": 40,
+          "seq": 1,
+          "pct": 2.6,
           "price_zone": [
             28.4,
             29.26
           ],
-          "ref_price": 28.83
+          "status": "planned"
         },
         {
-          "pct": 60,
+          "seq": 2,
+          "pct": 2.6,
           "price_zone": [
             29.26,
-            30.11
+            30.97
           ],
-          "ref_price": 29.69
+          "status": "planned"
         }
       ],
-      "stop_loss": 26.52,
-      "take_profit": 30.97,
+      "stop_loss": 26.92,
+      "take_profit": 35.11,
+      "ref_price": 29.26,
       "last_close": 30.73,
-      "quality_score": 85.4,
-      "rationale": "ROE 8.1%（横截面83%分位）；营收同比 +34.2%；EP 百分位 91%；因子总分 0.784（池内 #10）",
+      "rationale": "20日低波动 分位 96%；EP(TTM) 分位 91%；营收同比 分位 89%",
       "risks": [
-        "短期动量回落风险（动量因子为横截面相对强度，非绝对上涨趋势）"
+        "未发现明显瑕疵，但需跟踪三季报与行业景气变化"
       ],
-      "status": "planned_demo",
-      "notes": "彩排订单，禁止执行；行情基准 20261023"
+      "status": "planned",
+      "notes": "首档位于 20 日区间下三分位 [28.40, 29.26]，10-23 收盘 30.73；金额与股数由持仓管家执行时按总资产计算"
     },
     {
-      "id": "ORD-20261023-004",
-      "side": "buy",
-      "code": "603889.SH",
-      "name": "新澳股份",
-      "industry": "纺织",
-      "target_weight_pct": 5.1,
-      "target_amount_cny": 50998.0,
-      "tranches": [
-        {
-          "pct": 40,
-          "price_zone": [
-            5.87,
-            6.06
-          ],
-          "ref_price": 5.96
-        },
-        {
-          "pct": 60,
-          "price_zone": [
-            6.06,
-            6.26
-          ],
-          "ref_price": 6.16
-        }
-      ],
-      "stop_loss": 5.49,
-      "take_profit": 6.45,
-      "last_close": 6.15,
-      "quality_score": 83.3,
-      "rationale": "ROE 12.4%（横截面92%分位）；营收同比 +19.7%；EP 百分位 94%；因子总分 0.747（池内 #26）",
-      "risks": [
-        "商誉数据缺失，未能排查"
-      ],
-      "status": "planned_demo",
-      "notes": "彩排订单，禁止执行；行情基准 20261023"
-    },
-    {
-      "id": "ORD-20261023-005",
-      "side": "buy",
-      "code": "002833.SZ",
-      "name": "弘亚数控",
-      "industry": "专用机械",
-      "target_weight_pct": 5.07,
-      "target_amount_cny": 50692.0,
-      "tranches": [
-        {
-          "pct": 40,
-          "price_zone": [
-            17.56,
-            18.37
-          ],
-          "ref_price": 17.96
-        },
-        {
-          "pct": 60,
-          "price_zone": [
-            18.37,
-            19.17
-          ],
-          "ref_price": 18.77
-        }
-      ],
-      "stop_loss": 16.53,
-      "take_profit": 19.98,
-      "last_close": 19.4,
-      "quality_score": 82.8,
-      "rationale": "ROE 8.6%（横截面85%分位）；营收同比 +21.7%；EP 百分位 71%；因子总分 0.793（池内 #8）",
-      "risks": [
-        "商誉数据缺失，未能排查"
-      ],
-      "status": "planned_demo",
-      "notes": "彩排订单，禁止执行；行情基准 20261023"
-    },
-    {
-      "id": "ORD-20261023-006",
+      "id": "ORD-20261023-04",
       "side": "buy",
       "code": "603198.SH",
       "name": "迎驾贡酒",
-      "industry": "白酒",
-      "target_weight_pct": 5.0,
-      "target_amount_cny": 50018.0,
+      "sector": "白酒",
+      "quality_score": 84.7,
+      "target_weight_pct": 5.2,
       "tranches": [
         {
-          "pct": 40,
+          "seq": 1,
+          "pct": 2.6,
           "price_zone": [
             36.7,
             38.36
           ],
-          "ref_price": 37.53
+          "status": "planned"
         },
         {
-          "pct": 60,
+          "seq": 2,
+          "pct": 2.6,
           "price_zone": [
             38.36,
-            40.02
+            41.68
           ],
-          "ref_price": 39.19
+          "status": "planned"
         }
       ],
-      "stop_loss": 34.53,
-      "take_profit": 41.68,
+      "stop_loss": 35.29,
+      "take_profit": 46.03,
+      "ref_price": 38.36,
       "last_close": 41.38,
-      "quality_score": 81.7,
-      "rationale": "ROE 10.9%（横截面90%分位）；营收同比 +8.1%；EP 百分位 77%；因子总分 0.749（池内 #25）",
+      "rationale": "毛利率 分位 98%；净利率 分位 95%；20日动量 分位 93%",
       "risks": [
-        "商誉数据缺失，未能排查"
+        "未发现明显瑕疵，但需跟踪三季报与行业景气变化"
       ],
-      "status": "planned_demo",
-      "notes": "彩排订单，禁止执行；行情基准 20261023"
+      "status": "planned",
+      "notes": "首档位于 20 日区间下三分位 [36.70, 38.36]，10-23 收盘 41.38；金额与股数由持仓管家执行时按总资产计算"
     },
     {
-      "id": "ORD-20261023-007",
+      "id": "ORD-20261023-05",
       "side": "buy",
-      "code": "603332.SH",
-      "name": "苏州龙杰",
-      "industry": "化纤",
-      "target_weight_pct": 4.98,
-      "target_amount_cny": 49835.0,
+      "code": "002833.SZ",
+      "name": "弘亚数控",
+      "sector": "专用机械",
+      "quality_score": 81.5,
+      "target_weight_pct": 5.0,
       "tranches": [
         {
-          "pct": 40,
+          "seq": 1,
+          "pct": 2.5,
           "price_zone": [
-            10.93,
-            11.93
+            17.81,
+            18.53
           ],
-          "ref_price": 11.43
+          "status": "planned"
         },
         {
-          "pct": 60,
+          "seq": 2,
+          "pct": 2.5,
           "price_zone": [
-            11.93,
-            12.94
+            18.53,
+            19.98
           ],
-          "ref_price": 12.43
+          "status": "planned"
         }
       ],
-      "stop_loss": 10.52,
-      "take_profit": 13.72,
-      "last_close": 12.34,
-      "quality_score": 81.4,
-      "rationale": "ROE 8.7%（横截面85%分位）；营收同比 +36.9%；EP 百分位 70%；因子总分 0.766（池内 #14）",
+      "stop_loss": 17.05,
+      "take_profit": 22.24,
+      "ref_price": 18.53,
+      "last_close": 19.4,
+      "rationale": "20日动量 分位 93%；ROE(TTM) 分位 85%；净利率 分位 84%",
       "risks": [
-        "商誉数据缺失，未能排查"
+        "未发现明显瑕疵，但需跟踪三季报与行业景气变化"
       ],
-      "status": "planned_demo",
-      "notes": "彩排订单，禁止执行；行情基准 20261023"
+      "status": "planned",
+      "notes": "首档位于 20 日区间下三分位 [17.81, 18.53]，10-23 收盘 19.40；金额与股数由持仓管家执行时按总资产计算"
     },
     {
-      "id": "ORD-20261023-008",
+      "id": "ORD-20261023-06",
       "side": "buy",
       "code": "600285.SH",
       "name": "羚锐制药",
-      "industry": "中成药",
-      "target_weight_pct": 4.79,
-      "target_amount_cny": 47937.0,
+      "sector": "中成药",
+      "quality_score": 81.2,
+      "target_weight_pct": 4.98,
       "tranches": [
         {
-          "pct": 40,
+          "seq": 1,
+          "pct": 2.49,
           "price_zone": [
             18.51,
             19.54
           ],
-          "ref_price": 19.02
+          "status": "planned"
         },
         {
-          "pct": 60,
+          "seq": 2,
+          "pct": 2.49,
           "price_zone": [
             19.54,
-            20.57
+            21.6
           ],
-          "ref_price": 20.05
+          "status": "planned"
         }
       ],
-      "stop_loss": 17.5,
-      "take_profit": 21.6,
+      "stop_loss": 17.98,
+      "take_profit": 23.45,
+      "ref_price": 19.54,
       "last_close": 20.32,
-      "quality_score": 78.3,
-      "rationale": "ROE 14.9%（横截面94%分位）；营收同比 +2.3%；EP 百分位 81%；因子总分 0.741（池内 #29）",
+      "rationale": "毛利率 分位 99%；ROE(TTM) 分位 94%；净利率 分位 90%",
       "risks": [
-        "短期动量回落风险（动量因子为横截面相对强度，非绝对上涨趋势）"
+        "未发现明显瑕疵，但需跟踪三季报与行业景气变化"
       ],
-      "status": "planned_demo",
-      "notes": "彩排订单，禁止执行；行情基准 20261023"
+      "status": "planned",
+      "notes": "首档位于 20 日区间下三分位 [18.51, 19.54]，10-23 收盘 20.32；金额与股数由持仓管家执行时按总资产计算"
     },
     {
-      "id": "ORD-20261023-009",
+      "id": "ORD-20261023-07",
+      "side": "buy",
+      "code": "600674.SH",
+      "name": "川投能源",
+      "sector": "水力发电",
+      "quality_score": 77.7,
+      "target_weight_pct": 4.77,
+      "tranches": [
+        {
+          "seq": 1,
+          "pct": 2.38,
+          "price_zone": [
+            15.52,
+            16.28
+          ],
+          "status": "planned"
+        },
+        {
+          "seq": 2,
+          "pct": 2.39,
+          "price_zone": [
+            16.28,
+            17.79
+          ],
+          "status": "planned"
+        }
+      ],
+      "stop_loss": 14.98,
+      "take_profit": 19.54,
+      "ref_price": 16.28,
+      "last_close": 17.22,
+      "rationale": "净利率 分位 100%；20日低波动 分位 99%；20日动量 分位 93%",
+      "risks": [
+        "未发现明显瑕疵，但需跟踪三季报与行业景气变化"
+      ],
+      "status": "planned",
+      "notes": "首档位于 20 日区间下三分位 [15.52, 16.28]，10-23 收盘 17.22；金额与股数由持仓管家执行时按总资产计算"
+    },
+    {
+      "id": "ORD-20261023-08",
+      "side": "buy",
+      "code": "603889.SH",
+      "name": "新澳股份",
+      "sector": "纺织",
+      "quality_score": 76.3,
+      "target_weight_pct": 4.68,
+      "tranches": [
+        {
+          "seq": 1,
+          "pct": 2.34,
+          "price_zone": [
+            5.87,
+            6.06
+          ],
+          "status": "planned"
+        },
+        {
+          "seq": 2,
+          "pct": 2.34,
+          "price_zone": [
+            6.06,
+            6.45
+          ],
+          "status": "planned"
+        }
+      ],
+      "stop_loss": 5.58,
+      "take_profit": 7.27,
+      "ref_price": 6.06,
+      "last_close": 6.15,
+      "rationale": "EP(TTM) 分位 94%；ROE(TTM) 分位 92%；20日动量 分位 82%",
+      "risks": [
+        "未发现明显瑕疵，但需跟踪三季报与行业景气变化"
+      ],
+      "status": "planned",
+      "notes": "首档位于 20 日区间下三分位 [5.87, 6.06]，10-23 收盘 6.15；金额与股数由持仓管家执行时按总资产计算"
+    },
+    {
+      "id": "ORD-20261023-09",
       "side": "buy",
       "code": "601900.SH",
       "name": "南方传媒",
-      "industry": "出版业",
-      "target_weight_pct": 4.54,
-      "target_amount_cny": 45427.0,
+      "sector": "出版业",
+      "quality_score": 75.6,
+      "target_weight_pct": 4.64,
       "tranches": [
         {
-          "pct": 40,
+          "seq": 1,
+          "pct": 2.32,
           "price_zone": [
             11.96,
             12.6
           ],
-          "ref_price": 12.28
+          "status": "planned"
         },
         {
-          "pct": 60,
+          "seq": 2,
+          "pct": 2.32,
           "price_zone": [
             12.6,
-            13.24
+            13.88
           ],
-          "ref_price": 12.92
+          "status": "planned"
         }
       ],
-      "stop_loss": 11.3,
-      "take_profit": 13.88,
+      "stop_loss": 11.59,
+      "take_profit": 15.12,
+      "ref_price": 12.6,
       "last_close": 12.98,
-      "quality_score": 74.2,
-      "rationale": "ROE 11.8%（横截面91%分位）；营收同比 +0.2%；EP 百分位 93%；因子总分 0.728（池内 #43）",
+      "rationale": "EP(TTM) 分位 93%；ROE(TTM) 分位 91%；20日动量 分位 89%",
       "risks": [
-        "短期动量回落风险（动量因子为横截面相对强度，非绝对上涨趋势）"
+        "未发现明显瑕疵，但需跟踪三季报与行业景气变化"
       ],
-      "status": "planned_demo",
-      "notes": "彩排订单，禁止执行；行情基准 20261023"
+      "status": "planned",
+      "notes": "首档位于 20 日区间下三分位 [11.96, 12.60]，10-23 收盘 12.98；金额与股数由持仓管家执行时按总资产计算"
     },
     {
-      "id": "ORD-20261023-010",
+      "id": "ORD-20261023-10",
       "side": "buy",
-      "code": "600621.SH",
-      "name": "华鑫股份",
-      "industry": "证券",
-      "target_weight_pct": 4.53,
-      "target_amount_cny": 45304.0,
+      "code": "600329.SH",
+      "name": "达仁堂",
+      "sector": "中成药",
+      "quality_score": 74.7,
+      "target_weight_pct": 4.59,
       "tranches": [
         {
-          "pct": 40,
+          "seq": 1,
+          "pct": 2.29,
           "price_zone": [
-            12.72,
-            13.71
+            34.04,
+            36.93
           ],
-          "ref_price": 13.21
+          "status": "planned"
         },
         {
-          "pct": 60,
+          "seq": 2,
+          "pct": 2.3,
           "price_zone": [
-            13.71,
-            14.7
+            36.93,
+            42.7
           ],
-          "ref_price": 14.21
+          "status": "planned"
         }
       ],
-      "stop_loss": 12.16,
-      "take_profit": 15.69,
-      "last_close": 14.9,
-      "quality_score": 74.0,
-      "rationale": "ROE 4.4%（横截面63%分位）；营收同比 +22.1%；EP 百分位 70%；因子总分 0.741（池内 #28）",
+      "stop_loss": 33.36,
+      "take_profit": 44.32,
+      "ref_price": 36.93,
+      "last_close": 41.08,
+      "rationale": "20日动量 分位 99%；毛利率 分位 99%；净利率 分位 92%",
       "risks": [
-        "短期动量回落风险（动量因子为横截面相对强度，非绝对上涨趋势）"
+        "5 日涨幅居前（分位 94%），短期追高风险"
       ],
-      "status": "planned_demo",
-      "notes": "彩排订单，禁止执行；行情基准 20261023"
+      "status": "planned",
+      "notes": "首档位于 20 日区间下三分位 [34.04, 36.93]，10-23 收盘 41.08；金额与股数由持仓管家执行时按总资产计算"
     }
   ],
-  "notes": {
-    "warning": "本文件为彩排产物，status=planned_demo，持仓管家不会执行；正式订单只写 state/orders.json",
-    "sector_weights": {
-      "服饰": 5.44,
-      "互联网": 5.31,
-      "环境保护": 5.23,
-      "纺织": 5.1,
-      "专用机械": 5.07,
-      "白酒": 5.0,
-      "化纤": 4.98,
-      "中成药": 4.79,
-      "出版业": 4.54,
-      "证券": 4.53
-    },
-    "weight_formula": "neutral base 50% × quality_score 占比，单票上限 15%，行业上限 30%",
-    "hard_rule": "所有订单均带 stop_loss 与 take_profit（R-003）"
-  }
+  "notes": [
+    "彩排运行，仅写 test/state/orders.json；正式 orders.json 未被触碰",
+    "params v1.4：持仓数量约束 8~12 只（本次 10 只）",
+    "权重归一化：weight_i = 50 × qs_i / Σqs，clamp 到 [3%, 15%] 后重新归一化，合计 50.00%",
+    "单票权重区间 4.59% ~ 5.51%（v1.3 旧规则下为 15% 顶格 × 3 只）",
+    "单行业最大 中成药 9.57%，上限 30%",
+    "订单不含金额与股数：持仓管家执行时按当日实际总资产 × 权重计算，股数按 100 股整数倍取整",
+    "价格区间基于 2026-09-23~2026-10-23 共 20 个交易日高低点三等分，首档取下三分位",
+    "止损 = min(20日最低×0.98, 首档参考价×0.92)；止盈 = 首档参考价×1.20"
+  ]
 }

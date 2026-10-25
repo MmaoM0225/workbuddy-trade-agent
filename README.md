@@ -13,7 +13,7 @@ WorkBuddy 内的多智能体量化交易协同框架。完整闭环：
 
 | 目录 | 内容 | 写者 |
 |---|---|---|
-| `data/daily_YYYYMMDD/` | 每日标准化数据集（指数行情/市场全景/资讯 + meta.json） | 数据员 |
+| `data/daily_YYYYMMDD/` | 每日标准化数据集（9 文件：indices / market_overview(8维度) / sector_ranking / news(50) / hot_news / hot_board / dragon_tiger / northbound / meta） | 数据员 |
 | `state/` | 共享状态文件（agent 间的唯一协同媒介） | 见下表 |
 | `state/tasks/` | 任务状态文件（9 个，每任务一个，undo/doing/done） | 对应 agent 各自写 |
 | `reports/` | 每日巡检报告 + 持仓检视报告 | 总控 / 持仓管家 |

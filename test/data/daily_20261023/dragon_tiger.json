@@ -1,0 +1,129 @@
+{
+  "date": "20261023",
+  "source": "tushare:top_list",
+  "note": "原始返回约 80 条记录（含同一股票多个上榜原因），此处按 net_amount 预聚合 Top10 净买/净卖",
+  "net_buy_top10": [
+    {
+      "name": "天娱数科",
+      "code": "002354.SZ",
+      "net_amount_yi": 4.89,
+      "reason": "日涨幅偏离值达7%"
+    },
+    {
+      "name": "歌尔股份",
+      "code": "002241.SZ",
+      "net_amount_yi": 4.51,
+      "reason": "日涨幅偏离值达7%"
+    },
+    {
+      "name": "兆威机电",
+      "code": "003021.SZ",
+      "net_amount_yi": 2.34,
+      "reason": "连续三日涨幅偏离20%"
+    },
+    {
+      "name": "宇树科技",
+      "code": "688836.SH",
+      "net_amount_yi": 2.11,
+      "reason": "日涨幅达15%"
+    },
+    {
+      "name": "粤芯半导体",
+      "code": "301660.SZ",
+      "net_amount_yi": 1.95,
+      "reason": "日涨幅达15%"
+    },
+    {
+      "name": "凡拓数创",
+      "code": "301313.SZ",
+      "net_amount_yi": 1.76,
+      "reason": "日涨幅达15%"
+    },
+    {
+      "name": "埃斯顿",
+      "code": "002747.SZ",
+      "net_amount_yi": 1.72,
+      "reason": "日涨幅偏离值达7%"
+    },
+    {
+      "name": "绿盟科技",
+      "code": "300369.SZ",
+      "net_amount_yi": 1.66,
+      "reason": "日涨幅达15%"
+    },
+    {
+      "name": "慈星股份",
+      "code": "300307.SZ",
+      "net_amount_yi": 1.59,
+      "reason": "日涨幅达15%"
+    },
+    {
+      "name": "华瓷股份",
+      "code": "001216.SZ",
+      "net_amount_yi": 1.42,
+      "reason": "连续三日涨幅偏离20%"
+    }
+  ],
+  "net_sell_top10": [
+    {
+      "name": "索辰科技",
+      "code": "688507.SH",
+      "net_amount_yi": -3.03,
+      "reason": "日振幅达30%"
+    },
+    {
+      "name": "盛视科技",
+      "code": "002990.SZ",
+      "net_amount_yi": -1.48,
+      "reason": "连续三日跌幅偏离20%"
+    },
+    {
+      "name": "风语筑",
+      "code": "603466.SH",
+      "net_amount_yi": -1.27,
+      "reason": "日涨幅偏离值达7%"
+    },
+    {
+      "name": "沈鼓集团",
+      "code": "601091.SH",
+      "net_amount_yi": -1.19,
+      "reason": "日换手率达20%"
+    },
+    {
+      "name": "冰山冷热",
+      "code": "000530.SZ",
+      "net_amount_yi": -1.01,
+      "reason": "日换手率达20%"
+    },
+    {
+      "name": "万里石",
+      "code": "002785.SZ",
+      "net_amount_yi": -0.62,
+      "reason": "日跌幅偏离值达7%"
+    },
+    {
+      "name": "闽发铝业",
+      "code": "002578.SZ",
+      "net_amount_yi": -0.56,
+      "reason": "日跌幅偏离值达7%"
+    },
+    {
+      "name": "海量数据",
+      "code": "603138.SH",
+      "net_amount_yi": -0.5,
+      "reason": "日跌幅偏离值达7%"
+    },
+    {
+      "name": "华依科技",
+      "code": "688071.SH",
+      "net_amount_yi": -0.44,
+      "reason": "日涨幅达15%"
+    },
+    {
+      "name": "晶丰明源",
+      "code": "688368.SH",
+      "net_amount_yi": -0.41,
+      "reason": "日涨幅达15%"
+    }
+  ]
+}

@@ -89,6 +89,12 @@
 - 不拆多 automation 的理由：① 横截面排名/市值中性化必须全 universe 一起算，拆开破坏一致性；② 多 automation 需额外汇总编排（时序+失败处理），链路变脆；③ 并发打同一数据源有触发限流风险。
 - 未来值得真拆的信号：universe 从 top200 扩到全市场 5000+ 只（数据量 28 倍），届时配合数据本地化工程重构。
 
+## 数据仓库 data/warehouse/（2026-10-25 建立）
+- 全市场数据本地化落库，18MB：daily/（21 个交易日全市场日线）、weekly/、fina/（118 文件）、daily_basic/20261023.csv（5572 只）、meta/stock_basic.csv（5577）+ suspend、research/。
+- **scores_full.csv = 1802 只 × 17 因子全量打分**（v1.3 口径：0 只双创/北交所/ST；全市场 5572 → 剔 2574 → 再剔次新/停牌/流动性<5000万/因子缺失 1196 → 1802）。
+- **选股必须走全市场**：旧"市值 top300 → 200 只"口径与实际全量 Top50 仅重合 1 只（2%），存在极端大盘偏误（银行 11 只占 22% vs 全量最大行业仅 10%）。选股师正式链路应直接用 warehouse 全量打分，不再做市值 top300 截断。
+- 跑选股/研究前先查 warehouse 数据日期，避免用 test/data 下的旧样本。
+
 ## 工程地基（2026-10-24）
 - git 仓库：E:/cashfree/agent，远程 origin = https://github.com/MmaoM0225/workbuddy-trade-agent.git（main，凭据用系统已存，推送成功）。变更后记得 commit+push。
 - check_pipeline.py：schema + 数据完整性 + 业务规则（仅查已 populate 文件）；支持 --base/--date；退出码 0/1。总控每日调用。

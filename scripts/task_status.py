@@ -126,10 +126,14 @@ def cmd_list(args):
 
 
 def main():
+    root = str(Path(__file__).resolve().parent.parent)
+    common = argparse.ArgumentParser(add_help=False)
+    common.add_argument("--base", default=root,
+                        help="project root (default: repo root); use for rehearsal copies")
     p = argparse.ArgumentParser(description="pipeline task status")
     sub = p.add_subparsers(dest="cmd", required=True)
 
-    ps = sub.add_parser("set")
+    ps = sub.add_parser("set", parents=[common])
     ps.add_argument("task")
     ps.add_argument("status", choices=["undo", "doing", "done"])
     ps.add_argument("--date")
@@ -137,21 +141,26 @@ def main():
     ps.add_argument("--artifact")
     ps.set_defaults(fn=cmd_set)
 
-    pw = sub.add_parser("wait")
+    pw = sub.add_parser("wait", parents=[common])
     pw.add_argument("task")
     pw.add_argument("--deps", required=True)
     pw.add_argument("--interval", type=float, default=1.0, help="minutes between checks")
     pw.add_argument("--max-wait", type=float, default=9.0, help="max minutes this call blocks")
     pw.set_defaults(fn=cmd_wait)
 
-    pg = sub.add_parser("get")
+    pg = sub.add_parser("get", parents=[common])
     pg.add_argument("task")
     pg.set_defaults(fn=cmd_get)
 
-    pl = sub.add_parser("list")
+    pl = sub.add_parser("list", parents=[common])
     pl.set_defaults(fn=cmd_list)
 
     args = p.parse_args()
+
+    global TASKS_DIR
+    if args.base and Path(args.base).resolve() != Path(root).resolve():
+        TASKS_DIR = Path(args.base) / "state" / "tasks"
+
     return args.fn(args)
 
 

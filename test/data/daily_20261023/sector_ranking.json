@@ -1,0 +1,200 @@
+{
+  "date": "2026-10-23",
+  "source": "westock-mcp:data_sector ranking industry changePct",
+  "universe_note": "申万行业全量约 100 个二级行业，此处预聚合 Top15 涨幅 / Bottom10 跌幅；mainNetInflow 单位万元",
+  "top_gainers": [
+    {
+      "name": "电池",
+      "changePct": 5.98,
+      "upCount": "95/97",
+      "mainNetInflow_wan": 101229.42,
+      "mainNetInflow5d_wan": -1130292.39,
+      "leader": "利元亨 +16.04"
+    },
+    {
+      "name": "软件开发",
+      "changePct": 5.79,
+      "upCount": "119/130",
+      "mainNetInflow_wan": 199485.04,
+      "mainNetInflow5d_wan": -48563.65,
+      "leader": "汇金科技 +20.00"
+    },
+    {
+      "name": "自动化设备",
+      "changePct": 5.66,
+      "upCount": "78/82",
+      "mainNetInflow_wan": 49990.74,
+      "mainNetInflow5d_wan": 105720.33,
+      "leader": "奥普特 +20.00"
+    },
+    {
+      "name": "电机Ⅱ",
+      "changePct": 5.55,
+      "upCount": "26/26",
+      "mainNetInflow_wan": 21886.23,
+      "mainNetInflow5d_wan": 123555.05,
+      "leader": "华阳智能 +20.00"
+    },
+    {
+      "name": "影视院线",
+      "changePct": 4.75,
+      "upCount": "18/19",
+      "mainNetInflow_wan": 27137.41,
+      "mainNetInflow5d_wan": -69255.91,
+      "leader": "中广天择 +10.01"
+    },
+    {
+      "name": "数字媒体",
+      "changePct": 4.58,
+      "upCount": "13/14",
+      "mainNetInflow_wan": 5011.87,
+      "mainNetInflow5d_wan": -40868.97,
+      "leader": "凡拓数创 +20.00"
+    },
+    {
+      "name": "广告营销",
+      "changePct": 4.58,
+      "upCount": "23/28",
+      "mainNetInflow_wan": 150783.76,
+      "mainNetInflow5d_wan": 67197.83,
+      "leader": "天娱数科 +10.00"
+    },
+    {
+      "name": "消费电子",
+      "changePct": 4.49,
+      "upCount": "77/91",
+      "mainNetInflow_wan": 218330.41,
+      "mainNetInflow5d_wan": 431729.01,
+      "leader": "长盈精密 +14.82"
+    },
+    {
+      "name": "IT服务Ⅱ",
+      "changePct": 4.36,
+      "upCount": "107/122",
+      "mainNetInflow_wan": 144273.22,
+      "mainNetInflow5d_wan": 65693.26,
+      "leader": "海天瑞声 +20.00"
+    },
+    {
+      "name": "游戏Ⅱ",
+      "changePct": 3.85,
+      "upCount": "23/26",
+      "mainNetInflow_wan": 3709.08,
+      "mainNetInflow5d_wan": -224958.09,
+      "leader": "宝通科技 +14.42"
+    },
+    {
+      "name": "工程机械",
+      "changePct": 3.58,
+      "upCount": "26/28",
+      "mainNetInflow_wan": 20660.6,
+      "mainNetInflow5d_wan": 62800.35,
+      "leader": "南方路机 +10.01"
+    },
+    {
+      "name": "计算机设备",
+      "changePct": 3.41,
+      "upCount": "77/82",
+      "mainNetInflow_wan": 6254.3,
+      "mainNetInflow5d_wan": -254978.24,
+      "leader": "汇金股份 +9.09"
+    },
+    {
+      "name": "半导体",
+      "changePct": 3.3,
+      "upCount": "168/183",
+      "mainNetInflow_wan": 689656.16,
+      "mainNetInflow5d_wan": 234872.22,
+      "leader": "粤芯半导体-U +20.01"
+    },
+    {
+      "name": "汽车零部件",
+      "changePct": 3.03,
+      "upCount": "217/244",
+      "mainNetInflow_wan": 73476.49,
+      "mainNetInflow5d_wan": -27269.77,
+      "leader": "松原安全 +13.01"
+    },
+    {
+      "name": "光学光电子",
+      "changePct": 2.78,
+      "upCount": "79/93",
+      "mainNetInflow_wan": 56519.64,
+      "mainNetInflow5d_wan": -23432.0,
+      "leader": "利亚德 +20.00"
+    }
+  ],
+  "bottom_losers": [
+    {
+      "name": "国有大型银行Ⅱ",
+      "changePct": -2.89,
+      "upCount": "0/6",
+      "mainNetInflow_wan": -145892.52,
+      "leader": "邮储银行 -1.44"
+    },
+    {
+      "name": "特钢Ⅱ",
+      "changePct": -1.3,
+      "upCount": "7/12",
+      "mainNetInflow_wan": 7154.71,
+      "leader": "久立特材 +3.23"
+    },
+    {
+      "name": "城商行Ⅱ",
+      "changePct": -1.06,
+      "upCount": "5/17",
+      "mainNetInflow_wan": -31420.53,
+      "leader": "苏州银行 +2.10"
+    },
+    {
+      "name": "电力",
+      "changePct": -0.68,
+      "upCount": "55/109",
+      "mainNetInflow_wan": -150982.59,
+      "leader": "京运通 +1.82"
+    },
+    {
+      "name": "股份制银行Ⅱ",
+      "changePct": -0.41,
+      "upCount": "2/9",
+      "mainNetInflow_wan": -111152.63,
+      "leader": "民生银行 +0.58"
+    },
+    {
+      "name": "养殖业",
+      "changePct": -0.41,
+      "upCount": "17/22",
+      "mainNetInflow_wan": -21800.87,
+      "leader": "湘佳股份 +10.02"
+    },
+    {
+      "name": "铁路公路",
+      "changePct": -0.39,
+      "upCount": "13/33",
+      "mainNetInflow_wan": -18753.18,
+      "leader": "重庆路桥 +1.96"
+    },
+    {
+      "name": "工程咨询服务Ⅱ",
+      "changePct": -0.24,
+      "upCount": "29/40",
+      "mainNetInflow_wan": -13988.04,
+      "leader": "勘设股份 +5.48"
+    },
+    {
+      "name": "地面兵装Ⅱ",
+      "changePct": -0.24,
+      "upCount": "8/12",
+      "mainNetInflow_wan": -19552.14,
+      "leader": "北方导航 +3.12"
+    },
+    {
+      "name": "农产品加工",
+      "changePct": -0.23,
+      "upCount": "12/23",
+      "mainNetInflow_wan": -9984.84,
+      "leader": "中基健康 +10.03"
+    }
+  ],
+  "breadth_note": "上涨行业数/下跌行业数需从全量计算：本次返回中 changePct>0 的行业约占多数，但涨幅>3%的集中在 TMT/电力设备"
+}

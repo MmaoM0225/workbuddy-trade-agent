@@ -32,8 +32,9 @@ STATE_SCHEMAS = {
     "orders.json": ["orders"],
 }
 
-DATA_CORE_FILES = ["indices.json"]
-DATA_OPTIONAL_FILES = ["market_overview.json", "news.json"]
+DATA_CORE_FILES = ["indices.json", "market_overview.json"]
+DATA_OPTIONAL_FILES = ["news.json", "hot_news.json", "hot_board.json",
+                       "sector_ranking.json", "dragon_tiger.json", "northbound.json"]
 
 REGIMES = ("bull", "neutral", "bear")
 TOL = 0.5
@@ -199,6 +200,17 @@ def latest_data_date():
     return dirs[-1] if dirs else None
 
 
+def _record_count(payload):
+    """Best-effort record count across the daily_* file shapes."""
+    if isinstance(payload, list):
+        return len(payload)
+    for k in ("records", "items", "dimensions", "top_gainers", "net_buy_top10"):
+        v = payload.get(k)
+        if isinstance(v, (list, dict)):
+            return len(v)
+    return 1
+
+
 def check_data(date_str):
     d = DATA / f"daily_{date_str}"
     if not d.exists():
@@ -225,7 +237,7 @@ def check_data(date_str):
         except Exception as e:
             failures.append(f"{f}: invalid JSON ({e})")
             continue
-        n = len(payload) if isinstance(payload, list) else len(payload.get("records", payload.get("items", [1])))
+        n = _record_count(payload)
         if n == 0:
             failures.append(f"{f}: empty")
         else:
@@ -237,7 +249,7 @@ def check_data(date_str):
             continue
         try:
             payload = load_json(p)
-            n = len(payload) if isinstance(payload, list) else len(payload.get("records", payload.get("items", [1])))
+            n = _record_count(payload)
             print(f"[data] {f}: {n} records")
         except Exception as e:
             failures.append(f"{f}: invalid JSON ({e})")

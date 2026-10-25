@@ -1,0 +1,164 @@
+{
+  "date": "2026-10-23",
+  "source": "westock-mcp:data_market_overview",
+  "mode": "all",
+  "dimensions": [
+    {
+      "type": "summary",
+      "date": "2026-10-23",
+      "desc": "市场画像总评",
+      "row": {
+        "ADJ_SCORE": 17.99,
+        "SENTIMENT_STATUS": "情绪狂热(涨停>50只，或者涨股比>70%，两融周增>2%)",
+        "STOCK_WIDTH_STATUS": "普涨(创新高>200只，或者破位<10只)",
+        "SECTOR_WIDTH_STATUS": "全面下跌(上涨板块<20%)",
+        "SECTOR_ROTATION_STATUS": "分化严重(头部在涨,尾部在跌,头部尾部相差超过5%)",
+        "STYLE_ROTATION_STATUS": "价值主导(价值指数 > 成长指数 +5%)",
+        "CAP_ROTATION_STATUS": "均衡(大小盘差异 < ±3%)",
+        "TECHNICAL_STATUS": "偏弱(MACD死叉，或者RSI恐慌抛售时机，或者布林下轨附近)",
+        "TREND_LONG_DIRECTION_STATUS": "暴跌(均线空头排列且距离中间均线以下距离很大)",
+        "TREND_SHORT_DIRECTION_STATUS": "弱势下跌(均线空头排列,或者短线下穿中线且距离中线以下距离较小)",
+        "VALUATION_STATUS": "合理区间(PE分位数30%-70%)",
+        "VOLUME_ENERGE_STATUS": "缩量震荡(成交额90~110%均值)"
+      }
+    },
+    {
+      "type": "trade",
+      "date": "2026-10-23",
+      "desc": "三大指数收盘统计 + 量能 vs 多周期均值",
+      "row": {
+        "CLOSE_PRICE_SZZS": 3690.48,
+        "CHANGE_PCT_SZZS": 0.89,
+        "CLOSE_PRICE_SZCZ": 11673.83,
+        "CHANGE_PCT_SZCZ": 2.79,
+        "CLOSE_PRICE_CYBZ": 2684.1,
+        "CHANGE_PCT_CYBZ": 4.16,
+        "MONEY": 19562.84,
+        "MONEY_5DAVG_RATIO": 125.27,
+        "MONEY_10DAVG_RATIO": 125.21,
+        "MONEY_20DAVG_RATIO": 117.07,
+        "MONEY_60DAVG_RATIO": 99.85,
+        "MONEY_120DAVG_RATIO": 78.49,
+        "MONEY_250DAVG_RATIO": 82.79
+      }
+    },
+    {
+      "type": "interval",
+      "date": "2026-10-23",
+      "desc": "指数区间涨跌幅与52周位置",
+      "row": {
+        "CHG_5D_SZZS": -0.69,
+        "CHG_10D_SZZS": -3.23,
+        "CHG_20D_SZZS": -4.78,
+        "CHG_60D_SZZS": -4.81,
+        "CHG_120D_SZZS": -9.54,
+        "CHG_250D_SZZS": -5.12,
+        "CHG_5D_CYBZ": -3.18,
+        "CHG_10D_CYBZ": -11.8,
+        "CHG_20D_CYBZ": -18.62,
+        "CHG_60D_CYBZ": -24.93,
+        "CHG_120D_CYBZ": -26.82,
+        "CHG_250D_CYBZ": -12.82,
+        "CHG_20D_HS300": -7.96,
+        "52WEEK_HIGH_SZZS": 4258.86,
+        "52WEEK_LOW_SZZS": 3574.27,
+        "52WEEK_HIGH_CYBZ": 4380.41,
+        "52WEEK_LOW_CYBZ": 2494.22
+      }
+    },
+    {
+      "type": "technical",
+      "date": "2026-10-23",
+      "desc": "上证指数技术指标",
+      "row": {
+        "MA_5": 3705.566,
+        "MA_10": 3731.692,
+        "MA_20": 3803.8835,
+        "MA_60": 3871.5665,
+        "MA_120": 3965.6712,
+        "MA_250": 3985.4474,
+        "MACD": -21.9835,
+        "DIF": -57.1019,
+        "DEA": -46.1101,
+        "KDJ_K": 28.1134,
+        "KDJ_D": 24.4193,
+        "KDJ_J": 35.5014,
+        "RSI_6": 32.4786,
+        "RSI_12": 31.6024,
+        "RSI_24": 36.5171,
+        "BOLL_UPPER": 3983.4666,
+        "BOLL_MID": 3803.8835,
+        "BOLL_LOWER": 3624.3004
+      }
+    },
+    {
+      "type": "updown",
+      "date": "2026-10-23",
+      "desc": "A股涨跌分布（情绪与宽度硬数据）",
+      "row": {
+        "CNT_TOTAL": 5577,
+        "CNT_RED": 4526,
+        "CNT_GREEN": 909,
+        "CNT_ZERO": 142,
+        "RATIO_UP": 81.15,
+        "RATIO_DOWN": 16.3,
+        "RATIO_UPDOWN": 4.98,
+        "CNT_REACH_UPLIMIT": 82,
+        "CNT_REACH_DNLIMIT": 2,
+        "RATIO_UPLIMIT": 1.47,
+        "RATIO_DOWNLIMIT": 0.04,
+        "CNT_HIGH20": 219,
+        "CNT_LOW20": 4115,
+        "CNT_HIGH60": 108,
+        "CNT_LOW60": 2339,
+        "CNT_HIGH250": 12,
+        "CNT_LOW250": 1087
+      }
+    },
+    {
+      "type": "valuation",
+      "date": "2026-10-22",
+      "desc": "中证全指估值水平（T+1 更新，滞后1日）",
+      "row": {
+        "PE_TTM": 18.5,
+        "PB_LF": 1.6,
+        "PS_TTM": 1.47,
+        "DIV_TTM": 2.08,
+        "PCF_TTM": 5.15,
+        "PE_TTM_PCT_3Y": 50.13,
+        "PE_TTM_PCT_5Y": 68.25,
+        "PE_TTM_PCT_10Y": 57.02
+      }
+    },
+    {
+      "type": "rotation",
+      "date": "2026-10-23",
+      "desc": "风格指数轮动（价值/成长/大小盘）",
+      "row": {
+        "CHG_5D_QZJZ": -1.86,
+        "CHG_10D_QZJZ": -1.55,
+        "CHG_20D_QZJZ": -0.15,
+        "CHG_60D_QZJZ": -1.36,
+        "CHG_120D_QZJZ": -4.31,
+        "CHG_250D_QZJZ": -2.84,
+        "CHG_5D_QZCZ": -0.47,
+        "CHG_10D_QZCZ": -5.21,
+        "CHG_20D_QZCZ": -9.69,
+        "CHG_60D_QZCZ": -12.63,
+        "CHG_120D_QZCZ": -13.18,
+        "CHG_250D_QZCZ": -12.37,
+        "CHG_5D_HS300": -1.57,
+        "CHG_20D_HS300": -7.96,
+        "CHG_5D_ZZ1000": 0.79,
+        "CHG_20D_ZZ1000": -10.79
+      }
+    },
+    {
+      "type": "margin",
+      "date": "2026-10-23",
+      "desc": "两融余额变动（接口返回空，标记缺失）",
+      "row": {},
+      "missing": true
+    }
+  ]
+}

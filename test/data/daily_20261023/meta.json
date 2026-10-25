@@ -1,0 +1,44 @@
+{
+  "date": "20261023",
+  "fetched_at": "2026-10-25T16:43:13",
+  "trading_day": true,
+  "rehearsal": true,
+  "mode": "manual-rehearsal-from-2026-10-25",
+  "sources": {
+    "trade_cal": "tushare:trade_cal",
+    "indices": "tushare:index_daily",
+    "market_overview": "westock-mcp:data_market_overview",
+    "news": "westock-mcp:data_flash_news_search",
+    "sector_ranking": "westock-mcp:data_sector",
+    "dragon_tiger": "tushare:top_list",
+    "northbound": "tushare:moneyflow_hsgt",
+    "hot_news": "westock-mcp:data_hot"
+  },
+  "record_counts": {
+    "indices": 5,
+    "market_overview_dimensions": 8,
+    "sector_top": 15,
+    "sector_bottom": 10,
+    "dragon_tiger_net_buy": 10,
+    "dragon_tiger_net_sell": 10,
+    "northbound": 1,
+    "news": 15,
+    "hot_news": 20
+  },
+  "degraded": false,
+  "notes": [
+    "trade_cal(SSE, 20261023) is_open=1 确认为交易日，pretrade_date=20261022",
+    "indices: 5/5 指数按 trade_date=20261023 精确取到，无缺失，无需区间回退",
+    "market_overview: 接口支持 date=2026-10-23 回看，返回当日真实市场画像（非当前时点）",
+    "news: flash_news 仅支持最近24小时滚动窗口，本次(10-25 16:4x)取到的是10-25当日快讯，非10-23当日；已在 notes 标注，不影响 indices/overview 的基准日正确性",
+    "tushare:news 无权限(40203)，快讯统一走 westock",
+    "本次为彩排运行，产物写 test/data/，未触碰正式 data/daily_20261023/",
+    "v2 扩展：market_overview 改用 type=all（8 维度），新增 sector_ranking / dragon_tiger / northbound / hot_news",
+    "接口权限实测：limit_list_d/limit_cpt_list/moneyflow_mkt_dc/major_news/news/stk_factor 均 40203 无权限；top_list、moneyflow_hsgt 有权限；data_sector ranking 支持 date 回看",
+    "summary 标签 VOLUME_ENERGE_STATUS=缩量震荡 与实测矛盾：当日两市成交 19562.84 亿，为 20 日均值 117.07%、10 日均值 125.21%（实为放量）——定性标签不可单独采信",
+    "market_overview 的 valuation 维度为 T+1 更新，date 显示 2026-10-22，已标注滞后",
+    "margin（两融）维度接口返回空 row，标记 missing",
+    "hot_news / data_hot 为实时榜，无法回看 10-23；正式跑(当日23:00)不受影响"
+  ],
+  "version": "v2-multi-source"
+}

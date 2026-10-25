@@ -1,0 +1,97 @@
+{
+  "date": "20261023",
+  "regime": "neutral",
+  "confidence": 0.62,
+  "evidence": [
+    "trend: 上证收 3690.48 同时低于 MA5 3705.57 / MA20 3803.88 / MA60 3871.57 / MA250 3985.45，均线完全空头排列；20日 -4.78%、60日 -4.81%、120日 -9.54%；创业板 20日 -18.62%、60日 -24.93%、120日 -26.82%",
+    "updown: RATIO_UP=81.15%（4526涨/909跌/142平），涨停 82 家 vs 跌停 2 家；但 CNT_LOW20=4115 是 CNT_HIGH20=219 的 18.8 倍，CNT_LOW250=1087 vs CNT_HIGH250=12——单日普涨与中期破位同时存在",
+    "trade: 两市成交 19562.84 亿，为 5日均值 125.27%、10日均值 125.21%、20日均值 117.07%、60日均值 99.85%、250日均值 82.79%——短期放量、长期仍低于长期均值",
+    "capital: 北向净流入 31.32 亿；龙虎榜净买前列 天娱数科 4.89亿 / 歌尔股份 4.51亿 / 兆威机电 2.34亿 / 宇树科技 2.11亿 / 粤芯半导体 1.95亿，方向集中于 TMT 与机器人",
+    "sector: 申万行业约 84/100 上涨；领涨 电池 +5.98%（95/97 家上涨）、软件开发 +5.79%（119/130）、自动化设备 +5.66%（78/82）；主力净流入 半导体 +68.97亿、消费电子 +21.83亿、软件开发 +19.95亿",
+    "sector: 垫底 国有大型银行 -2.89%（0/6 上涨，主力 -14.59亿）、特钢 -1.30%、城商行 -1.06%、电力 -0.68%（主力 -15.10亿）——权重蓝筹失血，指数上涨由成长板块驱动",
+    "valuation: 中证全指 PE_TTM 18.5，3年分位 50.13%、5年分位 68.25%、10年分位 57.02%（该维度 T+1 更新，date=2026-10-22）",
+    "钳制触发：空头排列 + 20日新低/新高比 18.8 倍 → 宽度/情绪/量能三维虽强，regime 上限 neutral。判定为超跌反弹而非趋势反转"
+  ],
+  "dimensions": {
+    "trend": {
+      "score": -2,
+      "direction": "bear",
+      "reason": "收盘低于 MA5/20/60/250 全部均线，空头排列；创业板 120 日 -26.82% 深度回调"
+    },
+    "breadth": {
+      "score": 0,
+      "direction": "conflict",
+      "reason": "RATIO_UP 81.15% 极强 vs CNT_LOW20/HIGH20=18.8倍 极弱，单日与中期背离"
+    },
+    "sentiment": {
+      "score": 2,
+      "direction": "bull",
+      "reason": "涨停 82 > 50 且跌停 2 < 5，涨停跌停比 41:1"
+    },
+    "volume": {
+      "score": 2,
+      "direction": "bull",
+      "reason": "成交额达 20 日均值 117.07% 且指数上涨，短期放量确认；但仅为 250 日均值 82.79%，属修复性放量"
+    },
+    "capital": {
+      "score": 2,
+      "direction": "bull",
+      "reason": "北向净流入 31.32 亿超阈值；龙虎榜净买前十集中 TMT/机器人，主力资金半导体净流入 68.97 亿居首"
+    },
+    "sector": {
+      "score": 2,
+      "direction": "bull",
+      "reason": "约 84% 行业上涨，主力净流入前列为半导体/消费电子/软件，方向明确；但结构极端（银行、电力净流出）"
+    },
+    "total_raw_score": 6,
+    "clamp_applied": "趋势钳制（空头排列 + 20日新低超新高3倍）→ regime 上限 neutral"
+  },
+  "tag_conflicts": [
+    "VOLUME_ENERGE_STATUS='缩量震荡(成交额90~110%均值)' vs 实测 trade 维度：成交 19562.84 亿 = 20日均值 117.07%、10日均值 125.21%，实为放量",
+    "STYLE_ROTATION_STATUS='价值主导(价值>成长+5%)' vs 实测 rotation 与 sector：国有大行 -2.89%、城商行 -1.06% 领跌，电池 +5.98%、软件 +5.79% 领涨，成长占优而非价值",
+    "SECTOR_WIDTH_STATUS='全面下跌(上涨板块<20%)' vs 实测 sector_ranking：申万行业约 84/100 上涨，仅 16 个行业下跌"
+  ],
+  "sector_signals": [
+    {
+      "sector": "半导体",
+      "direction": "long",
+      "note": "+3.30%，168/183 家上涨，主力净流入 68.97 亿（全行业第一），领涨粤芯半导体-U +20.01%"
+    },
+    {
+      "sector": "电池/电力设备",
+      "direction": "long",
+      "note": "电池 +5.98% 领涨全行业，95/97 家上涨，主力净流入 10.12 亿，领涨利元亨 +16.04%"
+    },
+    {
+      "sector": "软件开发/IT服务",
+      "direction": "long",
+      "note": "+5.79% / +4.36%，119/130 与 107/122 家上涨，主力净流入 19.95 亿 / 14.43 亿"
+    },
+    {
+      "sector": "银行",
+      "direction": "short",
+      "note": "国有大型银行 -2.89%（0/6 家上涨，主力净流出 14.59 亿）、城商行 -1.06%、股份制银行 -0.41%"
+    },
+    {
+      "sector": "电力",
+      "direction": "short",
+      "note": "-0.68%，55/109 家上涨，主力净流出 15.10 亿（全行业净流出第二），高股息资产遭减配"
+    }
+  ],
+  "risk_level": "medium",
+  "confirmed_days": 1,
+  "position_hint": "neutral → 基础仓位 50%；因中期趋势仍空头，建议实际执行取区间下沿（40-50%），不追高单日反弹",
+  "data_basis": {
+    "source_date": "20261023",
+    "files_used": [
+      "indices.json",
+      "market_overview.json (trade/updown/technical/interval/rotation/valuation)",
+      "sector_ranking.json",
+      "dragon_tiger.json",
+      "northbound.json",
+      "news.json",
+      "hot_news.json"
+    ],
+    "missing_dimensions": ["market_overview.margin（两融接口返回空 row）"]
+  }
+}

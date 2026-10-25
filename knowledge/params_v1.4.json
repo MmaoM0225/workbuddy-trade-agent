@@ -1,0 +1,208 @@
+{
+  "version": "v1.4",
+  "created": "2026-10-25",
+  "status": "confirmed",
+  "note": "v1.4 在 v1.3 基础上解决两个实跑暴露的问题：① 持仓过度集中（只能买 4 只）；② 订单预先写死金额（100 万固定本金）与实际净值脱节。任何后续修改必须新建 v{n+1}。",
+  "strategy": {
+    "name": "multi_factor_quant",
+    "reference": "WorldQuant 101 Formulaic Alphas; GTJA Alpha191; Barra 风格分组框架",
+    "universe": {
+      "exclude_bj": true,
+      "exclude_gem_star": true,
+      "exclude_st": true,
+      "min_list_days": 250,
+      "min_amount_20d_avg_cny": 50000000,
+      "rules_detail": "exclude_bj: ts_code 以 .BJ 结尾; exclude_gem_star: 300/301 开头(创业板) 或 688/689 开头(科创板); exclude_st: 名称含 ST(含 *ST); exclude_no_fina: 无财务指标的股票视为信息不透明直接出局（避免质量因子因缺失被整体剔除）"
+    },
+    "scoring_pipeline": {
+      "cross_section_rank": true,
+      "mad_winsorize": true,
+      "mad_threshold": 3,
+      "neutralization": "log_total_mv",
+      "score_formula": "sum(factor_rank_pct * weight)",
+      "factor_drop_rule": "缺失数据超过 30% 股票的因子剔除，按组内剩余因子占比重新归一化",
+      "factor_groups": {
+        "momentum": [
+          "mom_5d",
+          "mom_10d",
+          "mom_20d",
+          "mom_60d"
+        ],
+        "volatility_risk": [
+          "vol_20d_inv",
+          "mdd_20d_inv"
+        ],
+        "technical_price_volume": [
+          "price_pos_20d",
+          "pv_corr_20d",
+          "turnover_trend_20d"
+        ],
+        "quality": [
+          "roe_ttm",
+          "gross_margin_ttm",
+          "net_margin_ttm",
+          "tr_yoy"
+        ],
+        "valuation": [
+          "ep_ttm",
+          "bp_ttm",
+          "sp_ttm"
+        ],
+        "liquidity": [
+          "turnover_rate"
+        ]
+      }
+    },
+    "factors": {
+      "mom_5d": {
+        "weight": 0.06,
+        "direction": "desc",
+        "group": "momentum",
+        "source": "tushare daily 5 日收盘价"
+      },
+      "mom_10d": {
+        "weight": 0.07,
+        "direction": "desc",
+        "group": "momentum",
+        "source": "tushare daily 10 日收盘价"
+      },
+      "mom_20d": {
+        "weight": 0.07,
+        "direction": "desc",
+        "group": "momentum",
+        "source": "tushare daily 20 日收盘价"
+      },
+      "mom_60d": {
+        "weight": 0.05,
+        "direction": "desc",
+        "group": "momentum",
+        "source": "tushare weekly 近 13 周收盘价"
+      },
+      "vol_20d_inv": {
+        "weight": 0.08,
+        "direction": "desc",
+        "group": "volatility_risk",
+        "source": "tushare daily 20 日收益率标准差取负"
+      },
+      "mdd_20d_inv": {
+        "weight": 0.07,
+        "direction": "desc",
+        "group": "volatility_risk",
+        "source": "tushare daily 20 日区间最大回撤取负"
+      },
+      "price_pos_20d": {
+        "weight": 0.06,
+        "direction": "desc",
+        "group": "technical_price_volume",
+        "source": "tushare daily (close-min20)/(max20-min20)"
+      },
+      "pv_corr_20d": {
+        "weight": 0.07,
+        "direction": "desc",
+        "group": "technical_price_volume",
+        "source": "tushare daily corr(20 日 close, amount)"
+      },
+      "turnover_trend_20d": {
+        "weight": 0.07,
+        "direction": "desc",
+        "group": "technical_price_volume",
+        "source": "tushare daily 20 日 amount 线性回归斜率"
+      },
+      "roe_ttm": {
+        "weight": 0.08,
+        "direction": "desc",
+        "group": "quality",
+        "source": "tushare fina_indicator 最新报告期 roe"
+      },
+      "gross_margin_ttm": {
+        "weight": 0.04,
+        "direction": "desc",
+        "group": "quality",
+        "source": "tushare fina_indicator grossprofit_margin"
+      },
+      "net_margin_ttm": {
+        "weight": 0.04,
+        "direction": "desc",
+        "group": "quality",
+        "source": "tushare fina_indicator netprofit_margin"
+      },
+      "tr_yoy": {
+        "weight": 0.04,
+        "direction": "desc",
+        "group": "quality",
+        "source": "tushare fina_indicator 营收同比"
+      },
+      "ep_ttm": {
+        "weight": 0.06,
+        "direction": "desc",
+        "group": "valuation",
+        "source": "tushare daily_basic pe_ttm 倒数（负 PE 记缺失）"
+      },
+      "bp_ttm": {
+        "weight": 0.05,
+        "direction": "desc",
+        "group": "valuation",
+        "source": "tushare daily_basic pb 倒数"
+      },
+      "sp_ttm": {
+        "weight": 0.04,
+        "direction": "desc",
+        "group": "valuation",
+        "source": "tushare daily_basic ps_ttm 倒数"
+      },
+      "turnover_rate": {
+        "weight": 0.05,
+        "direction": "desc",
+        "group": "liquidity",
+        "source": "tushare daily_basic 当日换手率"
+      }
+    },
+    "call_budget": {
+      "limit": 40,
+      "plan": "stock_basic 1 + suspend_d 1 + trade_cal 1 + daily 8 + weekly 8 + fina_indicator 15(含回退) = 35"
+    },
+    "pool_size": 50
+  },
+  "capital": {
+    "initial_sim_capital_cny": 1000000,
+    "currency": "CNY",
+    "note": "暂按 v1.0 默认 100 万；待用户确认后新建下一版本修正"
+  },
+  "position_limits": {
+    "max_single_weight_pct": 15,
+    "max_sector_weight_pct": 30,
+    "min_order_weight_pct": 2,
+    "first_tranche_max_pct_of_target": 50,
+    "min_single_weight_pct": 3,
+    "min_holdings": 8,
+    "max_holdings": 12
+  },
+  "regime_base_position_pct": {
+    "bull": 80,
+    "neutral": 50,
+    "bear": 20
+  },
+  "risk": {
+    "daily_loss_stop_pct": -3,
+    "drawdown_halve_pct": -8,
+    "drawdown_liquidate_pct": -12,
+    "circuit_freeze_days": 5,
+    "single_stop_loss_pct": 8,
+    "single_take_profit_pct": 20
+  },
+  "parent": "v1.3",
+  "changelog": [
+    "用户要求保证持仓多样性：新增 min_holdings=8 / max_holdings=12 硬约束",
+    "权重分配改为池内归一化 weight_i = regime_base × qs_i / Σqs（原 target=regime_base×qs/100 必然超过 15% 单票上限，导致组合只剩 3-4 只）",
+    "新增 min_single_weight_pct=3，避免归一化后出现碎片化小仓位",
+    "订单不再写金额字段：金额由持仓管家在执行时按当日实际总资产（现金+持仓市值）× 权重百分比计算，股数按 100 股整数倍取整"
+  ],
+  "weight_allocation": {
+    "method": "quality_normalized",
+    "formula": "weight_i = regime_base_position_pct × qs_i / Σ(qs_j for j in selected N)",
+    "selection": "按 quality_score 降序取 N 只，N 由 min_holdings/max_holdings 与行业分散度决定，默认 10",
+    "clamp": "单票权重 clamp 到 [min_single_weight_pct, max_single_weight_pct]，clamp 后重新归一化一次",
+    "sector_constraint": "单行业合计 ≤ max_sector_weight_pct(30)，超限时按 quality_score 从低到高剔除并补入次优标的",
+    "amount_rule": "订单只给权重百分比，金额与股数由持仓管家执行时按实际总资产计算"
+  }
+}

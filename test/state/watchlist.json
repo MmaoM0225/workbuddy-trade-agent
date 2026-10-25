@@ -1,298 +1,375 @@
 {
   "date": "20261023",
   "source_pool_date": "20261023",
+  "pool_universe_size": 1802,
+  "screened_count": 50,
+  "avoid_count": 9,
+  "buy_watch_count": 20,
   "items": [
     {
       "code": "002832.SZ",
       "name": "比音勒芬",
-      "quality_score": 88.9,
+      "pool_rank": 40,
+      "pool_score": 0.73,
+      "quality_score": 89.8,
+      "goodwill_ratio_pct": 0.0,
+      "audit": "标准无保留意见",
       "verdict": "buy_watch",
-      "thesis": "ROE 13.5%（横截面93%分位）；营收同比 +27.4%；EP 百分位 63%；因子总分 0.730（池内 #40）",
+      "thesis": "毛利率 分位 98%；ROE(TTM) 分位 93%；20日动量 分位 87%",
       "risks": [
-        "商誉数据缺失，未能排查"
+        "未发现明显瑕疵，但需跟踪三季报与行业景气变化"
       ],
-      "veto_flags": []
+      "watch_rank": 1
     },
     {
       "code": "002315.SZ",
       "name": "焦点科技",
-      "quality_score": 86.7,
+      "pool_rank": 11,
+      "pool_score": 0.7767,
+      "quality_score": 88.4,
+      "goodwill_ratio_pct": 0.0,
+      "audit": "标准无保留意见",
       "verdict": "buy_watch",
-      "thesis": "ROE 15.3%（横截面95%分位）；营收同比 +13.9%；EP 百分位 61%；因子总分 0.777（池内 #11）",
+      "thesis": "毛利率 分位 99%；ROE(TTM) 分位 95%；20日动量 分位 94%",
       "risks": [
-        "商誉数据缺失，未能排查"
+        "5 日涨幅居前（分位 94%），短期追高风险"
       ],
-      "veto_flags": []
+      "watch_rank": 2
     },
     {
       "code": "600323.SH",
       "name": "瀚蓝环境",
-      "quality_score": 85.4,
+      "pool_rank": 10,
+      "pool_score": 0.7839,
+      "quality_score": 84.7,
+      "goodwill_ratio_pct": 9.2,
+      "audit": "标准无保留意见",
       "verdict": "buy_watch",
-      "thesis": "ROE 8.1%（横截面83%分位）；营收同比 +34.2%；EP 百分位 91%；因子总分 0.784（池内 #10）",
+      "thesis": "20日低波动 分位 96%；EP(TTM) 分位 91%；营收同比 分位 89%",
       "risks": [
-        "短期动量回落风险（动量因子为横截面相对强度，非绝对上涨趋势）"
+        "未发现明显瑕疵，但需跟踪三季报与行业景气变化"
       ],
-      "veto_flags": []
-    },
-    {
-      "code": "603889.SH",
-      "name": "新澳股份",
-      "quality_score": 83.3,
-      "verdict": "buy_watch",
-      "thesis": "ROE 12.4%（横截面92%分位）；营收同比 +19.7%；EP 百分位 94%；因子总分 0.747（池内 #26）",
-      "risks": [
-        "商誉数据缺失，未能排查"
-      ],
-      "veto_flags": []
-    },
-    {
-      "code": "002833.SZ",
-      "name": "弘亚数控",
-      "quality_score": 82.8,
-      "verdict": "buy_watch",
-      "thesis": "ROE 8.6%（横截面85%分位）；营收同比 +21.7%；EP 百分位 71%；因子总分 0.793（池内 #8）",
-      "risks": [
-        "商誉数据缺失，未能排查"
-      ],
-      "veto_flags": []
+      "watch_rank": 3
     },
     {
       "code": "603198.SH",
       "name": "迎驾贡酒",
-      "quality_score": 81.7,
+      "pool_rank": 25,
+      "pool_score": 0.7491,
+      "quality_score": 84.7,
+      "goodwill_ratio_pct": 0.0,
+      "audit": "标准无保留意见",
       "verdict": "buy_watch",
-      "thesis": "ROE 10.9%（横截面90%分位）；营收同比 +8.1%；EP 百分位 77%；因子总分 0.749（池内 #25）",
+      "thesis": "毛利率 分位 98%；净利率 分位 95%；20日动量 分位 93%",
       "risks": [
-        "商誉数据缺失，未能排查"
+        "未发现明显瑕疵，但需跟踪三季报与行业景气变化"
       ],
-      "veto_flags": []
+      "watch_rank": 4
     },
     {
-      "code": "603332.SH",
-      "name": "苏州龙杰",
-      "quality_score": 81.4,
+      "code": "002833.SZ",
+      "name": "弘亚数控",
+      "pool_rank": 8,
+      "pool_score": 0.7927,
+      "quality_score": 81.5,
+      "goodwill_ratio_pct": 0.0,
+      "audit": "标准无保留意见",
       "verdict": "buy_watch",
-      "thesis": "ROE 8.7%（横截面85%分位）；营收同比 +36.9%；EP 百分位 70%；因子总分 0.766（池内 #14）",
+      "thesis": "20日动量 分位 93%；ROE(TTM) 分位 85%；净利率 分位 84%",
       "risks": [
-        "商誉数据缺失，未能排查"
+        "未发现明显瑕疵，但需跟踪三季报与行业景气变化"
       ],
-      "veto_flags": []
+      "watch_rank": 5
     },
     {
       "code": "600285.SH",
       "name": "羚锐制药",
-      "quality_score": 78.3,
+      "pool_rank": 29,
+      "pool_score": 0.741,
+      "quality_score": 81.2,
+      "goodwill_ratio_pct": 14.9,
+      "audit": "标准无保留意见",
       "verdict": "buy_watch",
-      "thesis": "ROE 14.9%（横截面94%分位）；营收同比 +2.3%；EP 百分位 81%；因子总分 0.741（池内 #29）",
+      "thesis": "毛利率 分位 99%；ROE(TTM) 分位 94%；净利率 分位 90%",
       "risks": [
-        "短期动量回落风险（动量因子为横截面相对强度，非绝对上涨趋势）"
+        "未发现明显瑕疵，但需跟踪三季报与行业景气变化"
       ],
-      "veto_flags": []
-    },
-    {
-      "code": "601900.SH",
-      "name": "南方传媒",
-      "quality_score": 74.2,
-      "verdict": "buy_watch",
-      "thesis": "ROE 11.8%（横截面91%分位）；营收同比 +0.2%；EP 百分位 93%；因子总分 0.728（池内 #43）",
-      "risks": [
-        "短期动量回落风险（动量因子为横截面相对强度，非绝对上涨趋势）"
-      ],
-      "veto_flags": []
-    },
-    {
-      "code": "600621.SH",
-      "name": "华鑫股份",
-      "quality_score": 74.0,
-      "verdict": "buy_watch",
-      "thesis": "ROE 4.4%（横截面63%分位）；营收同比 +22.1%；EP 百分位 70%；因子总分 0.741（池内 #28）",
-      "risks": [
-        "短期动量回落风险（动量因子为横截面相对强度，非绝对上涨趋势）"
-      ],
-      "veto_flags": []
+      "watch_rank": 6
     },
     {
       "code": "600674.SH",
       "name": "川投能源",
-      "quality_score": 74.0,
+      "pool_rank": 44,
+      "pool_score": 0.7268,
+      "quality_score": 77.7,
+      "goodwill_ratio_pct": 0.0,
+      "audit": "标准无保留意见",
       "verdict": "buy_watch",
-      "thesis": "ROE 9.6%（横截面88%分位）；营收同比 -1.4%；EP 百分位 75%；因子总分 0.727（池内 #44）",
+      "thesis": "净利率 分位 100%；20日低波动 分位 99%；20日动量 分位 93%",
       "risks": [
-        "商誉数据缺失，未能排查",
-        "营收同比下滑 -1.4%"
+        "未发现明显瑕疵，但需跟踪三季报与行业景气变化"
       ],
-      "veto_flags": []
+      "watch_rank": 7
     },
     {
-      "code": "001283.SZ",
-      "name": "豪鹏科技",
-      "quality_score": 70.4,
+      "code": "603889.SH",
+      "name": "新澳股份",
+      "pool_rank": 26,
+      "pool_score": 0.7467,
+      "quality_score": 76.3,
+      "goodwill_ratio_pct": 0.0,
+      "audit": "标准无保留意见",
       "verdict": "buy_watch",
-      "thesis": "ROE 6.5%（横截面76%分位）；营收同比 +19.6%；EP 百分位 53%；因子总分 0.788（池内 #9）",
+      "thesis": "EP(TTM) 分位 94%；ROE(TTM) 分位 92%；20日动量 分位 82%",
       "risks": [
-        "商誉数据缺失，未能排查"
+        "未发现明显瑕疵，但需跟踪三季报与行业景气变化"
       ],
-      "veto_flags": []
+      "watch_rank": 8
     },
     {
-      "code": "600312.SH",
-      "name": "平高电气",
-      "quality_score": 70.4,
+      "code": "601900.SH",
+      "name": "南方传媒",
+      "pool_rank": 43,
+      "pool_score": 0.7275,
+      "quality_score": 75.6,
+      "goodwill_ratio_pct": 0.2,
+      "audit": "标准无保留意见",
       "verdict": "buy_watch",
-      "thesis": "ROE 10.6%（横截面90%分位）；营收同比 -3.4%；EP 百分位 65%；因子总分 0.773（池内 #13）",
+      "thesis": "EP(TTM) 分位 93%；ROE(TTM) 分位 91%；20日动量 分位 89%",
       "risks": [
-        "营收同比下滑 -3.4%"
+        "未发现明显瑕疵，但需跟踪三季报与行业景气变化"
       ],
-      "veto_flags": []
-    },
-    {
-      "code": "603101.SH",
-      "name": "汇嘉时代",
-      "quality_score": 70.3,
-      "verdict": "buy_watch",
-      "thesis": "ROE 9.4%（横截面87%分位）；营收同比 +4.9%；EP 百分位 51%；因子总分 0.795（池内 #6）",
-      "risks": [
-        "短期动量回落风险（动量因子为横截面相对强度，非绝对上涨趋势）"
-      ],
-      "veto_flags": []
-    },
-    {
-      "code": "001286.SZ",
-      "name": "陕西能源",
-      "quality_score": 69.9,
-      "verdict": "buy_watch",
-      "thesis": "ROE 5.1%（横截面69%分位）；营收同比 +8.6%；EP 百分位 88%；因子总分 0.731（池内 #39）",
-      "risks": [
-        "短期动量回落风险（动量因子为横截面相对强度，非绝对上涨趋势）"
-      ],
-      "veto_flags": []
+      "watch_rank": 9
     },
     {
       "code": "600329.SH",
       "name": "达仁堂",
-      "quality_score": 69.7,
+      "pool_rank": 45,
+      "pool_score": 0.7264,
+      "quality_score": 74.7,
+      "goodwill_ratio_pct": 0.0,
+      "audit": "标准无保留意见",
       "verdict": "buy_watch",
-      "thesis": "ROE 9.9%（横截面88%分位）；营收同比 -7.4%；EP 百分位 42%；因子总分 0.726（池内 #45）",
+      "thesis": "20日动量 分位 99%；毛利率 分位 99%；净利率 分位 92%",
       "risks": [
-        "商誉数据缺失，未能排查",
-        "营收同比下滑 -7.4%"
+        "5 日涨幅居前（分位 94%），短期追高风险"
       ],
-      "veto_flags": []
+      "watch_rank": 10
     },
     {
-      "code": "002117.SZ",
-      "name": "东港股份",
-      "quality_score": 66.4,
+      "code": "001286.SZ",
+      "name": "陕西能源",
+      "pool_rank": 39,
+      "pool_score": 0.7308,
+      "quality_score": 73.2,
+      "goodwill_ratio_pct": 0.7,
+      "audit": "标准无保留意见",
       "verdict": "buy_watch",
-      "thesis": "ROE 7.0%（横截面79%分位）；营收同比 -1.5%；EP 百分位 56%；因子总分 0.753（池内 #24）",
+      "thesis": "20日低波动 分位 91%；20日动量 分位 89%；净利率 分位 88%",
       "risks": [
-        "营收同比下滑 -1.5%"
+        "未发现明显瑕疵，但需跟踪三季报与行业景气变化"
       ],
-      "veto_flags": []
+      "watch_rank": 11
     },
     {
-      "code": "002530.SZ",
-      "name": "金财互联",
-      "quality_score": 66.0,
+      "code": "600621.SH",
+      "name": "华鑫股份",
+      "pool_rank": 28,
+      "pool_score": 0.7413,
+      "quality_score": 72.7,
+      "goodwill_ratio_pct": 0.5,
+      "audit": "标准无保留意见",
       "verdict": "buy_watch",
-      "thesis": "ROE 3.2%（横截面53%分位）；营收同比 +29.9%；EP 百分位 22%；因子总分 0.755（池内 #21）",
+      "thesis": "20日动量 分位 98%；净利率 分位 93%；营收同比 分位 79%",
       "risks": [
-        "短期动量回落风险（动量因子为横截面相对强度，非绝对上涨趋势）"
+        "波动率高于样本（低波分位 18%）"
       ],
-      "veto_flags": []
+      "watch_rank": 12
     },
     {
-      "code": "603239.SH",
-      "name": "浙江仙通",
-      "quality_score": 65.2,
+      "code": "603332.SH",
+      "name": "苏州龙杰",
+      "pool_rank": 14,
+      "pool_score": 0.7665,
+      "quality_score": 71.1,
+      "goodwill_ratio_pct": 0.0,
+      "audit": "标准无保留意见",
       "verdict": "buy_watch",
-      "thesis": "ROE 6.1%（横截面74%分位）；营收同比 +2.8%；EP 百分位 63%；因子总分 0.765（池内 #16）",
+      "thesis": "20日动量 分位 92%；营收同比 分位 89%；ROE(TTM) 分位 85%",
       "risks": [
-        "商誉数据缺失，未能排查"
+        "5 日涨幅居前（分位 91%），短期追高风险"
       ],
-      "veto_flags": []
+      "watch_rank": 13
     },
     {
       "code": "600351.SH",
       "name": "亚宝药业",
-      "quality_score": 65.2,
+      "pool_rank": 31,
+      "pool_score": 0.7392,
+      "quality_score": 70.0,
+      "goodwill_ratio_pct": 0.9,
+      "audit": "标准无保留意见",
       "verdict": "buy_watch",
-      "thesis": "ROE 6.2%（横截面75%分位）；营收同比 +0.5%；EP 百分位 82%；因子总分 0.739（池内 #31）",
+      "thesis": "毛利率 分位 93%；20日动量 分位 86%；净利率 分位 82%",
       "risks": [
-        "短期动量回落风险（动量因子为横截面相对强度，非绝对上涨趋势）"
+        "未发现明显瑕疵，但需跟踪三季报与行业景气变化"
       ],
-      "veto_flags": []
+      "watch_rank": 14
+    },
+    {
+      "code": "600312.SH",
+      "name": "平高电气",
+      "pool_rank": 13,
+      "pool_score": 0.7731,
+      "quality_score": 69.9,
+      "goodwill_ratio_pct": 0.4,
+      "audit": "标准无保留意见",
+      "verdict": "buy_watch",
+      "thesis": "20日动量 分位 96%；ROE(TTM) 分位 90%；净利率 分位 82%",
+      "risks": [
+        "未发现明显瑕疵，但需跟踪三季报与行业景气变化"
+      ],
+      "watch_rank": 15
+    },
+    {
+      "code": "603101.SH",
+      "name": "汇嘉时代",
+      "pool_rank": 6,
+      "pool_score": 0.7954,
+      "quality_score": 69.1,
+      "goodwill_ratio_pct": 9.3,
+      "audit": "标准无保留意见",
+      "verdict": "buy_watch",
+      "thesis": "20日动量 分位 97%；ROE(TTM) 分位 87%；毛利率 分位 76%",
+      "risks": [
+        "5 日涨幅居前（分位 92%），短期追高风险",
+        "波动率高于样本（低波分位 26%）"
+      ],
+      "watch_rank": 16
+    },
+    {
+      "code": "002117.SZ",
+      "name": "东港股份",
+      "pool_rank": 24,
+      "pool_score": 0.7532,
+      "quality_score": 69.1,
+      "goodwill_ratio_pct": 0.1,
+      "audit": "标准无保留意见",
+      "verdict": "buy_watch",
+      "thesis": "20日动量 分位 91%；净利率 分位 84%；毛利率 分位 80%",
+      "risks": [
+        "未发现明显瑕疵，但需跟踪三季报与行业景气变化"
+      ],
+      "watch_rank": 17
+    },
+    {
+      "code": "002351.SZ",
+      "name": "漫步者",
+      "pool_rank": 5,
+      "pool_score": 0.8056,
+      "quality_score": 68.1,
+      "goodwill_ratio_pct": 0.1,
+      "audit": "标准无保留意见",
+      "verdict": "buy_watch",
+      "thesis": "20日动量 分位 95%；20日低波动 分位 85%；毛利率 分位 85%",
+      "risks": [
+        "5 日涨幅居前（分位 94%），短期追高风险"
+      ],
+      "watch_rank": 18
+    },
+    {
+      "code": "002530.SZ",
+      "name": "金财互联",
+      "pool_rank": 21,
+      "pool_score": 0.7553,
+      "quality_score": 68.0,
+      "goodwill_ratio_pct": 0.9,
+      "audit": "标准无保留意见",
+      "verdict": "buy_watch",
+      "thesis": "20日动量 分位 89%；营收同比 分位 86%；20日低波动 分位 79%",
+      "risks": [
+        "估值处于样本高位（EP 分位 22%）"
+      ],
+      "watch_rank": 19
+    },
+    {
+      "code": "002627.SZ",
+      "name": "三峡旅游",
+      "pool_rank": 37,
+      "pool_score": 0.7317,
+      "quality_score": 67.2,
+      "goodwill_ratio_pct": 0.2,
+      "audit": "标准无保留意见",
+      "verdict": "buy_watch",
+      "thesis": "净利率 分位 86%；20日动量 分位 83%；20日低波动 分位 82%",
+      "risks": [
+        "估值处于样本高位（EP 分位 29%）",
+        "5 日涨幅居前（分位 90%），短期追高风险"
+      ],
+      "watch_rank": 20
     }
   ],
-  "notes": {
-    "mode": "rehearsal",
-    "candidates_scanned": 50,
-    "avoid_count": 8,
-    "avoid_summary": [
-      {
-        "code": "002322.SZ",
-        "name": "理工能科",
-        "flags": [
-          "商誉/净资产 46.6% >30%"
-        ]
-      },
-      {
-        "code": "000576.SZ",
-        "name": "甘化科工",
-        "flags": [
-          "商誉/净资产 44.2% >30%"
-        ]
-      },
-      {
-        "code": "603276.SH",
-        "name": "恒兴新材",
-        "flags": [
-          "近3月减持 3 次"
-        ]
-      },
-      {
-        "code": "002811.SZ",
-        "name": "郑中设计",
-        "flags": [
-          "近3月减持 4 次"
-        ]
-      },
-      {
-        "code": "002605.SZ",
-        "name": "姚记科技",
-        "flags": [
-          "商誉/净资产 31.3% >30%"
-        ]
-      },
-      {
-        "code": "600633.SH",
-        "name": "浙数文化",
-        "flags": [
-          "商誉/净资产 41.6% >30%"
-        ]
-      },
-      {
-        "code": "002291.SZ",
-        "name": "遥望科技",
-        "flags": [
-          "商誉/净资产 39.6% >30%"
-        ]
-      },
-      {
-        "code": "000788.SZ",
-        "name": "北大医药",
-        "flags": [
-          "近3月减持 6 次"
-        ]
-      }
-    ],
-    "watch_count": 12,
-    "due_diligence_coverage": {
-      "goodwill": 50,
-      "reduction": 50,
-      "audit": 50
+  "avoid_list": [
+    {
+      "code": "002322.SZ",
+      "name": "理工能科",
+      "verdict": "avoid",
+      "reason": "商誉/净资产 46.6% 超过 30% 上限"
     },
-    "quality_formula": "ROE .5 / 营收增速 .3 / 净利率 .2 横截面百分位加权，减持次数扣分"
-  }
+    {
+      "code": "002722.SZ",
+      "name": "物产金轮",
+      "verdict": "avoid",
+      "reason": "近3月大股东减持 2 次 / 825 万股（占总股本 3.71%）"
+    },
+    {
+      "code": "000576.SZ",
+      "name": "甘化科工",
+      "verdict": "avoid",
+      "reason": "商誉/净资产 44.2% 超过 30% 上限"
+    },
+    {
+      "code": "002811.SZ",
+      "name": "郑中设计",
+      "verdict": "avoid",
+      "reason": "近3月大股东减持 4 次 / 1540 万股（占总股本 5.00%）"
+    },
+    {
+      "code": "002839.SZ",
+      "name": "张家港行",
+      "verdict": "avoid",
+      "reason": "近3月大股东减持 1 次 / 17739 万股（占总股本 7.26%）"
+    },
+    {
+      "code": "002605.SZ",
+      "name": "姚记科技",
+      "verdict": "avoid",
+      "reason": "商誉/净资产 31.3% 超过 30% 上限"
+    },
+    {
+      "code": "600633.SH",
+      "name": "浙数文化",
+      "verdict": "avoid",
+      "reason": "商誉/净资产 41.6% 超过 30% 上限"
+    },
+    {
+      "code": "002291.SZ",
+      "name": "遥望科技",
+      "verdict": "avoid",
+      "reason": "商誉/净资产 39.6% 超过 30% 上限"
+    },
+    {
+      "code": "000788.SZ",
+      "name": "北大医药",
+      "verdict": "avoid",
+      "reason": "近3月大股东减持 6 次 / 4901 万股（占总股本 8.22%）"
+    }
+  ],
+  "notes": [
+    "彩排：全本地研判，零 MCP 调用（因子来自 warehouse/scores_full.csv，排雷来自 warehouse/research/）",
+    "排雷规则：商誉/净资产>30% 或 审计非标 或 近3月减持≥3次或占总股本>1% → avoid",
+    "quality_score 定义：ROE 35% + 净利率 25% + 毛利率 15% + 营收同比 25%，均为 1802 只样本内百分位加权",
+    "入围 20 只（按 quality_score 取前 20），剔除 9 只",
+    "正式运行需补充：个股级新闻情绪扫描（news_search）与近 3 年 PE/PB 分位（当前用横截面 EP/BP 分位近似）"
+  ]
 }
