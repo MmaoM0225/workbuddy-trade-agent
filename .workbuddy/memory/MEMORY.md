@@ -49,6 +49,12 @@
 - 接口权限备忘：stk_factor / tushare news 无权限（40203）。
 - 数据落盘习惯：全市场原始数据先写 CSV 再计算（demo 数据在 data/demo_20261025/）。
 
+## 并行执行决策（2026-10-25）
+- 用户问"筛选定时任务能否多 agent 同时执行" → 结论：**不拆多个 automation，在选股师 prompt 内并行**（单一写者原则 + 横截面一致性不能拆）。
+- 选股师 prompt 已加【并行执行策略】：因子取证阶段用 Agent 工具派 3-4 个并行子 agent（daily×2 / weekly×1 / fina×1），子 agent 只回报汇总不回传原始数据；fina 缺口由主 agent 补派回退子 agent。
+- 不拆多 automation 的理由：① 横截面排名/市值中性化必须全 universe 一起算，拆开破坏一致性；② 多 automation 需额外汇总编排（时序+失败处理），链路变脆；③ 并发打同一数据源有触发限流风险。
+- 未来值得真拆的信号：universe 从 top200 扩到全市场 5000+ 只（数据量 28 倍），届时配合数据本地化工程重构。
+
 ## 工程地基（2026-10-24）
 - git 仓库：E:/cashfree/agent，远程 origin = https://github.com/MmaoM0225/workbuddy-trade-agent.git（main，凭据用系统已存，推送成功）。变更后记得 commit+push。
 - check_pipeline.py：schema + 数据完整性 + 业务规则（仅查已 populate 文件）；支持 --base/--date；退出码 0/1。总控每日调用。
