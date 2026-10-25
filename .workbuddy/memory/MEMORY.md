@@ -3,6 +3,12 @@
 ## 项目定位
 多 Agent 协同交易框架开发工作区。目标：WorkBuddy 内多智能体量化交易闭环（选股→优选→建仓→持仓管理→复盘→经验回流）。
 
+## 目录边界（2026-10-25 立规）
+- `test/` = 彩排/测试专用（data/scripts/reports/state 四子目录）。所有非正式运行产物落这里，**禁止写正式 state/**。
+- 硬规则：彩排 orders 只写 `test/state/orders.json`——持仓管家工作日 23:20 会自动执行 state/orders.json 的 planned 订单，脏写=计划外建仓。
+- 正式 automation 只写 state/、data/、reports/；scripts/ 为生产脚本，彩排脚本放 test/scripts/。
+- 历史彩跑数据：test/data/20261025/（2026-10-23 基准，含 v1.2 因子得分与 v1.3 universe 重选文件 universe_200_v13.csv / fresh_codes.txt）。
+
 ## 已定架构决策（2026-10-24）
 - 协同模式：混合模式 = 定时 automation 流水线（每日盘后/每周选股/每周复盘）+ TeamCreate 实时会商（critical 预警/regime 切换/净值波动±3% 时升级）。
 - agent 间不直接对话，通过共享状态文件协同（单一写者原则）：state/{pool,watchlist,regime,positions,orders}.json + trades.jsonl(append-only) + reviews/ + knowledge/。
