@@ -1,3 +1,471 @@
 {
-  "orders": []
+  "date": "20261023",
+  "mode": "production",
+  "params_version": "v1.7",
+  "regime": "neutral",
+  "base_position_pct": 50.0,
+  "holdings_before": 0,
+  "target_holdings": 10,
+  "planned_new_orders": 10,
+  "planned_total_weight_pct": 49.99,
+  "cash_reserve_pct": 50.01,
+  "sector_weights": {
+    "服饰": 10.37,
+    "互联网": 5.38,
+    "白酒": 5.16,
+    "环境保护": 5.15,
+    "专用机械": 4.96,
+    "中成药": 4.94,
+    "水力发电": 4.73,
+    "证券": 4.66,
+    "纺织": 4.64
+  },
+  "orders": [
+    {
+      "id": "ORD-20261023-001",
+      "side": "buy",
+      "code": "002832.SZ",
+      "name": "比音勒芬",
+      "industry": "服饰",
+      "target_weight_pct": 5.46,
+      "weight_basis": "pct_of_total_assets",
+      "amount_note": "不预置金额，由持仓管家按执行时总资产计算（R-011）",
+      "ref_price": 26.47,
+      "tranches": [
+        {
+          "pct": 50,
+          "trigger_pct": -1.0,
+          "price_zone": [
+            25.41,
+            26.21
+          ],
+          "status": "pending"
+        },
+        {
+          "pct": 50,
+          "trigger_pct": -4.0,
+          "price_zone": [
+            23.29,
+            25.41
+          ],
+          "status": "pending"
+        }
+      ],
+      "fill_logic": "cumulative_threshold（价格≤-1%触发首档；≤-4%触发两档；跌破-12%不买）",
+      "guard_price": 23.29,
+      "stop_loss": 24.17,
+      "take_profit": 31.76,
+      "quality_score": 89.8,
+      "rationale": "ROE 13.5%（横截面93%分位）；净利率 18.3%；营收同比 +27.4%；EP 百分位 63%；因子总分 0.729（池内 #40）",
+      "risks": [
+        "短期动量回落风险（动量因子为横截面相对强度，非绝对上涨趋势）"
+      ],
+      "expires_after_trading_days": 10,
+      "expire_rule": "R-006 挂 10 个交易日未成交即 expired，禁止上移 price_zone",
+      "status": "planned",
+      "created_at": "2026-10-25T18:47:07"
+    },
+    {
+      "id": "ORD-20261023-002",
+      "side": "buy",
+      "code": "002315.SZ",
+      "name": "焦点科技",
+      "industry": "互联网",
+      "target_weight_pct": 5.38,
+      "weight_basis": "pct_of_total_assets",
+      "amount_note": "不预置金额，由持仓管家按执行时总资产计算（R-011）",
+      "ref_price": 26.4,
+      "tranches": [
+        {
+          "pct": 50,
+          "trigger_pct": -1.0,
+          "price_zone": [
+            25.34,
+            26.14
+          ],
+          "status": "pending"
+        },
+        {
+          "pct": 50,
+          "trigger_pct": -4.0,
+          "price_zone": [
+            23.23,
+            25.34
+          ],
+          "status": "pending"
+        }
+      ],
+      "fill_logic": "cumulative_threshold（价格≤-1%触发首档；≤-4%触发两档；跌破-12%不买）",
+      "guard_price": 23.23,
+      "stop_loss": 23.19,
+      "take_profit": 31.68,
+      "quality_score": 88.5,
+      "rationale": "ROE 15.3%（横截面95%分位）；净利率 25.7%；营收同比 +13.9%；EP 百分位 61%；因子总分 0.771（池内 #12）",
+      "risks": [
+        "短期动量回落风险（动量因子为横截面相对强度，非绝对上涨趋势）"
+      ],
+      "expires_after_trading_days": 10,
+      "expire_rule": "R-006 挂 10 个交易日未成交即 expired，禁止上移 price_zone",
+      "status": "planned",
+      "created_at": "2026-10-25T18:47:07"
+    },
+    {
+      "id": "ORD-20261023-003",
+      "side": "buy",
+      "code": "603198.SH",
+      "name": "迎驾贡酒",
+      "industry": "白酒",
+      "target_weight_pct": 5.16,
+      "weight_basis": "pct_of_total_assets",
+      "amount_note": "不预置金额，由持仓管家按执行时总资产计算（R-011）",
+      "ref_price": 41.38,
+      "tranches": [
+        {
+          "pct": 50,
+          "trigger_pct": -1.0,
+          "price_zone": [
+            39.72,
+            40.97
+          ],
+          "status": "pending"
+        },
+        {
+          "pct": 50,
+          "trigger_pct": -4.0,
+          "price_zone": [
+            36.41,
+            39.72
+          ],
+          "status": "pending"
+        }
+      ],
+      "fill_logic": "cumulative_threshold（价格≤-1%触发首档；≤-4%触发两档；跌破-12%不买）",
+      "guard_price": 36.41,
+      "stop_loss": 35.97,
+      "take_profit": 49.66,
+      "quality_score": 84.8,
+      "rationale": "ROE 10.9%（横截面90%分位）；净利率 34.1%；营收同比 +8.1%；EP 百分位 77%；因子总分 0.749（池内 #24）",
+      "risks": [
+        "短期动量回落风险（动量因子为横截面相对强度，非绝对上涨趋势）"
+      ],
+      "expires_after_trading_days": 10,
+      "expire_rule": "R-006 挂 10 个交易日未成交即 expired，禁止上移 price_zone",
+      "status": "planned",
+      "created_at": "2026-10-25T18:47:07"
+    },
+    {
+      "id": "ORD-20261023-004",
+      "side": "buy",
+      "code": "600323.SH",
+      "name": "瀚蓝环境",
+      "industry": "环境保护",
+      "target_weight_pct": 5.15,
+      "weight_basis": "pct_of_total_assets",
+      "amount_note": "不预置金额，由持仓管家按执行时总资产计算（R-011）",
+      "ref_price": 30.73,
+      "tranches": [
+        {
+          "pct": 50,
+          "trigger_pct": -1.0,
+          "price_zone": [
+            29.5,
+            30.42
+          ],
+          "status": "pending"
+        },
+        {
+          "pct": 50,
+          "trigger_pct": -4.0,
+          "price_zone": [
+            27.04,
+            29.5
+          ],
+          "status": "pending"
+        }
+      ],
+      "fill_logic": "cumulative_threshold（价格≤-1%触发首档；≤-4%触发两档；跌破-12%不买）",
+      "guard_price": 27.04,
+      "stop_loss": 27.83,
+      "take_profit": 36.88,
+      "quality_score": 84.7,
+      "rationale": "ROE 8.1%（横截面83%分位）；净利率 18.9%；营收同比 +34.2%；EP 百分位 91%；因子总分 0.783（池内 #10）",
+      "risks": [
+        "短期动量回落风险（动量因子为横截面相对强度，非绝对上涨趋势）"
+      ],
+      "expires_after_trading_days": 10,
+      "expire_rule": "R-006 挂 10 个交易日未成交即 expired，禁止上移 price_zone",
+      "status": "planned",
+      "created_at": "2026-10-25T18:47:07"
+    },
+    {
+      "id": "ORD-20261023-005",
+      "side": "buy",
+      "code": "002833.SZ",
+      "name": "弘亚数控",
+      "industry": "专用机械",
+      "target_weight_pct": 4.96,
+      "weight_basis": "pct_of_total_assets",
+      "amount_note": "不预置金额，由持仓管家按执行时总资产计算（R-011）",
+      "ref_price": 19.4,
+      "tranches": [
+        {
+          "pct": 50,
+          "trigger_pct": -1.0,
+          "price_zone": [
+            18.62,
+            19.21
+          ],
+          "status": "pending"
+        },
+        {
+          "pct": 50,
+          "trigger_pct": -4.0,
+          "price_zone": [
+            17.07,
+            18.62
+          ],
+          "status": "pending"
+        }
+      ],
+      "fill_logic": "cumulative_threshold（价格≤-1%触发首档；≤-4%触发两档；跌破-12%不买）",
+      "guard_price": 17.07,
+      "stop_loss": 17.45,
+      "take_profit": 23.28,
+      "quality_score": 81.6,
+      "rationale": "ROE 8.6%（横截面85%分位）；净利率 17.2%；营收同比 +21.7%；EP 百分位 71%；因子总分 0.791（池内 #6）",
+      "risks": [
+        "短期动量回落风险（动量因子为横截面相对强度，非绝对上涨趋势）"
+      ],
+      "expires_after_trading_days": 10,
+      "expire_rule": "R-006 挂 10 个交易日未成交即 expired，禁止上移 price_zone",
+      "status": "planned",
+      "created_at": "2026-10-25T18:47:07"
+    },
+    {
+      "id": "ORD-20261023-006",
+      "side": "buy",
+      "code": "600285.SH",
+      "name": "羚锐制药",
+      "industry": "中成药",
+      "target_weight_pct": 4.94,
+      "weight_basis": "pct_of_total_assets",
+      "amount_note": "不预置金额，由持仓管家按执行时总资产计算（R-011）",
+      "ref_price": 20.32,
+      "tranches": [
+        {
+          "pct": 50,
+          "trigger_pct": -1.0,
+          "price_zone": [
+            19.51,
+            20.12
+          ],
+          "status": "pending"
+        },
+        {
+          "pct": 50,
+          "trigger_pct": -4.0,
+          "price_zone": [
+            17.88,
+            19.51
+          ],
+          "status": "pending"
+        }
+      ],
+      "fill_logic": "cumulative_threshold（价格≤-1%触发首档；≤-4%触发两档；跌破-12%不买）",
+      "guard_price": 17.88,
+      "stop_loss": 18.14,
+      "take_profit": 24.38,
+      "quality_score": 81.3,
+      "rationale": "ROE 14.9%（横截面94%分位）；净利率 23.2%；营收同比 +2.3%；EP 百分位 81%；因子总分 0.739（池内 #29）",
+      "risks": [
+        "短期动量回落风险（动量因子为横截面相对强度，非绝对上涨趋势）"
+      ],
+      "expires_after_trading_days": 10,
+      "expire_rule": "R-006 挂 10 个交易日未成交即 expired，禁止上移 price_zone",
+      "status": "planned",
+      "created_at": "2026-10-25T18:47:07"
+    },
+    {
+      "id": "ORD-20261023-007",
+      "side": "buy",
+      "code": "002780.SZ",
+      "name": "三夫户外",
+      "industry": "服饰",
+      "target_weight_pct": 4.91,
+      "weight_basis": "pct_of_total_assets",
+      "amount_note": "不预置金额，由持仓管家按执行时总资产计算（R-011）",
+      "ref_price": 14.6,
+      "tranches": [
+        {
+          "pct": 50,
+          "trigger_pct": -1.0,
+          "price_zone": [
+            14.02,
+            14.45
+          ],
+          "status": "pending"
+        },
+        {
+          "pct": 50,
+          "trigger_pct": -4.0,
+          "price_zone": [
+            12.85,
+            14.02
+          ],
+          "status": "pending"
+        }
+      ],
+      "fill_logic": "cumulative_threshold（价格≤-1%触发首档；≤-4%触发两档；跌破-12%不买）",
+      "guard_price": 12.85,
+      "stop_loss": 12.95,
+      "take_profit": 17.52,
+      "quality_score": 80.8,
+      "rationale": "ROE 6.6%（横截面76%分位）；净利率 9.8%；营收同比 +39.4%；EP 百分位 55%；因子总分 0.727（池内 #45）",
+      "risks": [
+        "短期动量回落风险（动量因子为横截面相对强度，非绝对上涨趋势）"
+      ],
+      "expires_after_trading_days": 10,
+      "expire_rule": "R-006 挂 10 个交易日未成交即 expired，禁止上移 price_zone",
+      "status": "planned",
+      "created_at": "2026-10-25T18:47:07"
+    },
+    {
+      "id": "ORD-20261023-008",
+      "side": "buy",
+      "code": "600674.SH",
+      "name": "川投能源",
+      "industry": "水力发电",
+      "target_weight_pct": 4.73,
+      "weight_basis": "pct_of_total_assets",
+      "amount_note": "不预置金额，由持仓管家按执行时总资产计算（R-011）",
+      "ref_price": 17.22,
+      "tranches": [
+        {
+          "pct": 50,
+          "trigger_pct": -1.0,
+          "price_zone": [
+            16.53,
+            17.05
+          ],
+          "status": "pending"
+        },
+        {
+          "pct": 50,
+          "trigger_pct": -4.0,
+          "price_zone": [
+            15.15,
+            16.53
+          ],
+          "status": "pending"
+        }
+      ],
+      "fill_logic": "cumulative_threshold（价格≤-1%触发首档；≤-4%触发两档；跌破-12%不买）",
+      "guard_price": 15.15,
+      "stop_loss": 15.21,
+      "take_profit": 20.66,
+      "quality_score": 77.8,
+      "rationale": "ROE 9.6%（横截面88%分位）；净利率 395.8%；营收同比 -1.4%；EP 百分位 75%；因子总分 0.738（池内 #32）",
+      "risks": [
+        "营收同比下滑 -1.4%"
+      ],
+      "expires_after_trading_days": 10,
+      "expire_rule": "R-006 挂 10 个交易日未成交即 expired，禁止上移 price_zone",
+      "status": "planned",
+      "created_at": "2026-10-25T18:47:07"
+    },
+    {
+      "id": "ORD-20261023-009",
+      "side": "buy",
+      "code": "600621.SH",
+      "name": "华鑫股份",
+      "industry": "证券",
+      "target_weight_pct": 4.66,
+      "weight_basis": "pct_of_total_assets",
+      "amount_note": "不预置金额，由持仓管家按执行时总资产计算（R-011）",
+      "ref_price": 14.9,
+      "tranches": [
+        {
+          "pct": 50,
+          "trigger_pct": -1.0,
+          "price_zone": [
+            14.3,
+            14.75
+          ],
+          "status": "pending"
+        },
+        {
+          "pct": 50,
+          "trigger_pct": -4.0,
+          "price_zone": [
+            13.11,
+            14.3
+          ],
+          "status": "pending"
+        }
+      ],
+      "fill_logic": "cumulative_threshold（价格≤-1%触发首档；≤-4%触发两档；跌破-12%不买）",
+      "guard_price": 13.11,
+      "stop_loss": 12.67,
+      "take_profit": 17.88,
+      "quality_score": 76.7,
+      "rationale": "ROE 4.4%（横截面63%分位）；净利率 28.2%；营收同比 +22.1%；EP 百分位 70%；因子总分 0.751（池内 #23）",
+      "risks": [
+        "短期动量回落风险（动量因子为横截面相对强度，非绝对上涨趋势）"
+      ],
+      "expires_after_trading_days": 10,
+      "expire_rule": "R-006 挂 10 个交易日未成交即 expired，禁止上移 price_zone",
+      "status": "planned",
+      "created_at": "2026-10-25T18:47:07"
+    },
+    {
+      "id": "ORD-20261023-010",
+      "side": "buy",
+      "code": "603889.SH",
+      "name": "新澳股份",
+      "industry": "纺织",
+      "target_weight_pct": 4.64,
+      "weight_basis": "pct_of_total_assets",
+      "amount_note": "不预置金额，由持仓管家按执行时总资产计算（R-011）",
+      "ref_price": 6.15,
+      "tranches": [
+        {
+          "pct": 50,
+          "trigger_pct": -1.0,
+          "price_zone": [
+            5.9,
+            6.09
+          ],
+          "status": "pending"
+        },
+        {
+          "pct": 50,
+          "trigger_pct": -4.0,
+          "price_zone": [
+            5.41,
+            5.9
+          ],
+          "status": "pending"
+        }
+      ],
+      "fill_logic": "cumulative_threshold（价格≤-1%触发首档；≤-4%触发两档；跌破-12%不买）",
+      "guard_price": 5.41,
+      "stop_loss": 5.66,
+      "take_profit": 7.38,
+      "quality_score": 76.3,
+      "rationale": "ROE 12.4%（横截面92%分位）；净利率 10.7%；营收同比 +19.7%；EP 百分位 94%；因子总分 0.746（池内 #27）",
+      "risks": [
+        "短期动量回落风险（动量因子为横截面相对强度，非绝对上涨趋势）"
+      ],
+      "expires_after_trading_days": 10,
+      "expire_rule": "R-006 挂 10 个交易日未成交即 expired，禁止上移 price_zone",
+      "status": "planned",
+      "created_at": "2026-10-25T18:47:07"
+    }
+  ],
+  "notes": {
+    "weight_formula": "weight_i = regime_base_position_pct × qs_i / Σ(qs_j for j in selected N)",
+    "price_zone_rule": "close_relative_ladder: ref=20261023 收盘价，tr1=-1.0%，tr2=-4.0%，保护线 -12.0%",
+    "hard_rules": "R-003 必带止损止盈 / R-006 10 日过期 / R-011 不给金额",
+    "writer": "position_builder 只写 buy 单，不删改持仓管家的 sell 单"
+  }
 }

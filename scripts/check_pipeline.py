@@ -136,8 +136,13 @@ def check_business():
             trs = o.get("tranches") or []
             if len(trs) < 2:
                 failures.append(f"orders.json: {oid} has {len(trs)} tranches (<2)")
-            if sum(t.get("pct", 0) or 0 for t in trs) > 15 + TOL:
-                failures.append(f"orders.json: {oid} tranche pct sum exceeds 15% cap")
+            # tranches[].pct 是该档占本单目标仓位的比例（合计应为 100），不是仓位上限
+            pct_sum = sum(t.get("pct", 0) or 0 for t in trs)
+            if pct_sum > 100 + TOL:
+                failures.append(f"orders.json: {oid} tranche pct sum {pct_sum:.1f}% > 100%")
+            tw = o.get("target_weight_pct")
+            if isinstance(tw, (int, float)) and tw > 15 + TOL:
+                failures.append(f"orders.json: {oid} target_weight {tw}% exceeds single cap 15%")
             if not (o.get("stop_loss") and o.get("take_profit")):
                 failures.append(f"orders.json: {oid} missing stop_loss/take_profit")
         elif o.get("side") == "sell":

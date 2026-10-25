@@ -1,0 +1,543 @@
+{
+  "date": "20261023",
+  "strategy_version": "v1.8",
+  "universe_size": 2499,
+  "count": 50,
+  "stocks": [
+    {
+      "code": "603368.SH",
+      "name": "柳药集团",
+      "score": 0.9293,
+      "reasons": [
+        "vol_20d_inv 百分位93%",
+        "mdd_20d_inv 百分位100%",
+        "mom_10d 百分位98%"
+      ]
+    },
+    {
+      "code": "002307.SZ",
+      "name": "北新路桥",
+      "score": 0.8896,
+      "reasons": [
+        "mom_20d 百分位98%",
+        "pv_corr_20d 百分位98%",
+        "mom_10d 百分位98%"
+      ]
+    },
+    {
+      "code": "000528.SZ",
+      "name": "柳工",
+      "score": 0.8754,
+      "reasons": [
+        "mom_10d 百分位95%",
+        "mdd_20d_inv 百分位95%",
+        "mom_20d 百分位95%"
+      ]
+    },
+    {
+      "code": "000570.SZ",
+      "name": "苏常柴A",
+      "score": 0.8661,
+      "reasons": [
+        "vol_20d_inv 百分位94%",
+        "mdd_20d_inv 百分位100%",
+        "mom_10d 百分位99%"
+      ]
+    },
+    {
+      "code": "600853.SH",
+      "name": "龙建股份",
+      "score": 0.8599,
+      "reasons": [
+        "mom_10d 百分位99%",
+        "turnover_trend_20d 百分位99%",
+        "mom_20d 百分位96%"
+      ]
+    },
+    {
+      "code": "002376.SZ",
+      "name": "新北洋",
+      "score": 0.85,
+      "reasons": [
+        "mom_20d 百分位98%",
+        "mom_10d 百分位98%",
+        "pv_corr_20d 百分位97%"
+      ]
+    },
+    {
+      "code": "600271.SH",
+      "name": "航天信息",
+      "score": 0.8457,
+      "reasons": [
+        "mdd_20d_inv 百分位98%",
+        "mom_20d 百分位97%",
+        "pv_corr_20d 百分位97%"
+      ]
+    },
+    {
+      "code": "000948.SZ",
+      "name": "南天信息",
+      "score": 0.8365,
+      "reasons": [
+        "mom_20d 百分位98%",
+        "mom_10d 百分位98%",
+        "pv_corr_20d 百分位96%"
+      ]
+    },
+    {
+      "code": "603089.SH",
+      "name": "正裕工业",
+      "score": 0.8302,
+      "reasons": [
+        "mom_10d 百分位100%",
+        "mom_20d 百分位100%",
+        "pv_corr_20d 百分位91%"
+      ]
+    },
+    {
+      "code": "000860.SZ",
+      "name": "顺鑫农业",
+      "score": 0.8275,
+      "reasons": [
+        "mom_10d 百分位96%",
+        "mom_20d 百分位95%",
+        "turnover_trend_20d 百分位95%"
+      ]
+    },
+    {
+      "code": "600511.SH",
+      "name": "国药股份",
+      "score": 0.8263,
+      "reasons": [
+        "vol_20d_inv 百分位91%",
+        "mdd_20d_inv 百分位100%",
+        "pv_corr_20d 百分位93%"
+      ]
+    },
+    {
+      "code": "000028.SZ",
+      "name": "国药一致",
+      "score": 0.823,
+      "reasons": [
+        "vol_20d_inv 百分位94%",
+        "mdd_20d_inv 百分位99%",
+        "pv_corr_20d 百分位92%"
+      ]
+    },
+    {
+      "code": "002351.SZ",
+      "name": "漫步者",
+      "score": 0.8228,
+      "reasons": [
+        "mom_10d 百分位97%",
+        "vol_20d_inv 百分位85%",
+        "pv_corr_20d 百分位96%"
+      ]
+    },
+    {
+      "code": "002727.SZ",
+      "name": "一心堂",
+      "score": 0.821,
+      "reasons": [
+        "mdd_20d_inv 百分位98%",
+        "mom_20d 百分位98%",
+        "mom_10d 百分位97%"
+      ]
+    },
+    {
+      "code": "001283.SZ",
+      "name": "豪鹏科技",
+      "score": 0.811,
+      "reasons": [
+        "pv_corr_20d 百分位98%",
+        "mom_20d 百分位98%",
+        "mom_10d 百分位97%"
+      ]
+    },
+    {
+      "code": "002526.SZ",
+      "name": "山东矿机",
+      "score": 0.8098,
+      "reasons": [
+        "vol_20d_inv 百分位89%",
+        "mom_10d 百分位98%",
+        "mdd_20d_inv 百分位96%"
+      ]
+    },
+    {
+      "code": "002403.SZ",
+      "name": "爱仕达",
+      "score": 0.8087,
+      "reasons": [
+        "mom_20d 百分位99%",
+        "mom_10d 百分位99%",
+        "mdd_20d_inv 百分位94%"
+      ]
+    },
+    {
+      "code": "600558.SH",
+      "name": "大西洋",
+      "score": 0.8086,
+      "reasons": [
+        "mdd_20d_inv 百分位98%",
+        "pv_corr_20d 百分位94%",
+        "mom_20d 百分位92%"
+      ]
+    },
+    {
+      "code": "002791.SZ",
+      "name": "坚朗五金",
+      "score": 0.8084,
+      "reasons": [
+        "mom_20d 百分位98%",
+        "mom_10d 百分位91%",
+        "turnover_trend_20d 百分位84%"
+      ]
+    },
+    {
+      "code": "002363.SZ",
+      "name": "隆基机械",
+      "score": 0.8034,
+      "reasons": [
+        "vol_20d_inv 百分位86%",
+        "mdd_20d_inv 百分位95%",
+        "mom_10d 百分位92%"
+      ]
+    },
+    {
+      "code": "601177.SH",
+      "name": "杭齿前进",
+      "score": 0.8013,
+      "reasons": [
+        "mom_10d 百分位98%",
+        "mom_20d 百分位94%",
+        "turnover_trend_20d 百分位89%"
+      ]
+    },
+    {
+      "code": "000400.SZ",
+      "name": "许继电气",
+      "score": 0.7987,
+      "reasons": [
+        "mdd_20d_inv 百分位99%",
+        "mom_20d 百分位96%",
+        "turnover_trend_20d 百分位93%"
+      ]
+    },
+    {
+      "code": "000065.SZ",
+      "name": "北方国际",
+      "score": 0.7946,
+      "reasons": [
+        "mom_10d 百分位92%",
+        "mom_20d 百分位87%",
+        "turnover_trend_20d 百分位85%"
+      ]
+    },
+    {
+      "code": "603101.SH",
+      "name": "汇嘉时代",
+      "score": 0.7942,
+      "reasons": [
+        "mom_20d 百分位99%",
+        "turnover_trend_20d 百分位99%",
+        "mom_10d 百分位95%"
+      ]
+    },
+    {
+      "code": "600501.SH",
+      "name": "航天晨光",
+      "score": 0.7919,
+      "reasons": [
+        "mom_10d 百分位98%",
+        "turnover_trend_20d 百分位97%",
+        "mom_20d 百分位97%"
+      ]
+    },
+    {
+      "code": "002322.SZ",
+      "name": "理工能科",
+      "score": 0.7901,
+      "reasons": [
+        "mom_20d 百分位99%",
+        "mom_10d 百分位98%",
+        "turnover_trend_20d 百分位97%"
+      ]
+    },
+    {
+      "code": "002249.SZ",
+      "name": "大洋电机",
+      "score": 0.7887,
+      "reasons": [
+        "pv_corr_20d 百分位98%",
+        "mom_20d 百分位96%",
+        "mom_10d 百分位95%"
+      ]
+    },
+    {
+      "code": "600422.SH",
+      "name": "昆药集团",
+      "score": 0.7883,
+      "reasons": [
+        "vol_20d_inv 百分位88%",
+        "mdd_20d_inv 百分位99%",
+        "mom_10d 百分位94%"
+      ]
+    },
+    {
+      "code": "000928.SZ",
+      "name": "中钢国际",
+      "score": 0.7881,
+      "reasons": [
+        "vol_20d_inv 百分位96%",
+        "mdd_20d_inv 百分位98%",
+        "mom_10d 百分位89%"
+      ]
+    },
+    {
+      "code": "002184.SZ",
+      "name": "海得控制",
+      "score": 0.7875,
+      "reasons": [
+        "mom_20d 百分位99%",
+        "mom_10d 百分位99%",
+        "turnover_trend_20d 百分位90%"
+      ]
+    },
+    {
+      "code": "601668.SH",
+      "name": "中国建筑",
+      "score": 0.7867,
+      "reasons": [
+        "mdd_20d_inv 百分位93%",
+        "turnover_trend_20d 百分位91%",
+        "vol_20d_inv 百分位78%"
+      ]
+    },
+    {
+      "code": "603883.SH",
+      "name": "老百姓",
+      "score": 0.7858,
+      "reasons": [
+        "mdd_20d_inv 百分位100%",
+        "mom_20d 百分位97%",
+        "mom_10d 百分位93%"
+      ]
+    },
+    {
+      "code": "002722.SZ",
+      "name": "物产金轮",
+      "score": 0.7854,
+      "reasons": [
+        "mdd_20d_inv 百分位97%",
+        "vol_20d_inv 百分位83%",
+        "mom_10d 百分位91%"
+      ]
+    },
+    {
+      "code": "002362.SZ",
+      "name": "汉王科技",
+      "score": 0.7832,
+      "reasons": [
+        "mom_10d 百分位99%",
+        "vol_20d_inv 百分位80%",
+        "mdd_20d_inv 百分位86%"
+      ]
+    },
+    {
+      "code": "601166.SH",
+      "name": "兴业银行",
+      "score": 0.7829,
+      "reasons": [
+        "pv_corr_20d 百分位97%",
+        "mdd_20d_inv 百分位91%",
+        "turnover_trend_20d 百分位90%"
+      ]
+    },
+    {
+      "code": "600963.SH",
+      "name": "岳阳林纸",
+      "score": 0.7822,
+      "reasons": [
+        "vol_20d_inv 百分位82%",
+        "mom_10d 百分位90%",
+        "mdd_20d_inv 百分位86%"
+      ]
+    },
+    {
+      "code": "603276.SH",
+      "name": "恒兴新材",
+      "score": 0.7803,
+      "reasons": [
+        "mdd_20d_inv 百分位96%",
+        "mom_10d 百分位94%",
+        "mom_20d 百分位93%"
+      ]
+    },
+    {
+      "code": "002291.SZ",
+      "name": "遥望科技",
+      "score": 0.7783,
+      "reasons": [
+        "turnover_trend_20d 百分位98%",
+        "mdd_20d_inv 百分位90%",
+        "mom_10d 百分位86%"
+      ]
+    },
+    {
+      "code": "600192.SH",
+      "name": "长城电工",
+      "score": 0.7775,
+      "reasons": [
+        "mom_10d 百分位99%",
+        "mom_20d 百分位98%",
+        "turnover_trend_20d 百分位98%"
+      ]
+    },
+    {
+      "code": "600312.SH",
+      "name": "平高电气",
+      "score": 0.7775,
+      "reasons": [
+        "mdd_20d_inv 百分位96%",
+        "mom_20d 百分位95%",
+        "turnover_trend_20d 百分位93%"
+      ]
+    },
+    {
+      "code": "002045.SZ",
+      "name": "国光电器",
+      "score": 0.777,
+      "reasons": [
+        "mom_10d 百分位92%",
+        "mom_5d 百分位98%",
+        "price_pos_20d 百分位97%"
+      ]
+    },
+    {
+      "code": "002833.SZ",
+      "name": "弘亚数控",
+      "score": 0.7765,
+      "reasons": [
+        "mom_20d 百分位93%",
+        "vol_20d_inv 百分位80%",
+        "mdd_20d_inv 百分位84%"
+      ]
+    },
+    {
+      "code": "600993.SH",
+      "name": "马应龙",
+      "score": 0.7764,
+      "reasons": [
+        "pv_corr_20d 百分位98%",
+        "mom_10d 百分位94%",
+        "mom_20d 百分位92%"
+      ]
+    },
+    {
+      "code": "600267.SH",
+      "name": "海正药业",
+      "score": 0.7761,
+      "reasons": [
+        "mom_20d 百分位97%",
+        "mom_10d 百分位96%",
+        "turnover_trend_20d 百分位94%"
+      ]
+    },
+    {
+      "code": "600027.SH",
+      "name": "华电国际",
+      "score": 0.7754,
+      "reasons": [
+        "mdd_20d_inv 百分位98%",
+        "mom_20d 百分位90%",
+        "vol_20d_inv 百分位76%"
+      ]
+    },
+    {
+      "code": "603239.SH",
+      "name": "浙江仙通",
+      "score": 0.7742,
+      "reasons": [
+        "mom_20d 百分位99%",
+        "mom_10d 百分位99%",
+        "pv_corr_20d 百分位95%"
+      ]
+    },
+    {
+      "code": "002405.SZ",
+      "name": "四维图新",
+      "score": 0.7734,
+      "reasons": [
+        "mdd_20d_inv 百分位97%",
+        "vol_20d_inv 百分位83%",
+        "mom_10d 百分位89%"
+      ]
+    },
+    {
+      "code": "002474.SZ",
+      "name": "榕基软件",
+      "score": 0.7724,
+      "reasons": [
+        "mom_20d 百分位99%",
+        "mom_10d 百分位99%",
+        "turnover_trend_20d 百分位90%"
+      ]
+    },
+    {
+      "code": "601328.SH",
+      "name": "交通银行",
+      "score": 0.7723,
+      "reasons": [
+        "pv_corr_20d 百分位94%",
+        "turnover_trend_20d 百分位89%",
+        "mom_20d 百分位88%"
+      ]
+    },
+    {
+      "code": "002332.SZ",
+      "name": "仙琚制药",
+      "score": 0.7716,
+      "reasons": [
+        "vol_20d_inv 百分位99%",
+        "mdd_20d_inv 百分位100%",
+        "mom_10d 百分位84%"
+      ]
+    }
+  ],
+  "notes": {
+    "mode": "rehearsal",
+    "run_at": "2026-10-26T01:21:16",
+    "params_file": "params_v1.8.json",
+    "source": "local warehouse (data/warehouse), zero MCP calls during scoring",
+    "universe_filter": {
+      "all": 5577,
+      "BJ": 353,
+      "GEM_STAR": 2029,
+      "ST": 141,
+      "NEW": 32,
+      "SUSPEND": 2,
+      "NO_FINA": 0,
+      "NO_QUOTE": 0,
+      "ILLIQ": 521
+    },
+    "factor_coverage": {
+      "mom_5d": 1.0,
+      "mom_10d": 1.0,
+      "mom_20d": 1.0,
+      "mom_60d": 1.0,
+      "vol_20d_inv": 1.0,
+      "mdd_20d_inv": 1.0,
+      "price_pos_20d": 1.0,
+      "pv_corr_20d": 1.0,
+      "turnover_trend_20d": 1.0,
+      "ep_ttm": 0.741,
+      "bp_ttm": 0.997,
+      "sp_ttm": 0.999,
+      "turnover_rate": 1.0
+    },
+    "factors_dropped": [],
+    "fina_report_period": "Q3 20260930 优先，缺失回退 H1 20260630",
+    "neutralization": "log(total_mv) OLS residual"
+  }
+}

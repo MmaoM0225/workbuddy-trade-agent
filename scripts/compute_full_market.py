@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-"""全市场 17 因子打分（params v1.3 规则），读取 data/warehouse/ 本地仓库。
-输出：data/warehouse/scores_full.csv + test/state/pool.json（彩跑）
+"""全市场 17 因子打分（权重/规则从 params_current 指向的版本读取），读取 data/warehouse/ 本地仓库。
+输出：data/warehouse/scores_full.csv + state/pool.json（正式）
+彩排时用环境变量 POOL_OUT 指向 test/state/pool.json。
 """
 import csv
 import glob
@@ -8,7 +9,7 @@ import json
 import math
 import os
 import statistics
-from datetime import date
+from datetime import date, datetime, timedelta
 
 ROOT = r"E:\cashfree\agent"
 WH = os.path.join(ROOT, "data", "warehouse")
@@ -18,25 +19,19 @@ BASE_DATE = _db_dates[-1] if _db_dates else "20261023"
 OUT_SCORES = os.path.join(WH, "scores_full.csv")
 # 正式跑写 state/pool.json；彩排时用环境变量 POOL_OUT 指向 test/state/pool.json
 OUT_POOL = os.environ.get("POOL_OUT") or os.path.join(ROOT, "state", "pool.json")
-POOL_SIZE = 50
 
-W = {
-    "mom_5d": 0.06, "mom_10d": 0.07, "mom_20d": 0.07, "mom_60d": 0.05,
-    "vol_20d_inv": 0.08, "mdd_20d_inv": 0.07,
-    "price_pos_20d": 0.06, "pv_corr_20d": 0.07, "turnover_trend_20d": 0.07,
-    "roe_ttm": 0.08, "gross_margin_ttm": 0.04, "net_margin_ttm": 0.04, "tr_yoy": 0.04,
-    "ep_ttm": 0.06, "bp_ttm": 0.05, "sp_ttm": 0.04,
-    "turnover_rate": 0.05,
-}
-GROUPS = {
-    "momentum": ["mom_5d", "mom_10d", "mom_20d", "mom_60d"],
-    "volatility_risk": ["vol_20d_inv", "mdd_20d_inv"],
-    "technical_price_volume": ["price_pos_20d", "pv_corr_20d", "turnover_trend_20d"],
-    "quality": ["roe_ttm", "gross_margin_ttm", "net_margin_ttm", "tr_yoy"],
-    "valuation": ["ep_ttm", "bp_ttm", "sp_ttm"],
-    "liquidity": ["turnover_rate"],
-}
+# ---------- params：版本与权重全部从 knowledge/params_current.txt 指向的文件读取 ----------
+KN = os.path.join(ROOT, "knowledge")
+VERSION = open(os.path.join(KN, "params_current.txt"), encoding="utf-8").read().strip()
+PARAMS = json.load(open(os.path.join(KN, f"params_{VERSION}.json"), encoding="utf-8"))
+_strategy = PARAMS["strategy"]
+W = {k: v["weight"] for k, v in _strategy["factors"].items()}
+GROUPS = _strategy["scoring_pipeline"]["factor_groups"]
+UNIV = _strategy["universe"]
+POOL_SIZE = int(_strategy.get("pool_size", 50))
 FACTORS = list(W.keys())
+_mode = "production" if os.path.abspath(OUT_POOL).startswith(os.path.abspath(os.path.join(ROOT, "state"))) else "rehearsal"
+print(f"params={VERSION} mode={_mode} base_date={BASE_DATE} weight_sum={sum(W.values()):.4f}", flush=True)
 
 
 def fnum(x):
@@ -95,20 +90,23 @@ for fn in ("h1_part3.csv", "h1_all.csv", "q3_all.csv"):  # 后者覆盖前者：
     print(f"  {fn}: {n} rows", flush=True)
 print(f"  fina total codes={len(fina)}", flush=True)
 
-# ---------- universe filter (v1.3) ----------
-cut = date(2025, 10, 23)
+# ---------- universe filter（规则来自 params.strategy.universe）----------
+_min_days = int(UNIV.get("min_list_days", 250))
+cut = datetime.strptime(BASE_DATE, "%Y%m%d").date() - timedelta(days=round(_min_days * 365 / 250))
+# tushare daily.amount 单位为千元：5000 万元 = 50,000 千元
+_amt_min_qian = float(UNIV.get("min_amount_20d_avg_cny", 50000000)) / 1000.0
 stats = {"all": 0, "BJ": 0, "GEM_STAR": 0, "ST": 0, "NEW": 0, "SUSPEND": 0,
          "NO_FINA": 0, "NO_QUOTE": 0, "ILLIQ": 0}
 universe = []
 for code, b in basic.items():
     stats["all"] += 1
-    if code.endswith(".BJ"):
+    if UNIV.get("exclude_bj", True) and code.endswith(".BJ"):
         stats["BJ"] += 1
         continue
-    if code.startswith(("300", "301", "688", "689")):  # 创业板 300/301，科创板 688/689
+    if UNIV.get("exclude_gem_star", True) and code.startswith(("300", "301", "688", "689")):
         stats["GEM_STAR"] += 1
         continue
-    if "ST" in b["name"].upper():
+    if UNIV.get("exclude_st", True) and "ST" in b["name"].upper():
         stats["ST"] += 1
         continue
     ld = b.get("list_date") or ""
@@ -121,16 +119,16 @@ for code, b in basic.items():
     if code in suspend:
         stats["SUSPEND"] += 1
         continue
-    # 财务数据缺失 = 信息不透明，直接出局（同时避免质量因子因缺失被整体剔除）
-    if code not in fina:
+    # v1.8: 财务数据缺失不再导致出局——选股只用量价/技术/估值，财务由研究员在 Top50 阶段处理
+    if UNIV.get("require_fina", False) and code not in fina:
         stats["NO_FINA"] += 1
         continue
     rows = daily.get(code, [])
     if not rows:
         stats["NO_QUOTE"] += 1
         continue
-    amts = [r[4] for r in rows if r[4] is not None]
-    if amts and statistics.fmean(amts) < 50_000:  # tushare amount 单位为千元：5000万元 = 50,000 千元
+    amts = [r[4] for r in rows[-20:] if r[4] is not None]  # 20 日平均成交额（不是全历史）
+    if amts and statistics.fmean(amts) < _amt_min_qian:
         stats["ILLIQ"] += 1
         continue
     universe.append(code)
@@ -142,10 +140,13 @@ F = {}
 for code in universe:
     f = {}
     rows = daily.get(code, [])
-    closes = [r[1] for r in rows if r[1] is not None]
-    highs = [r[2] for r in rows if r[2] is not None]
-    lows = [r[3] for r in rows if r[3] is not None]
-    amts = [r[4] for r in rows if r[4] is not None]
+    closes = [r[1] for r in rows if r[1] is not None]          # 全历史收盘（仅 mom_* 用尾部）
+    # 20 日窗口：所有 *_20d 因子严格只用最后 20 个交易日（backfill 后仓库有 450 天，必须切片）
+    w20 = rows[-20:]
+    c20 = [r[1] for r in w20 if r[1] is not None]
+    h20 = [r[2] for r in w20 if r[2] is not None]
+    l20 = [r[3] for r in w20 if r[3] is not None]
+    a20 = [r[4] for r in w20 if r[4] is not None]
 
     def mom(n):
         if len(closes) < n + 1:
@@ -154,38 +155,38 @@ for code in universe:
         return closes[-1] / base - 1.0 if base else None
 
     f["mom_5d"], f["mom_10d"], f["mom_20d"] = mom(5), mom(10), mom(20)
-    if len(closes) >= 6:
-        rets = [closes[i] / closes[i - 1] - 1 for i in range(1, len(closes)) if closes[i - 1]]
+    if len(c20) >= 6:
+        rets = [c20[i] / c20[i - 1] - 1 for i in range(1, len(c20)) if c20[i - 1]]
         f["vol_20d_inv"] = -statistics.pstdev(rets) if len(rets) >= 5 else None
     else:
         f["vol_20d_inv"] = None
-    if closes:
-        peak, mdd = closes[0], 0.0
-        for c in closes:
+    if c20:
+        peak, mdd = c20[0], 0.0
+        for c in c20:
             peak = max(peak, c)
             mdd = min(mdd, c / peak - 1.0)
         f["mdd_20d_inv"] = mdd
     else:
         f["mdd_20d_inv"] = None
-    if closes and highs and lows:
-        lo, hi = min(lows), max(highs)
-        f["price_pos_20d"] = (closes[-1] - lo) / (hi - lo) if hi > lo else 0.5
+    if c20 and h20 and l20:
+        lo, hi = min(l20), max(h20)
+        f["price_pos_20d"] = (c20[-1] - lo) / (hi - lo) if hi > lo else 0.5
     else:
         f["price_pos_20d"] = None
-    if len(closes) >= 5 and len(amts) == len(closes):
-        mc, ma = statistics.fmean(closes), statistics.fmean(amts)
-        num = sum((c - mc) * (a - ma) for c, a in zip(closes, amts))
-        dc = math.sqrt(sum((c - mc) ** 2 for c in closes))
-        da = math.sqrt(sum((a - ma) ** 2 for a in amts))
+    if len(c20) >= 5 and len(a20) == len(c20):
+        mc, ma = statistics.fmean(c20), statistics.fmean(a20)
+        num = sum((c - mc) * (a - ma) for c, a in zip(c20, a20))
+        dc = math.sqrt(sum((c - mc) ** 2 for c in c20))
+        da = math.sqrt(sum((a - ma) ** 2 for a in a20))
         f["pv_corr_20d"] = num / (dc * da) if dc > 0 and da > 0 else None
     else:
         f["pv_corr_20d"] = None
-    if len(amts) >= 5:
-        n = len(amts)
+    if len(a20) >= 5:
+        n = len(a20)
         xs = list(range(n))
-        mx, my = statistics.fmean(xs), statistics.fmean(amts)
+        mx, my = statistics.fmean(xs), statistics.fmean(a20)
         den = sum((x - mx) ** 2 for x in xs)
-        f["turnover_trend_20d"] = sum((x - mx) * (y - my) for x, y in zip(xs, amts)) / den if den else None
+        f["turnover_trend_20d"] = sum((x - mx) * (y - my) for x, y in zip(xs, a20)) / den if den else None
     else:
         f["turnover_trend_20d"] = None
     w = weekly.get(code, [])
@@ -299,7 +300,7 @@ with open(OUT, "w", newline="", encoding="utf-8") as f:
 os.makedirs(os.path.dirname(OUT_POOL), exist_ok=True)
 pool = {
     "date": BASE_DATE,
-    "strategy_version": "v1.3",
+    "strategy_version": VERSION,
     "universe_size": n,
     "count": min(POOL_SIZE, len(ranked)),
     "stocks": [
@@ -307,8 +308,9 @@ pool = {
         for c in ranked[:POOL_SIZE]
     ],
     "notes": {
-        "mode": "rehearsal",
-        "run_at": "2026-10-25 manual",
+        "mode": _mode,
+        "run_at": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
+        "params_file": f"params_{VERSION}.json",
         "source": "local warehouse (data/warehouse), zero MCP calls during scoring",
         "universe_filter": stats,
         "factor_coverage": {k: round(v / n, 3) for k, v in cover.items()},

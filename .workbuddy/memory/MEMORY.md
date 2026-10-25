@@ -24,6 +24,7 @@
 2. 初始模拟资金规模（暂按默认 100 万跑，确认后新建 params v1.2 修正）
 3. Tushare 积分权限级别
 4. 实盘通道（推荐：框架出指令 + 人工复核手动下单）
+5. **次档买点与止损线重叠（2026-10-25 发现，待拍板）**：v1.7 次档区间 [-12%,-4%]，止损线 ref×0.92(-8%)，-8%~-12% 区间买入会"买了就在止损线下方"。方案 A 次档收到 [-8%,-4%]；**B 止损改锚定实际成交成本价×0.92**（推荐）；C 保持现状接受跳空无效交易。
 
 ## 关键文件
 - 设计方案：D:\ClawOutputs\多Agent协同交易框架设计方案.md（v1.0）
@@ -57,7 +58,10 @@
 - 选股师（周六 21:30）、个股研究员（周六 23:30）、建仓经理（周日 00:10）三个 automation 已切 ACTIVE；首跑 **2026-10-31（周六）21:30**。
 - 卖出交易员已撤销（2026-10-25）：用户选 B 方案——职责合并进持仓管家。原 prompt 五触发条件（止损/止盈/逻辑破坏/bear降仓/权重超限）已植入持仓管家步骤 4，步骤 5 同轮执行。
 - 资金规模未确认前建仓经理按默认 100 万执行（prompt 已锁定不得自行调整）。
-- 参数版本线：v1.0 默认4因子 → v1.1 七因子（确认日）→ v1.2 十七因子（用户反馈因子少，同日扩展）。
+## 参数版本线（当前 **v1.7**，status=confirmed）
+- v1.0 默认4因子 → v1.1 七因子 → v1.2 十七因子 → v1.3 universe 收紧(剔北交所/双创/ST) → v1.4 持仓 8-12 只 + 质量归一化权重 → v1.5 买点改 close_relative_ladder(-1%/-4% 两档，-12% 保护) → v1.6 主动换仓 rotation(R-007) → **v1.7 regime 分层**：bear 门槛放宽到 -6，light(-6~-8) 只禁买不降仓，heavy(≤-8) 确认 2 日后降至 20% 且每轮只执行一次。
+- **年度回测（2025-12~2026-10，204 交易日，上证 -4.65%）v1.7 逻辑完胜**：+11.63% / 超额 +16.28% / 回撤 -10.45% / 胜率 84.8%；v1(每日降仓) -9.01%、v2(降一次) -3.15%。差别不在仓位（三代均 37-40%），在交易质量（v1 有 144 笔无效摩擦）。
+- **正式首跑（2026-10-25，基准 10-23）**：universe 1810 → Top50 → avoid 8 → buy_watch 20 → 10 张 planned 买单，regime=neutral base 50%，单票 4.64~5.46%，总仓位 49.99%。详见 D:\ClawOutputs\周末流水线运行报告_20261025.md。
 
 ## 演示跑与 prompt v3 修复（2026-10-25）
 - 手动演示跑验证全链路：universe=市值top200，17/17 因子激活，产出见 D:\ClawOutputs\选股演示跑报告_20261025.md；Top50 画像=大盘低波动量价值蓝筹，质量组暴露偏低待 IC 检验。
@@ -68,7 +72,14 @@
 ## 数据仓库架构（2026-10-25，全市场筛选的正解）
 - **全市场筛选必须走本地仓库**，不能 API 逐批取证：5500 只 × 4 类数据 ≈ 900 次调用，上下文必爆；fina_indicator 有 200 次/分钟硬限流。
 - 仓库 data/warehouse/（已 .gitignore 排除）：daily/<交易日>.csv（21 天）、weekly/、daily_basic/、fina/（q3_all + h1_all + h1_part3）、meta/（stock_basic 含 market 字段、suspend_<date>）。
-- 四个脚本（全部 MCP 直连 JSON-RPC，落盘不进上下文，限速 0.45s/批）：update_warehouse.py（周增量）、compute_full_market.py（17 因子全市场打分，POOL_OUT 环境变量控制输出，默认 state/pool.json）、research_check_mcp.py（逐只排雷）、build_watchlist.py + build_orders.py。
+- 四个脚本（全部 MCP 直连 JSON-RPC，落盘不进上下文，限速 0.45s/批）：update_warehouse.py（周增量）、compute_full_market.py（17 因子全市场打分，POOL_OUT 环境变量控制输出，默认 state/pool.json）、research_check_mcp.py（逐只排雷）、build_watchlist.py + build_orders_live.py。
+- **生产跑批命令（2026-10-25 定型，产物直接写正式 state/）**：
+  1. `python scripts/compute_full_market.py` → state/pool.json（权重/universe/pool_size 全部从 params_current 读，输出带 strategy_version + mode）
+  2. `POOL_IN=state/pool.json python scripts/research_check_mcp.py`（仅需刷新排雷三件套时才跑，150 次调用约 2 分钟）→ data/warehouse/research/
+  3. `POOL_IN=state/pool.json WATCHLIST_OUT=state/watchlist.json python scripts/build_watchlist.py` → state/watchlist.json
+  4. `python scripts/build_orders_live.py` → state/orders.json（v1.7 全规则，只写 buy 单）
+  5. `python scripts/check_pipeline.py` 校验 PASS
+- **【硬约束】所有 `*_20d` 因子与流动性门槛必须切 `rows[-20:]`**：仓库已 backfill 到 450 交易日，直接对全历史取 min/max/std 会把因子变成 450 日长周期因子（2026-10-25 踩过，导致 universe 从 1810 虚增到 2100、Top1 错成海正药业）。只有 mom_5d/10d/20d 用尾部 n+1 个收盘价是例外。
 - 选股师 prompt 已改仓库模式（v4）：跑 update_warehouse.py → compute_full_market.py → 校验 pool.json，禁止 MCP 逐批取证。
 - **接口批量能力实测**：daily / weekly / fina_indicator 支持 ts_code 逗号批量（25 只/批）；**balancesheet / stk_holdertrade / fina_audit 不支持批量，必须逐只**。
 

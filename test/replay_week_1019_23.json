@@ -1,0 +1,297 @@
+{
+  "period": "2026-10-19 选股建仓 -> 10-20 ~ 10-23 执行",
+  "base_date": "20261019",
+  "capital": 1000000.0,
+  "universe": 3030,
+  "factor_count": 16,
+  "pool_size": 50,
+  "avoid_count": 0,
+  "watch_count": 50,
+  "orders": [
+    {
+      "code": "000858.SZ",
+      "name": "五粮液",
+      "industry": "白酒",
+      "weight": 5.7,
+      "qs": 87.0,
+      "zone1": [
+        68.68,
+        70.28
+      ],
+      "close_1019": 72.82,
+      "stop_loss": 64.66,
+      "take_profit": 84.34,
+      "filled_tranches": 0
+    },
+    {
+      "code": "600323.SH",
+      "name": "瀚蓝环境",
+      "industry": "环境保护",
+      "weight": 5.62,
+      "qs": 85.8,
+      "zone1": [
+        28.4,
+        29.26
+      ],
+      "close_1019": 30.74,
+      "stop_loss": 26.92,
+      "take_profit": 35.11,
+      "filled_tranches": 0
+    },
+    {
+      "code": "000423.SZ",
+      "name": "东阿阿胶",
+      "industry": "中成药",
+      "weight": 5.45,
+      "qs": 83.2,
+      "zone1": [
+        44.99,
+        46.64
+      ],
+      "close_1019": 49.81,
+      "stop_loss": 42.91,
+      "take_profit": 55.97,
+      "filled_tranches": 0
+    },
+    {
+      "code": "600285.SH",
+      "name": "羚锐制药",
+      "industry": "中成药",
+      "weight": 5.39,
+      "qs": 82.3,
+      "zone1": [
+        18.51,
+        19.54
+      ],
+      "close_1019": 21.29,
+      "stop_loss": 17.98,
+      "take_profit": 23.45,
+      "filled_tranches": 0
+    },
+    {
+      "code": "600600.SH",
+      "name": "青岛啤酒",
+      "industry": "啤酒",
+      "weight": 4.96,
+      "qs": 75.7,
+      "zone1": [
+        49.48,
+        50.62
+      ],
+      "close_1019": 52.51,
+      "stop_loss": 46.57,
+      "take_profit": 60.74,
+      "filled_tranches": 1
+    },
+    {
+      "code": "002893.SZ",
+      "name": "京能热力",
+      "industry": "供气供热",
+      "weight": 4.91,
+      "qs": 75.0,
+      "zone1": [
+        9.85,
+        10.24
+      ],
+      "close_1019": 11.02,
+      "stop_loss": 9.42,
+      "take_profit": 12.29,
+      "filled_tranches": 0
+    },
+    {
+      "code": "001286.SZ",
+      "name": "陕西能源",
+      "industry": "火力发电",
+      "weight": 4.89,
+      "qs": 74.6,
+      "zone1": [
+        9.36,
+        9.72
+      ],
+      "close_1019": 10.21,
+      "stop_loss": 8.94,
+      "take_profit": 11.66,
+      "filled_tranches": 0
+    },
+    {
+      "code": "601988.SH",
+      "name": "中国银行",
+      "industry": "银行",
+      "weight": 4.51,
+      "qs": 68.8,
+      "zone1": [
+        6.49,
+        6.71
+      ],
+      "close_1019": 7.11,
+      "stop_loss": 6.17,
+      "take_profit": 8.05,
+      "filled_tranches": 0
+    },
+    {
+      "code": "600941.SH",
+      "name": "中国移动",
+      "industry": "电信运营",
+      "weight": 4.44,
+      "qs": 67.8,
+      "zone1": [
+        94.13,
+        97.09
+      ],
+      "close_1019": 102.42,
+      "stop_loss": 89.32,
+      "take_profit": 116.51,
+      "filled_tranches": 2
+    },
+    {
+      "code": "600210.SH",
+      "name": "紫江企业",
+      "industry": "广告包装",
+      "weight": 4.13,
+      "qs": 63.1,
+      "zone1": [
+        6.13,
+        6.37
+      ],
+      "close_1019": 6.76,
+      "stop_loss": 5.86,
+      "take_profit": 7.64,
+      "filled_tranches": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "date": "20261020",
+      "regime": "neutral",
+      "confidence": 0.55,
+      "note": "空头排列+缩量(86.21%), 宽度尚可",
+      "fills": [],
+      "sells": [],
+      "positions": 0,
+      "position_value": 0,
+      "position_pct": 0.0,
+      "cash": 1000000.0,
+      "total_assets": 1000000.0,
+      "pnl_pct": 0.0
+    },
+    {
+      "date": "20261021",
+      "regime": "neutral",
+      "confidence": 0.55,
+      "note": "空头排列+缩量(85.09%), 涨股比35.5%",
+      "fills": [
+        {
+          "code": "600600.SH",
+          "name": "青岛啤酒",
+          "tranche": 1,
+          "price": 50.01,
+          "shares": 400,
+          "amount": 20004.0
+        },
+        {
+          "code": "600941.SH",
+          "name": "中国移动",
+          "tranche": 1,
+          "price": 96.59,
+          "shares": 200,
+          "amount": 19318.0
+        }
+      ],
+      "sells": [],
+      "positions": 2,
+      "position_value": 39322.0,
+      "position_pct": 3.93,
+      "cash": 960678.0,
+      "total_assets": 1000000.0,
+      "pnl_pct": 0.0
+    },
+    {
+      "date": "20261022",
+      "regime": "neutral",
+      "confidence": 0.6,
+      "note": "原始信号 bear(涨股比9.59%,创业板-4.37%) 但 conf 0.72<0.75, 防抖维持 neutral",
+      "fills": [
+        {
+          "code": "600941.SH",
+          "name": "中国移动",
+          "tranche": 2,
+          "price": 99.0,
+          "shares": 200,
+          "amount": 19800.0
+        }
+      ],
+      "sells": [],
+      "positions": 2,
+      "position_value": 59484.0,
+      "position_pct": 5.95,
+      "cash": 940878.0,
+      "total_assets": 1000362.0,
+      "pnl_pct": 0.036
+    },
+    {
+      "date": "20261023",
+      "regime": "neutral",
+      "confidence": 0.62,
+      "note": "反弹但20日新低4115(新高219)为18.8倍, 趋势钳制",
+      "fills": [],
+      "sells": [],
+      "positions": 2,
+      "position_value": 59852.0,
+      "position_pct": 5.98,
+      "cash": 940878.0,
+      "total_assets": 1000730.0,
+      "pnl_pct": 0.073
+    }
+  ],
+  "trades": [
+    {
+      "date": "20261021",
+      "side": "buy",
+      "code": "600600.SH",
+      "name": "青岛啤酒",
+      "price": 50.01,
+      "shares": 400,
+      "amount": 20004.0,
+      "reason": "tranche1 落入区间 [49.48, 50.62]"
+    },
+    {
+      "date": "20261021",
+      "side": "buy",
+      "code": "600941.SH",
+      "name": "中国移动",
+      "price": 96.59,
+      "shares": 200,
+      "amount": 19318.0,
+      "reason": "tranche1 落入区间 [94.13, 97.09]"
+    },
+    {
+      "date": "20261022",
+      "side": "buy",
+      "code": "600941.SH",
+      "name": "中国移动",
+      "price": 99.0,
+      "shares": 200,
+      "amount": 19800.0,
+      "reason": "tranche2 落入区间 [97.09, 103.0]"
+    }
+  ],
+  "summary": {
+    "final_assets": 1000730.0,
+    "total_return_pct": 0.073,
+    "trades": 3,
+    "closed_trades": 0,
+    "win_rate_pct": null,
+    "avg_closed_pnl_pct": null,
+    "filled_orders": 2,
+    "fill_rate_pct": 20.0,
+    "final_positions": 2
+  },
+  "notes": [
+    "回测口径：10-19 收盘用 17 个交易日历史算因子（mom_20d 为 16 日近似，mom_60d 因无 60 日数据剔除并按比例重归一化，共 16 因子）",
+    "估值因子 ep/bp/sp 与换手率取自 daily_basic(20261023)，相对 10-19 有 4 个交易日的前视偏差",
+    "排雷数据（商誉/审计/减持）为最新披露口径，同样存在轻微前视偏差",
+    "未做市值中性化（缺少逐日 total_mv 序列）",
+    "regime 使用真实 market_overview 数值判定：10-20/21 neutral、10-22 bear、10-23 neutral",
+    "成交规则：当日收盘价落入 price_zone 才成交，不使用盘中价，不追价"
+  ]
+}

@@ -1,8 +1,8 @@
 {
   "task": "position_builder",
-  "status": "undo",
+  "status": "done",
   "date": "20261025",
-  "reason": "init",
-  "artifact": null,
-  "updated_at": "2026-10-25T16:18:54"
+  "reason": "manual-run-10orders-49.99pct-neutral",
+  "artifact": "state/orders.json",
+  "updated_at": "2026-10-25T18:45:42"
 }

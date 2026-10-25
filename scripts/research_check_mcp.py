@@ -12,7 +12,7 @@ import urllib.request
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 WH = os.path.join(ROOT, "data", "warehouse")
 OUT_DIR = os.path.join(WH, "research")
-POOL = os.path.join(ROOT, "test", "state", "pool.json")
+POOL = os.environ.get("POOL_IN") or os.path.join(ROOT, "test", "state", "pool.json")
 TOP_N = 60
 THROTTLE = 0.45
 

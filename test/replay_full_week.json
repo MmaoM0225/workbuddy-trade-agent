@@ -1,0 +1,657 @@
+{
+  "base_date": "20261016",
+  "orders": [
+    {
+      "id": "ORD-20261016-01",
+      "code": "600285.SH",
+      "name": "羚锐制药",
+      "industry": "中成药",
+      "weight": 6.09,
+      "qs": 82.3,
+      "tranches": [
+        {
+          "seq": 1,
+          "pct": 3.04,
+          "zone": [
+            18.51,
+            19.52
+          ],
+          "filled": false,
+          "fill_price": null,
+          "shares": 0
+        },
+        {
+          "seq": 2,
+          "pct": 3.05,
+          "zone": [
+            19.52,
+            21.55
+          ],
+          "filled": false,
+          "fill_price": null,
+          "shares": 0
+        }
+      ],
+      "stop_loss": 17.96,
+      "take_profit": 23.42,
+      "ref_price": 19.52,
+      "close_1016": 21.06,
+      "risks": []
+    },
+    {
+      "id": "ORD-20261016-02",
+      "code": "600600.SH",
+      "name": "青岛啤酒",
+      "industry": "啤酒",
+      "weight": 5.59,
+      "qs": 75.6,
+      "tranches": [
+        {
+          "seq": 1,
+          "pct": 2.79,
+          "zone": [
+            49.48,
+            50.58
+          ],
+          "filled": true,
+          "fill_price": 50.01,
+          "shares": 500
+        },
+        {
+          "seq": 2,
+          "pct": 2.8,
+          "zone": [
+            50.58,
+            52.77
+          ],
+          "filled": false,
+          "fill_price": null,
+          "shares": 0
+        }
+      ],
+      "stop_loss": 46.53,
+      "take_profit": 60.7,
+      "ref_price": 50.58,
+      "close_1016": 52.47,
+      "risks": []
+    },
+    {
+      "id": "ORD-20261016-03",
+      "code": "001286.SZ",
+      "name": "陕西能源",
+      "industry": "火力发电",
+      "weight": 5.51,
+      "qs": 74.5,
+      "tranches": [
+        {
+          "seq": 1,
+          "pct": 2.75,
+          "zone": [
+            9.36,
+            9.72
+          ],
+          "filled": false,
+          "fill_price": null,
+          "shares": 0
+        },
+        {
+          "seq": 2,
+          "pct": 2.76,
+          "zone": [
+            9.72,
+            10.44
+          ],
+          "filled": false,
+          "fill_price": null,
+          "shares": 0
+        }
+      ],
+      "stop_loss": 8.94,
+      "take_profit": 11.66,
+      "ref_price": 9.72,
+      "close_1016": 10.21,
+      "risks": []
+    },
+    {
+      "id": "ORD-20261016-04",
+      "code": "000999.SZ",
+      "name": "华润三九",
+      "industry": "中成药",
+      "weight": 5.37,
+      "qs": 72.6,
+      "tranches": [
+        {
+          "seq": 1,
+          "pct": 2.69,
+          "zone": [
+            23.35,
+            24.31
+          ],
+          "filled": false,
+          "fill_price": null,
+          "shares": 0
+        },
+        {
+          "seq": 2,
+          "pct": 2.68,
+          "zone": [
+            24.31,
+            26.22
+          ],
+          "filled": false,
+          "fill_price": null,
+          "shares": 0
+        }
+      ],
+      "stop_loss": 22.37,
+      "take_profit": 29.17,
+      "ref_price": 24.31,
+      "close_1016": 25.57,
+      "risks": []
+    },
+    {
+      "id": "ORD-20261016-05",
+      "code": "601939.SH",
+      "name": "建设银行",
+      "industry": "银行",
+      "weight": 5.29,
+      "qs": 71.5,
+      "tranches": [
+        {
+          "seq": 1,
+          "pct": 2.65,
+          "zone": [
+            10.7,
+            10.99
+          ],
+          "filled": false,
+          "fill_price": null,
+          "shares": 0
+        },
+        {
+          "seq": 2,
+          "pct": 2.64,
+          "zone": [
+            10.99,
+            11.58
+          ],
+          "filled": false,
+          "fill_price": null,
+          "shares": 0
+        }
+      ],
+      "stop_loss": 10.11,
+      "take_profit": 13.19,
+      "ref_price": 10.99,
+      "close_1016": 11.45,
+      "risks": []
+    },
+    {
+      "id": "ORD-20261016-06",
+      "code": "601988.SH",
+      "name": "中国银行",
+      "industry": "银行",
+      "weight": 5.08,
+      "qs": 68.6,
+      "tranches": [
+        {
+          "seq": 1,
+          "pct": 2.54,
+          "zone": [
+            6.49,
+            6.71
+          ],
+          "filled": false,
+          "fill_price": null,
+          "shares": 0
+        },
+        {
+          "seq": 2,
+          "pct": 2.54,
+          "zone": [
+            6.71,
+            7.15
+          ],
+          "filled": false,
+          "fill_price": null,
+          "shares": 0
+        }
+      ],
+      "stop_loss": 6.17,
+      "take_profit": 8.05,
+      "ref_price": 6.71,
+      "close_1016": 6.92,
+      "risks": []
+    },
+    {
+      "id": "ORD-20261016-07",
+      "code": "600941.SH",
+      "name": "中国移动",
+      "industry": "电信运营",
+      "weight": 5.01,
+      "qs": 67.7,
+      "tranches": [
+        {
+          "seq": 1,
+          "pct": 2.5,
+          "zone": [
+            94.13,
+            96.87
+          ],
+          "filled": true,
+          "fill_price": 96.59,
+          "shares": 200
+        },
+        {
+          "seq": 2,
+          "pct": 2.51,
+          "zone": [
+            96.87,
+            102.36
+          ],
+          "filled": true,
+          "fill_price": 99.0,
+          "shares": 200
+        }
+      ],
+      "stop_loss": 89.12,
+      "take_profit": 116.24,
+      "ref_price": 96.87,
+      "close_1016": 101.4,
+      "risks": []
+    },
+    {
+      "id": "ORD-20261016-08",
+      "code": "600210.SH",
+      "name": "紫江企业",
+      "industry": "广告包装",
+      "weight": 4.66,
+      "qs": 63.0,
+      "tranches": [
+        {
+          "seq": 1,
+          "pct": 2.33,
+          "zone": [
+            6.13,
+            6.35
+          ],
+          "filled": false,
+          "fill_price": null,
+          "shares": 0
+        },
+        {
+          "seq": 2,
+          "pct": 2.33,
+          "zone": [
+            6.35,
+            6.78
+          ],
+          "filled": false,
+          "fill_price": null,
+          "shares": 0
+        }
+      ],
+      "stop_loss": 5.84,
+      "take_profit": 7.62,
+      "ref_price": 6.35,
+      "close_1016": 6.74,
+      "risks": []
+    },
+    {
+      "id": "ORD-20261016-09",
+      "code": "601668.SH",
+      "name": "中国建筑",
+      "industry": "建筑工程",
+      "weight": 3.7,
+      "qs": 50.0,
+      "tranches": [
+        {
+          "seq": 1,
+          "pct": 1.85,
+          "zone": [
+            4.2,
+            4.31
+          ],
+          "filled": false,
+          "fill_price": null,
+          "shares": 0
+        },
+        {
+          "seq": 2,
+          "pct": 1.85,
+          "zone": [
+            4.31,
+            4.54
+          ],
+          "filled": false,
+          "fill_price": null,
+          "shares": 0
+        }
+      ],
+      "stop_loss": 3.97,
+      "take_profit": 5.17,
+      "ref_price": 4.31,
+      "close_1016": 4.54,
+      "risks": []
+    },
+    {
+      "id": "ORD-20261016-10",
+      "code": "601186.SH",
+      "name": "中国铁建",
+      "industry": "建筑工程",
+      "weight": 3.7,
+      "qs": 50.0,
+      "tranches": [
+        {
+          "seq": 1,
+          "pct": 1.85,
+          "zone": [
+            5.92,
+            6.02
+          ],
+          "filled": true,
+          "fill_price": 6.01,
+          "shares": 3000
+        },
+        {
+          "seq": 2,
+          "pct": 1.85,
+          "zone": [
+            6.02,
+            6.23
+          ],
+          "filled": false,
+          "fill_price": null,
+          "shares": 0
+        }
+      ],
+      "stop_loss": 5.54,
+      "take_profit": 7.22,
+      "ref_price": 6.02,
+      "close_1016": 6.19,
+      "risks": []
+    }
+  ],
+  "days": [
+    {
+      "date": "20261019",
+      "数据员": "indices 5/5, overview 8维, 成交14375亿(84.7%20日均值)",
+      "市场分析师": {
+        "raw": "neutral",
+        "regime": "neutral",
+        "confidence": 0.64,
+        "score": -2,
+        "clamp": true,
+        "switched": false,
+        "dims": {
+          "trend": -2,
+          "breadth": 0,
+          "sentiment": 0,
+          "volume": 0
+        },
+        "note": "原始信号 neutral(总分-2, conf 0.64)"
+      },
+      "confirmed_days": 1,
+      "持仓管家": {
+        "fills": [],
+        "sells": [],
+        "positions": 0,
+        "position_pct": 0.0,
+        "cash": 1000000,
+        "total": 1000000,
+        "pnl_pct": 0.0
+      },
+      "总控": {
+        "status": "PASS",
+        "warns": []
+      }
+    },
+    {
+      "date": "20261020",
+      "数据员": "indices 5/5, overview 8维, 成交14561亿(86.2%20日均值)",
+      "市场分析师": {
+        "raw": "neutral",
+        "regime": "neutral",
+        "confidence": 0.64,
+        "score": -2,
+        "clamp": true,
+        "switched": false,
+        "dims": {
+          "trend": -2,
+          "breadth": 0,
+          "sentiment": 0,
+          "volume": 0
+        },
+        "note": "原始信号 neutral(总分-2, conf 0.64)"
+      },
+      "confirmed_days": 2,
+      "持仓管家": {
+        "fills": [],
+        "sells": [],
+        "positions": 0,
+        "position_pct": 0.0,
+        "cash": 1000000,
+        "total": 1000000,
+        "pnl_pct": 0.0
+      },
+      "总控": {
+        "status": "PASS",
+        "warns": []
+      }
+    },
+    {
+      "date": "20261021",
+      "数据员": "indices 5/5, overview 8维, 成交14293亿(85.1%20日均值)",
+      "市场分析师": {
+        "raw": "neutral",
+        "regime": "neutral",
+        "confidence": 0.64,
+        "score": -2,
+        "clamp": true,
+        "switched": false,
+        "dims": {
+          "trend": -2,
+          "breadth": 0,
+          "sentiment": 0,
+          "volume": 0
+        },
+        "note": "原始信号 neutral(总分-2, conf 0.64)"
+      },
+      "confirmed_days": 3,
+      "持仓管家": {
+        "fills": [
+          {
+            "code": "600600.SH",
+            "name": "青岛啤酒",
+            "tr": 1,
+            "price": 50.01,
+            "shares": 500,
+            "amount": 25005
+          },
+          {
+            "code": "600941.SH",
+            "name": "中国移动",
+            "tr": 1,
+            "price": 96.59,
+            "shares": 200,
+            "amount": 19318
+          }
+        ],
+        "sells": [],
+        "positions": 2,
+        "position_pct": 4.43,
+        "cash": 955677,
+        "total": 1000000,
+        "pnl_pct": 0.0
+      },
+      "总控": {
+        "status": "PASS",
+        "warns": [
+          "持仓数量不足(2<8)"
+        ]
+      }
+    },
+    {
+      "date": "20261022",
+      "数据员": "indices 5/5, overview 8维, 成交15287亿(91.8%20日均值)",
+      "市场分析师": {
+        "raw": "bear",
+        "regime": "neutral",
+        "confidence": 0.73,
+        "score": -4,
+        "clamp": true,
+        "switched": false,
+        "dims": {
+          "trend": -2,
+          "breadth": -2,
+          "sentiment": 0,
+          "volume": 0
+        },
+        "note": "原始信号 bear(总分-4, conf 0.73)，未达切换阈值维持 neutral"
+      },
+      "confirmed_days": 4,
+      "持仓管家": {
+        "fills": [
+          {
+            "code": "600941.SH",
+            "name": "中国移动",
+            "tr": 2,
+            "price": 99.0,
+            "shares": 200,
+            "amount": 19800
+          }
+        ],
+        "sells": [],
+        "positions": 2,
+        "position_pct": 6.44,
+        "cash": 935877,
+        "total": 1000332,
+        "pnl_pct": 0.033
+      },
+      "总控": {
+        "status": "PASS",
+        "warns": [
+          "持仓数量不足(2<8)"
+        ]
+      }
+    },
+    {
+      "date": "20261023",
+      "数据员": "indices 5/5, overview 8维, 成交19563亿(117.1%20日均值)",
+      "市场分析师": {
+        "raw": "neutral",
+        "regime": "neutral",
+        "confidence": 0.64,
+        "score": 2,
+        "clamp": true,
+        "switched": false,
+        "dims": {
+          "trend": -2,
+          "breadth": 0,
+          "sentiment": 2,
+          "volume": 2
+        },
+        "note": "原始信号 neutral(总分+2, conf 0.64)"
+      },
+      "confirmed_days": 5,
+      "持仓管家": {
+        "fills": [
+          {
+            "code": "601186.SH",
+            "name": "中国铁建",
+            "tr": 1,
+            "price": 6.01,
+            "shares": 3000,
+            "amount": 18030
+          }
+        ],
+        "sells": [],
+        "positions": 3,
+        "position_pct": 8.29,
+        "cash": 917847,
+        "total": 1000778,
+        "pnl_pct": 0.078
+      },
+      "总控": {
+        "status": "PASS",
+        "warns": [
+          "持仓数量不足(3<8)"
+        ]
+      }
+    }
+  ],
+  "trades": [
+    {
+      "date": "20261021",
+      "side": "buy",
+      "code": "600600.SH",
+      "name": "青岛啤酒",
+      "price": 50.01,
+      "shares": 500,
+      "amount": 25005,
+      "reason": "tr1 落入区间 [49.48,50.58]"
+    },
+    {
+      "date": "20261021",
+      "side": "buy",
+      "code": "600941.SH",
+      "name": "中国移动",
+      "price": 96.59,
+      "shares": 200,
+      "amount": 19318,
+      "reason": "tr1 落入区间 [94.13,96.87]"
+    },
+    {
+      "date": "20261022",
+      "side": "buy",
+      "code": "600941.SH",
+      "name": "中国移动",
+      "price": 99.0,
+      "shares": 200,
+      "amount": 19800,
+      "reason": "tr2 落入区间 [96.87,102.36]"
+    },
+    {
+      "date": "20261023",
+      "side": "buy",
+      "code": "601186.SH",
+      "name": "中国铁建",
+      "price": 6.01,
+      "shares": 3000,
+      "amount": 18030,
+      "reason": "tr1 落入区间 [5.92,6.02]"
+    }
+  ],
+  "summary": {
+    "period": "2026-10-17 选股建仓 → 10-19~10-23 执行 → 10-24 复盘",
+    "universe": 3051,
+    "pool": 50,
+    "avoid": 0,
+    "watch": 50,
+    "orders": 10,
+    "filled_orders": 3,
+    "fill_rate_pct": 30.0,
+    "final_assets": 1000778,
+    "total_return_pct": 0.078,
+    "trades": 4,
+    "closed": 0,
+    "win_rate_pct": null,
+    "final_positions": 3,
+    "final_position_pct": 8.29,
+    "regime_path": [
+      "neutral",
+      "neutral",
+      "neutral",
+      "neutral",
+      "neutral"
+    ]
+  },
+  "avoid": [],
+  "notes": [
+    "基准日 10-16 收盘，历史 16 个交易日（0917~1016），16 因子（mom_60d 无 60 日数据剔除；mom_20d 为 15 日近似）",
+    "估值/换手因子取 daily_basic(20261023)，相对 10-16 有 5 个交易日前视偏差",
+    "排雷数据为最新披露口径，同样轻微前视",
+    "regime 用真实 market_overview 数值 + 六维打分 + 趋势钳制 + 防抖（反向需 conf>=0.75）",
+    "tranche 严格先低后高，不允许第二档抢跑"
+  ]
+}
