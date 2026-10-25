@@ -32,20 +32,20 @@
 ## P0 已交付（2026-10-24）
 - 骨架：E:/cashfree/agent/{data,state,reviews,reports,knowledge,scripts}；state 五文件按 schema 初始化，trades.jsonl append-only。
 - 校验脚本：scripts/check_pipeline.py（用 managed python：C:\Users\19204\.workbuddy\binaries\python\versions\3.13.12\python.exe）。
-- automation（ACTIVE）：P0-每日数据员（工作日 15:35）、P0-每日总控巡检（工作日 15:50），首跑 2026-10-26。
+- automation（ACTIVE）：P0-每日数据员（工作日 23:00）、P0-每日总控巡检（工作日 23:40），已统一挪到 23:00 后闲时档（原 15:35/15:50 作废），首跑 2026-10-26。
 - 数据源实测结论：tushare index_daily/trade_cal 可用；westock market_overview/flash_news 可用；**tushare news 无权限（40203）**，快讯一律走 westock。
 - 首个数据快照：data/daily_20261023/（5 指数 + 市场总览 + 14 快讯），校验 PASS。
 
 ## P1 智能体编排（2026-10-24 完成）
-- 10 个 agent 全部配好 automation，**全部排在 23:00 以后**（闲时成本，用户要求）：ACTIVE——数据员 23:00、市场分析师 23:10、持仓管家 23:20、总控 23:40（工作日）、复盘官周日 23:00、档案管理员周日 23:10；PAUSED——卖出交易员 23:30、选股师周六 23:00、研究员 23:10、建仓经理 23:20。
-- 执行模型：计划与执行分离。建仓经理/卖出交易员只写 planned 计划；持仓管家是唯一模拟执行者（当日收盘价成交，写 positions.json/trades.jsonl/orders.json 执行字段）。
+- **9 个 agent** 全部配好 automation（2026-10-25 决策：卖出交易员合并进持仓管家，10→9），**全部排在 23:00 以后**（闲时成本，用户要求）：ACTIVE——数据员 23:00、市场分析师 23:10、持仓管家 23:20、总控 23:40（工作日）、选股师周六 23:00、研究员 23:10、建仓经理 23:20、复盘官周日 23:00、档案管理员周日 23:10。
+- 执行模型：计划与执行分离。建仓经理只写 planned 买单；**持仓管家集卖出决策+执行于一体**（卖出触发→planned 卖单→同轮收盘价成交→回写 positions/trades/orders），纪律靠 rules.md R-002 + 复盘官周度审计（报告须列每张卖单 trigger/reason）+ 自我披露兜底。
 - 每日流水线 19:30 起跑的原因：tushare index_daily 每天 19:00 更新。
 - knowledge/ 种子文件：params_v1.0.json（默认多因子，默认模拟资金 100 万，待用户确认）、params_current.txt、rules.md（R-001~R-005 风控纪律）。
 
 ## P1 选股链路已激活（2026-10-25）
 - 用户确认首发策略 = 量化多因子（开源因子模型参考），params 现为 **v1.2（status=confirmed）**：17 因子 6 组（动量4：5d/10d/20d/60d；波动风险2；技术量价3：区间位置/量价相关/成交额趋势；质量4：ROE/毛利率/净利率/营收增速；估值3：EP/BP/SP；流动性1：换手），流程 = MAD 去极值 → 横截面百分位 → log 市值中性化 → 加权求和。扩展思路：同一批数据衍生多因子。
 - 选股师（周六 23:00）、个股研究员（周六 23:10）、建仓经理（周六 23:20）三个 automation 已切 ACTIVE；首跑 **2026-10-31（下周六）23:00**。
-- 卖出交易员仍 PAUSED：等 positions.json 非空后再激活。
+- 卖出交易员已撤销（2026-10-25）：用户选 B 方案——职责合并进持仓管家。原 prompt 五触发条件（止损/止盈/逻辑破坏/bear降仓/权重超限）已植入持仓管家步骤 4，步骤 5 同轮执行。
 - 资金规模未确认前建仓经理按默认 100 万执行（prompt 已锁定不得自行调整）。
 - 参数版本线：v1.0 默认4因子 → v1.1 七因子（确认日）→ v1.2 十七因子（用户反馈因子少，同日扩展）。
 
