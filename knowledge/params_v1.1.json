@@ -1,0 +1,53 @@
+{
+  "version": "v1.1",
+  "created": "2026-10-25",
+  "status": "confirmed",
+  "note": "用户 2026-10-25 确认首发策略方向为量化多因子选股，方法论参考开源因子模型（WorldQuant 101 Formulaic Alphas / 国泰君安 Alpha191 的常用子集）。在 v1.0 基础上扩展因子集并引入标准多因子处理流程。任何后续修改必须新建 v{n+1}，禁止原地改。",
+  "strategy": {
+    "name": "multi_factor_quant",
+    "reference": "WorldQuant 101 Formulaic Alphas; GTJA Alpha191",
+    "universe": {
+      "exclude_st": true,
+      "min_list_days": 250,
+      "min_amount_20d_avg_cny": 50000000
+    },
+    "scoring_pipeline": {
+      "cross_section_rank": true,
+      "mad_winsorize": true,
+      "mad_threshold": 3,
+      "neutralization": "log_total_mv",
+      "score_formula": "sum(factor_rank_pct * weight)",
+      "factor_drop_rule": "缺失数据超过 30% 股票的因子剔除并重新归一化权重"
+    },
+    "factors": {
+      "momentum_20d": {"weight": 0.20, "direction": "desc", "source": "tushare daily 20 日收盘价"},
+      "momentum_60d": {"weight": 0.10, "direction": "desc", "source": "tushare weekly 近 13 周收盘价"},
+      "roe_ttm": {"weight": 0.20, "direction": "desc", "source": "tushare fina_indicator 最新报告期"},
+      "gross_margin_ttm": {"weight": 0.10, "direction": "desc", "source": "tushare fina_indicator 最新报告期"},
+      "vol_20d_inv": {"weight": 0.15, "direction": "desc", "source": "tushare daily 20 日收益率标准差取负"},
+      "turnover_rate": {"weight": 0.10, "direction": "desc", "source": "tushare daily_basic 当日值"},
+      "ep_ttm": {"weight": 0.15, "direction": "desc", "source": "tushare daily_basic pe_ttm 倒数"}
+    },
+    "pool_size": 50
+  },
+  "capital": {
+    "initial_sim_capital_cny": 1000000,
+    "currency": "CNY",
+    "note": "暂按 v1.0 默认 100 万；待用户确认后新建 v1.2 修正"
+  },
+  "position_limits": {
+    "max_single_weight_pct": 15,
+    "max_sector_weight_pct": 30,
+    "min_order_weight_pct": 2,
+    "first_tranche_max_pct_of_target": 50
+  },
+  "regime_base_position_pct": {"bull": 80, "neutral": 50, "bear": 20},
+  "risk": {
+    "daily_loss_stop_pct": -3,
+    "drawdown_halve_pct": -8,
+    "drawdown_liquidate_pct": -12,
+    "circuit_freeze_days": 5,
+    "single_stop_loss_pct": 8,
+    "single_take_profit_pct": 20
+  }
+}
