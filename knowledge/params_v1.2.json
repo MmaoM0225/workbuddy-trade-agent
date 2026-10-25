@@ -1,0 +1,75 @@
+{
+  "version": "v1.2",
+  "created": "2026-10-25",
+  "status": "confirmed",
+  "note": "用户反馈 7 因子过少，扩展为 17 因子 6 组（v1.1 → v1.2）。扩展思路：同一批数据衍生多因子，总调用预算仍 ≤40 次/周。任何后续修改必须新建 v{n+1}，禁止原地改。",
+  "strategy": {
+    "name": "multi_factor_quant",
+    "reference": "WorldQuant 101 Formulaic Alphas; GTJA Alpha191; Barra 风格分组框架",
+    "universe": {
+      "exclude_st": true,
+      "min_list_days": 250,
+      "min_amount_20d_avg_cny": 50000000
+    },
+    "scoring_pipeline": {
+      "cross_section_rank": true,
+      "mad_winsorize": true,
+      "mad_threshold": 3,
+      "neutralization": "log_total_mv",
+      "score_formula": "sum(factor_rank_pct * weight)",
+      "factor_drop_rule": "缺失数据超过 30% 股票的因子剔除，按组内剩余因子占比重新归一化",
+      "factor_groups": {
+        "momentum": ["mom_5d", "mom_10d", "mom_20d", "mom_60d"],
+        "volatility_risk": ["vol_20d_inv", "mdd_20d_inv"],
+        "technical_price_volume": ["price_pos_20d", "pv_corr_20d", "turnover_trend_20d"],
+        "quality": ["roe_ttm", "gross_margin_ttm", "net_margin_ttm", "tr_yoy"],
+        "valuation": ["ep_ttm", "bp_ttm", "sp_ttm"],
+        "liquidity": ["turnover_rate"]
+      }
+    },
+    "factors": {
+      "mom_5d": {"weight": 0.06, "direction": "desc", "group": "momentum", "source": "tushare daily 5 日收盘价"},
+      "mom_10d": {"weight": 0.07, "direction": "desc", "group": "momentum", "source": "tushare daily 10 日收盘价"},
+      "mom_20d": {"weight": 0.07, "direction": "desc", "group": "momentum", "source": "tushare daily 20 日收盘价"},
+      "mom_60d": {"weight": 0.05, "direction": "desc", "group": "momentum", "source": "tushare weekly 近 13 周收盘价"},
+      "vol_20d_inv": {"weight": 0.08, "direction": "desc", "group": "volatility_risk", "source": "tushare daily 20 日收益率标准差取负"},
+      "mdd_20d_inv": {"weight": 0.07, "direction": "desc", "group": "volatility_risk", "source": "tushare daily 20 日区间最大回撤取负"},
+      "price_pos_20d": {"weight": 0.06, "direction": "desc", "group": "technical_price_volume", "source": "tushare daily (close-min20)/(max20-min20)"},
+      "pv_corr_20d": {"weight": 0.07, "direction": "desc", "group": "technical_price_volume", "source": "tushare daily corr(20 日 close, amount)"},
+      "turnover_trend_20d": {"weight": 0.07, "direction": "desc", "group": "technical_price_volume", "source": "tushare daily 20 日 amount 线性回归斜率"},
+      "roe_ttm": {"weight": 0.08, "direction": "desc", "group": "quality", "source": "tushare fina_indicator 最新报告期 roe"},
+      "gross_margin_ttm": {"weight": 0.04, "direction": "desc", "group": "quality", "source": "tushare fina_indicator grossprofit_margin"},
+      "net_margin_ttm": {"weight": 0.04, "direction": "desc", "group": "quality", "source": "tushare fina_indicator netprofit_margin"},
+      "tr_yoy": {"weight": 0.04, "direction": "desc", "group": "quality", "source": "tushare fina_indicator 营收同比"},
+      "ep_ttm": {"weight": 0.06, "direction": "desc", "group": "valuation", "source": "tushare daily_basic pe_ttm 倒数（负 PE 记缺失）"},
+      "bp_ttm": {"weight": 0.05, "direction": "desc", "group": "valuation", "source": "tushare daily_basic pb 倒数"},
+      "sp_ttm": {"weight": 0.04, "direction": "desc", "group": "valuation", "source": "tushare daily_basic ps_ttm 倒数"},
+      "turnover_rate": {"weight": 0.05, "direction": "desc", "group": "liquidity", "source": "tushare daily_basic 当日换手率"}
+    },
+    "call_budget": {
+      "limit": 40,
+      "plan": "stock_basic 1 + suspend_d 1 + trade_cal 1 + daily 20 + weekly 13 + daily_basic 1 + fina_indicator 1 = 38"
+    },
+    "pool_size": 50
+  },
+  "capital": {
+    "initial_sim_capital_cny": 1000000,
+    "currency": "CNY",
+    "note": "暂按 v1.0 默认 100 万；待用户确认后新建下一版本修正"
+  },
+  "position_limits": {
+    "max_single_weight_pct": 15,
+    "max_sector_weight_pct": 30,
+    "min_order_weight_pct": 2,
+    "first_tranche_max_pct_of_target": 50
+  },
+  "regime_base_position_pct": {"bull": 80, "neutral": 50, "bear": 20},
+  "risk": {
+    "daily_loss_stop_pct": -3,
+    "drawdown_halve_pct": -8,
+    "drawdown_liquidate_pct": -12,
+    "circuit_freeze_days": 5,
+    "single_stop_loss_pct": 8,
+    "single_take_profit_pct": 20
+  }
+}
