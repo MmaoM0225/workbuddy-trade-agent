@@ -1,0 +1,300 @@
+{
+  "version": "v1.9",
+  "created": "2026-10-26",
+  "status": "confirmed",
+  "note": "v1.9 关闭换仓。此前 v1.6 引入换仓是为解决『只进不出、满仓僵化』，但六年数据证明：候选池与持仓的质量分差异不足以产生正收益，98 笔换仓平均 +0.75% 且增加摩擦与滑点。仓位周转改由『止损/止盈退出后自然腾出仓位』实现，而非主动替换。",
+  "strategy": {
+    "name": "multi_factor_quant",
+    "reference": "WorldQuant 101 Formulaic Alphas; GTJA Alpha191; Barra 风格分组框架",
+    "universe": {
+      "exclude_bj": true,
+      "exclude_gem_star": true,
+      "exclude_st": true,
+      "min_list_days": 250,
+      "min_amount_20d_avg_cny": 50000000,
+      "rules_detail": "exclude_bj: ts_code 以 .BJ 结尾; exclude_gem_star: 300/301 开头(创业板) 或 688/689 开头(科创板); exclude_st: 名称含 ST(含 *ST); exclude_no_fina: 无财务指标的股票视为信息不透明直接出局（避免质量因子因缺失被整体剔除）; require_fina=False（v1.8 起选股阶段不再要求财务数据，财务缺失由研究员在 Top50 阶段处理）",
+      "require_fina": false
+    },
+    "scoring_pipeline": {
+      "cross_section_rank": true,
+      "mad_winsorize": true,
+      "mad_threshold": 3,
+      "neutralization": "log_total_mv",
+      "score_formula": "sum(factor_rank_pct * weight)",
+      "factor_drop_rule": "缺失数据超过 30% 股票的因子剔除，按组内剩余因子占比重新归一化",
+      "factor_groups": {
+        "momentum": [
+          "mom_5d",
+          "mom_10d",
+          "mom_20d",
+          "mom_60d"
+        ],
+        "volatility_risk": [
+          "vol_20d_inv",
+          "mdd_20d_inv"
+        ],
+        "technical_price_volume": [
+          "price_pos_20d",
+          "pv_corr_20d",
+          "turnover_trend_20d"
+        ],
+        "valuation": [
+          "ep_ttm",
+          "bp_ttm",
+          "sp_ttm"
+        ],
+        "liquidity": [
+          "turnover_rate"
+        ],
+        "_moved_to_researcher": [
+          "roe_ttm",
+          "gross_margin_ttm",
+          "net_margin_ttm",
+          "tr_yoy"
+        ]
+      }
+    },
+    "factors": {
+      "mom_5d": {
+        "weight": 0.075,
+        "direction": "desc",
+        "group": "momentum",
+        "source": "tushare daily 5 日收盘价"
+      },
+      "mom_10d": {
+        "weight": 0.0875,
+        "direction": "desc",
+        "group": "momentum",
+        "source": "tushare daily 10 日收盘价"
+      },
+      "mom_20d": {
+        "weight": 0.0875,
+        "direction": "desc",
+        "group": "momentum",
+        "source": "tushare daily 20 日收盘价"
+      },
+      "mom_60d": {
+        "weight": 0.0625,
+        "direction": "desc",
+        "group": "momentum",
+        "source": "tushare weekly 近 13 周收盘价"
+      },
+      "vol_20d_inv": {
+        "weight": 0.1,
+        "direction": "desc",
+        "group": "volatility_risk",
+        "source": "tushare daily 20 日收益率标准差取负"
+      },
+      "mdd_20d_inv": {
+        "weight": 0.0875,
+        "direction": "desc",
+        "group": "volatility_risk",
+        "source": "tushare daily 20 日区间最大回撤取负"
+      },
+      "price_pos_20d": {
+        "weight": 0.075,
+        "direction": "desc",
+        "group": "technical_price_volume",
+        "source": "tushare daily (close-min20)/(max20-min20)"
+      },
+      "pv_corr_20d": {
+        "weight": 0.0875,
+        "direction": "desc",
+        "group": "technical_price_volume",
+        "source": "tushare daily corr(20 日 close, amount)"
+      },
+      "turnover_trend_20d": {
+        "weight": 0.0875,
+        "direction": "desc",
+        "group": "technical_price_volume",
+        "source": "tushare daily 20 日 amount 线性回归斜率"
+      },
+      "ep_ttm": {
+        "weight": 0.075,
+        "direction": "desc",
+        "group": "valuation",
+        "source": "tushare daily_basic pe_ttm 倒数（负 PE 记缺失）"
+      },
+      "bp_ttm": {
+        "weight": 0.0625,
+        "direction": "desc",
+        "group": "valuation",
+        "source": "tushare daily_basic pb 倒数"
+      },
+      "sp_ttm": {
+        "weight": 0.05,
+        "direction": "desc",
+        "group": "valuation",
+        "source": "tushare daily_basic ps_ttm 倒数"
+      },
+      "turnover_rate": {
+        "weight": 0.0625,
+        "direction": "desc",
+        "group": "liquidity",
+        "source": "tushare daily_basic 当日换手率"
+      }
+    },
+    "call_budget": {
+      "limit": 40,
+      "plan": "stock_basic 1 + suspend_d 1 + trade_cal 1 + daily 8 + weekly 8 + fina_indicator 15(含回退) = 35"
+    },
+    "pool_size": 50
+  },
+  "capital": {
+    "initial_sim_capital_cny": 1000000,
+    "currency": "CNY",
+    "note": "暂按 v1.0 默认 100 万；待用户确认后新建下一版本修正"
+  },
+  "position_limits": {
+    "max_single_weight_pct": 15,
+    "max_sector_weight_pct": 30,
+    "min_order_weight_pct": 2,
+    "first_tranche_max_pct_of_target": 50,
+    "min_single_weight_pct": 3,
+    "min_holdings": 8,
+    "max_holdings": 12
+  },
+  "regime_base_position_pct": {
+    "bull": 80,
+    "neutral": 50,
+    "bear": 20
+  },
+  "risk": {
+    "daily_loss_stop_pct": -3,
+    "drawdown_halve_pct": -8,
+    "drawdown_liquidate_pct": -12,
+    "circuit_freeze_days": 5,
+    "single_stop_loss_pct": 8,
+    "single_take_profit_pct": 20,
+    "stop_loss_base": "基准收盘价 × (1-8%) 与 20 日最低 × 0.98 取更严者"
+  },
+  "parent": "v1.8",
+  "changelog": [
+    "关闭主动换仓 R-007（rotation.enabled=false）",
+    "依据：六年回测（2020-2026，按公告日回放财务）中换仓触发 98 笔，平均收益 +0.75%，对总收益贡献仅 +73%（累计百分比口径），扣除成本后为负，属纯摩擦",
+    "换仓关闭后持仓只由止损/止盈/逻辑破坏/bear降仓/权重超限退出，不再主动替换"
+  ],
+  "weight_allocation": {
+    "method": "quality_normalized",
+    "formula": "weight_i = regime_base_position_pct × qs_i / Σ(qs_j for j in selected N)",
+    "selection": "按 quality_score 降序取 N 只，N 由 min_holdings/max_holdings 与行业分散度决定，默认 10",
+    "clamp": "单票权重 clamp 到 [min_single_weight_pct, max_single_weight_pct]，clamp 后重新归一化一次",
+    "sector_constraint": "单行业合计 ≤ max_sector_weight_pct(30)，超限时按 quality_score 从低到高剔除并补入次优标的",
+    "amount_rule": "订单只给权重百分比，金额与股数由持仓管家执行时按实际总资产计算"
+  },
+  "price_zone_rule": {
+    "method": "close_relative_ladder",
+    "reference_price": "基准日收盘价（建仓经理运行时的最新收盘）",
+    "tranche1": {
+      "offset_pct": -1.0,
+      "zone_offset_pct": [
+        -4.0,
+        -1.0
+      ],
+      "weight_share": 0.5,
+      "desc": "价格回落 1% 即触发；区间标注为 -4%~-1%"
+    },
+    "tranche2": {
+      "offset_pct": -4.0,
+      "zone_offset_pct": [
+        -12.0,
+        -4.0
+      ],
+      "weight_share": 0.5,
+      "desc": "价格回落 4% 触发；区间标注为 -12%~-4%"
+    },
+    "fill_logic": "cumulative_threshold（价格≤-1%触发首档；≤-4%触发两档；跌破-12%不买）",
+    "guard_drop_pct": -12.0,
+    "rationale": "20 日区间下三分位在上涨趋势中永远等不到；相对现价的阶梯既避免追高又保证可成交",
+    "supersedes": "20日高低点三等分/首档取下三分位（v1.4 及更早）"
+  },
+  "rotation": {
+    "enabled": false,
+    "owner": "position_manager",
+    "score_gap_min": 10,
+    "max_per_week": 3,
+    "pnl_band_pct": [
+      -5.0,
+      5.0
+    ],
+    "target_holdings": [
+      8,
+      12
+    ],
+    "candidate_source": "state/watchlist.json（研究员产出，verdict=buy_watch 且未被持有）",
+    "exclusion": "当日已触发止损/止盈/逻辑破坏的持仓不参与换仓（走既有卖出流程）",
+    "order_id_prefix": "ORD-<date>-R<n>",
+    "rule": "对每个持仓 H 计算当前质量分 qs_h（在 watchlist 中查找；不在则 qs_h=0 视为掉队）；对候选 C 计算 qs_c；当 qs_c - qs_h ≥ 10 且 H 未触发卖出条件、浮动在 ±5% 内时，卖出 H 并买入 C（权重沿用 H），每周最多 3 对；换仓后持仓数仍须 8-12。",
+    "no_rotation_guard": "候选池为空或所有候选均不优于持仓时，不做任何换仓（禁止为有产出而调仓）",
+    "disabled_reason": "六年回测 98 笔换仓平均 +0.75%，纯摩擦；关闭后由止损/止盈/降仓自然腾仓位",
+    "disabled_at": "2026-10-26",
+    "reenable_condition": "需先证明候选池质量分对未来收益有预测力（IC 检验），否则不得重新开启"
+  },
+  "regime": {
+    "bull_min_score": 4,
+    "bear_light_max_score": -6,
+    "bear_heavy_max_score": -8,
+    "bear_confirm_days": 2,
+    "anti_flip_confidence": 0.75,
+    "severity_action": {
+      "light": "禁止新建仓；不强制降仓，仅在报告预警",
+      "heavy": "禁止新建仓；确认 2 日后降仓至 heavy_target_pct，每轮 bear 只执行一次"
+    },
+    "heavy_target_pct": 20,
+    "base_position_pct": {
+      "bull": 80,
+      "neutral": 50,
+      "bear": 20
+    },
+    "clamp_rule": "空头排列或 20日新低>新高×3 时，bull 降级为 neutral",
+    "note": "总分 = 趋势 + 宽度 + 情绪 + 量能，各维 -2..+2"
+  },
+  "researcher_quality": {
+    "owner": "researcher",
+    "applicable_to": "stock_picker 产出的 Top50",
+    "factors": {
+      "roe_ttm": 0.35,
+      "net_margin_ttm": 0.25,
+      "gross_margin_ttm": 0.15,
+      "tr_yoy": 0.25
+    },
+    "method": "组内（Top50）横截面百分位加权；缺失值按 50 分处理",
+    "quality_score_formula": "0.5 × 财务质量分 + 0.5 × 选股分（避免财务缺失时排序失真）",
+    "data_source": "优先 westock-mcp data_finance（含 InfoPublDate，可精确控制时点）；tushare fina_indicator 仅作兜底",
+    "look_ahead_rule": "必须使用公告日 InfoPublDate ≤ 分析基准日的最新一期报告，禁止使用未来财报",
+    "factor_definitions": {
+      "roe_ttm": {
+        "weight": 0.08,
+        "direction": "desc",
+        "group": "quality",
+        "source": "tushare fina_indicator 最新报告期 roe",
+        "owner": "researcher",
+        "weight_in_picker": 0.0
+      },
+      "gross_margin_ttm": {
+        "weight": 0.04,
+        "direction": "desc",
+        "group": "quality",
+        "source": "tushare fina_indicator grossprofit_margin",
+        "owner": "researcher",
+        "weight_in_picker": 0.0
+      },
+      "net_margin_ttm": {
+        "weight": 0.04,
+        "direction": "desc",
+        "group": "quality",
+        "source": "tushare fina_indicator netprofit_margin",
+        "owner": "researcher",
+        "weight_in_picker": 0.0
+      },
+      "tr_yoy": {
+        "weight": 0.04,
+        "direction": "desc",
+        "group": "quality",
+        "source": "tushare fina_indicator 营收同比",
+        "owner": "researcher",
+        "weight_in_picker": 0.0
+      }
+    }
+  }
+}

@@ -19,8 +19,8 @@ from pathlib import Path
 BASE = "E:/cashfree/agent/"
 DAILY_DIR = BASE + "data/warehouse/daily/"
 IDX_FILE = BASE + "test/index_000001SH.json"
-OUT_JSON = BASE + "test/replay_2y_v6.json"
-OUT_MD = BASE + "test/reports/replay_2y_v6.md"
+OUT_JSON = BASE + "test/replay_6y_v19.json"
+OUT_MD = BASE + "test/reports/replay_6y_v19.md"
 
 VER = os.environ.get("REPLAY_VER", "v3")   # v1=daily derisk, v2=once, v3=layered
 
@@ -30,6 +30,12 @@ CAPITAL = 1_000_000.0
 MAX_HOLD, MIN_HOLD, MAX_SINGLE = 12, 8, 15.0
 SL_PCT, TP_PCT = 0.08, 0.20
 ORDER_TTL_DAYS = 10
+ROT_ENABLED = False          # v1.9 / P1: 换仓实测 98 笔平均 +0.75%，纯摩擦，关闭
+BEAR_LIGHT_TARGET = 40.0     # v1.9 / P0: 轻度熊市降到 40%（原为不降仓）
+CIRCUIT_TARGET = 40.0        # 净值回撤熔断后的目标仓位
+DD_CIRCUIT_ON = -0.15        # 净值自峰值回撤 15% → 触发
+DD_CIRCUIT_OFF = -0.08       # 回撤收窄到 8% 内 → 解除
+
 ROT_GAP = 10.0 if VER == "v1" else 15.0
 ROT_MAX, ROT_BAND = 3, (-5.0, 5.0)
 ROT_MIN_HOLD_DAYS = 0 if VER == "v1" else 20
@@ -57,8 +63,49 @@ def load_csv(p):
 
 
 basic = {r["ts_code"]: r for r in load_csv(BASE + "data/warehouse/meta/stock_basic.csv")}
-fina = {r["ts_code"]: r for r in load_csv(BASE + "data/warehouse/fina/h1_all.csv")}
-fina.update({r["ts_code"]: r for r in load_csv(BASE + "data/warehouse/fina/q3_all.csv")})
+# ---- point-in-time financials (disclosure-date aware, fixes look-ahead) ----
+FINA_HIST = {}
+
+
+def load_fina_hist():
+    p = BASE + "data/warehouse/fina/history.csv"
+    if not os.path.exists(p):
+        print("WARN: fina/history.csv missing -> financials unavailable")
+        return {}
+    h = {}
+    with open(p, encoding="utf-8-sig") as f:
+        for r in csv.DictReader(f):
+            pub = (r.get("pub_date") or "").replace("-", "")
+            if len(pub) < 8:
+                continue
+
+            def fn(k):
+                try:
+                    v = float(r.get(k))
+                    return v if v == v else None
+                except (TypeError, ValueError):
+                    return None
+            h.setdefault(r["ts_code"], []).append({
+                "pub": pub, "end": (r.get("end_date") or "").replace("-", ""),
+                "roe": fn("roe_ttm"), "nm": fn("net_margin"),
+                "gm": fn("gross_margin"), "yoy": fn("rev_yoy"),
+            })
+    for k in h:
+        h[k].sort(key=lambda x: x["pub"])
+    print("financial history loaded: %d codes" % len(h))
+    return h
+
+
+def fina_at(code, base):
+    """最新一期已披露财报（pub_date <= base），严格无前视。"""
+    rows = FINA_HIST.get(code) or []
+    best = None
+    for r in rows:
+        if r["pub"] <= base:
+            best = r
+        else:
+            break
+    return best or {}
 gw = {r["ts_code"]: r for r in load_csv(BASE + "data/warehouse/research/goodwill.csv")}
 au = {r["ts_code"]: r for r in load_csv(BASE + "data/warehouse/research/audit.csv")}
 rd = {r["ts_code"]: r for r in load_csv(BASE + "data/warehouse/research/reduction.csv")}
@@ -143,6 +190,8 @@ def regime_of(d, prev):
 
 # v6 architecture: stock picker uses price/volume/valuation only (12 factors).
 # Financial quality is decided by the researcher on the Top50, not by the picker.
+FINA_HIST.update(load_fina_hist())
+
 W = {"mom_5d": .06, "mom_10d": .07, "mom_20d": .07, "vol_20d_inv": .08, "mdd_20d_inv": .07,
      "price_pos_20d": .06, "pv_corr_20d": .07, "turnover_trend_20d": .07,
      "ep_ttm": .06, "bp_ttm": .05, "sp_ttm": .04, "turnover_rate": .05}
@@ -207,7 +256,7 @@ def pick_and_screen(base):
         xs = list(range(n20))
         xm = sum(xs) / n20
         slope = sum((xs[i] - xm) * (a20[i] - ma_) for i in range(n20)) / sum((x - xm) ** 2 for x in xs)
-        fi, db = fina.get(code) or {}, dbr.get(code) or {}
+        fi, db = fina_at(code, base), dbr.get(code) or {}
 
         def f(k, src):
             try:
@@ -225,8 +274,8 @@ def pick_and_screen(base):
             "price_pos_20d": (c20[-1] - mn) / (mx - mn) if mx > mn else .5,
             "pv_corr_20d": (sum((c20[i] - mc) * (a20[i] - ma_) for i in range(n20)) / (vc * va)) if vc and va else None,
             "turnover_trend_20d": slope,
-            "roe_ttm": f("roe", fi), "gross_margin_ttm": f("grossprofit_margin", fi),
-            "net_margin_ttm": f("netprofit_margin", fi), "tr_yoy": f("tr_yoy", fi),
+            "roe_ttm": fi.get("roe"), "gross_margin_ttm": fi.get("gm"),
+            "net_margin_ttm": fi.get("nm"), "tr_yoy": fi.get("yoy"),
             "ep_ttm": (1 / pe) if pe and pe > 0 else None,
             "bp_ttm": (1 / pb) if pb and pb > 0 else None,
             "sp_ttm": (1 / ps) if ps and ps > 0 else None,
@@ -279,7 +328,7 @@ def pick_and_screen(base):
         qs = sum((r["_q_" + k] if r["_q_" + k] is not None else 50) * w for k, w in FIN_W.items())
         # 一半看财务质量、一半看选股分，避免财务数据缺失时排序失真
         watch.append({"code": r["code"], "name": r["name"], "industry": r["industry"],
-                      "qs": round(0.5 * qs + 0.5 * r["score"], 1)})
+                      "qs": round((r["score"] if os.environ.get("PURE_PRICE") else 0.5 * qs + 0.5 * r["score"]), 1)})
     watch.sort(key=lambda x: -x["qs"])
     return watch
 
@@ -296,6 +345,8 @@ last_select = None
 confirmed = 0
 bear_derisk_done = False
 rotated_codes = set()
+peak_nav = 0.0
+circuit_on = False
 
 
 def total_assets(d):
@@ -520,23 +571,32 @@ for i, d in enumerate(DATES):
 
     # 5) rotation: run once per week, on the first trading day after a new watchlist
     rot = []
-    if watchlist and last_select and d > last_select and (di - DATES.index(last_select)) == 1:
+    if ROT_ENABLED and watchlist and last_select and d > last_select and (di - DATES.index(last_select)) == 1:
         rot = rotate(d, conf)
 
-    # 6) bear de-risk (version-dependent)
+    # 6) de-risk (v1.9): bear light->40%, bear heavy->20%, plus absolute drawdown circuit
     sev = rmeta.get("severity")
-    if VER == "v1":       # every day while in bear
-        want = regime == "bear" and bool(positions)
-    elif VER == "v2":     # once per bear episode, after 2 confirmed days
-        want = regime == "bear" and bool(positions) and confirmed >= 2 and not bear_derisk_done
-    else:                 # v3: heavy bear only
-        want = (regime == "bear" and sev == "heavy" and bool(positions)
-                and confirmed >= 2 and not bear_derisk_done)
-    if want:
-        ta = total_assets(d)
-        pv = ta - cash
-        if pv > ta * 0.20:
-            ratio = ta * 0.20 / pv
+    ta = total_assets(d)
+    if ta > peak_nav:
+        peak_nav = ta
+    dd_now = (ta / peak_nav - 1) if peak_nav else 0.0
+    if dd_now <= DD_CIRCUIT_ON:
+        circuit_on = True
+    elif dd_now >= DD_CIRCUIT_OFF:
+        circuit_on = False
+
+    target = None
+    if regime == "bear" and confirmed >= 2:
+        target = 20.0 if sev == "heavy" else BEAR_LIGHT_TARGET
+    if circuit_on:
+        target = min(target if target is not None else 100.0, CIRCUIT_TARGET)
+    if target is not None and positions:
+        pv0 = ta - cash
+        cur = (pv0 / ta * 100) if ta else 0.0
+        if cur > target + 5.0:                    # 5pct 缓冲，避免每日反复摩擦
+            ratio = (ta * target / 100.0) / pv0
+            why = "circuit" if (circuit_on and target == CIRCUIT_TARGET) else (
+                "derisk_heavy" if target == 20.0 else "derisk_light")
             for code in list(positions):
                 p = positions[code]
                 price = (px.get(code) or {}).get("close")
@@ -549,13 +609,11 @@ for i, d in enumerate(DATES):
                 cash += sh * price
                 trades.append({"date": d, "side": "sell", "code": code, "name": p["name"],
                                "price": price, "shares": sh,
-                               "pnl_pct": round((price / p["cost"] - 1) * 100, 2), "why": "bear_derisk"})
+                               "pnl_pct": round((price / p["cost"] - 1) * 100, 2), "why": why})
                 p["shares"] = ns
                 if ns == 0:
                     del positions[code]
-        if VER != "v1":
-            bear_derisk_done = True
-    if not (regime == "bear" and (VER != "v3" or sev == "heavy")):
+    if not (regime == "bear" and confirmed >= 2):
         bear_derisk_done = False
 
     # 7) snapshot

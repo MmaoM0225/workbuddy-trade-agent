@@ -14,8 +14,8 @@ import time
 sys.path.insert(0, r"E:/cashfree/agent/scripts")
 from update_warehouse import McpClient, find_client, WH, THROTTLE  # noqa: E402
 
-TARGET_DAYS = 450
-WEEKS = 86                # 450 trading days supports ~86 weekly selections
+TARGET_DAYS = 1700
+WEEKS = 330
 HIST_DAYS = 16           # history needed for the first selection
 BASIC_ONLY_FOR_BASE = True
 
@@ -30,7 +30,7 @@ def write_csv(path, header, rows):
 
 def main():
     c = find_client()
-    cal = c.call("trade_cal", {"exchange": "SSE", "start_date": "20240401",
+    cal = c.call("trade_cal", {"exchange": "SSE", "start_date": "20191101",
                                "end_date": "20261023"})
     opens = sorted([r["cal_date"] for r in cal if str(r.get("is_open")) == "1"])
     window = opens[-TARGET_DAYS:]
