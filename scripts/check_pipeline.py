@@ -214,6 +214,73 @@ def check_tasks():
     print("[tasks] %d task states checked" % len(TASK_NAMES))
 
 
+CROWDING_LEVELS = ("normal", "watch", "warn", "alert")
+CROWDING_KEYS = ["crowding", "level", "band", "prev_month", "mom", "pct_rank",
+                 "top1_pct", "top10_pct", "mtd_days", "sample_months",
+                 "warn_pct", "alert_pct"]
+
+
+def check_crowding():
+    """data/warehouse/crowding/: 市场拥挤度序列与快照（v2.2 第 7 维）。"""
+    wh = STATE.parent / "data" / "warehouse" / "crowding"
+    if not wh.exists():
+        failures.append("missing crowding dir: %s (run scripts/compute_crowding.py)" % wh)
+        return
+
+    hist_p = wh / "history.csv"
+    if not hist_p.exists():
+        failures.append("crowding/history.csv missing")
+    else:
+        rows = [x for x in hist_p.read_text(encoding="utf-8").splitlines() if x.strip()]
+        if len(rows) < 2:
+            failures.append("crowding/history.csv has no data rows")
+        else:
+            print("[crowding] history.csv %d months" % (len(rows) - 1))
+
+    latest_p = wh / "latest.json"
+    if not latest_p.exists():
+        failures.append("crowding/latest.json missing")
+        return
+    try:
+        c = load_json(latest_p)
+    except Exception as e:
+        failures.append("crowding/latest.json invalid JSON (%s)" % e)
+        return
+
+    for k in CROWDING_KEYS:
+        if k not in c:
+            failures.append("crowding/latest.json missing key: %s" % k)
+
+    v = c.get("crowding")
+    if not isinstance(v, (int, float)) or not (0 < v < 100):
+        failures.append("crowding/latest.json: crowding out of range (%r)" % (v,))
+    if c.get("level") not in CROWDING_LEVELS:
+        failures.append("crowding/latest.json: invalid level %r" % (c.get("level"),))
+    t1, t10 = c.get("top1_pct"), c.get("top10_pct")
+    if isinstance(t1, (int, float)) and isinstance(t10, (int, float)) and t1 > t10:
+        failures.append("crowding/latest.json: top1_pct > top10_pct (抱团深度口径倒置)")
+
+    reg_p = STATE / "regime.json"
+    if reg_p.exists():
+        try:
+            reg = load_json(reg_p)
+            rc = reg.get("crowding")
+            if isinstance(rc, dict) and isinstance(rc.get("value"), (int, float)) \
+                    and isinstance(v, (int, float)):
+                if abs(rc["value"] - v) > 0.5:
+                    failures.append("regime.json crowding.value %.2f != latest.json %.2f"
+                                    % (rc["value"], v))
+                if rc.get("level") not in CROWDING_LEVELS:
+                    failures.append("regime.json: invalid crowding.level %r" % (rc.get("level"),))
+            if reg.get("date") and c.get("trade_date") and str(c["trade_date"]) < str(reg["date"]):
+                print("[crowding] WARN latest.json trade_date %s 落后 regime date %s"
+                      % (c["trade_date"], reg["date"]))
+        except Exception as e:
+            failures.append("regime.json crowding consistency check failed (%s)" % e)
+
+    print("[crowding] %s = %.2f%% (%s / %s)" % (c.get("trade_date"), v, c.get("level"), c.get("band")))
+
+
 def latest_data_date():
     if not DATA.exists():
         return None
@@ -291,6 +358,7 @@ def main():
     check_state()
     check_business()
     check_tasks()
+    check_crowding()
     if date_str:
         check_data(date_str)
     else:

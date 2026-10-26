@@ -38,6 +38,10 @@ scores = {r["ts_code"]: r for r in read_csv(SCORES)}
 
 regime_name = regime.get("regime", "neutral")
 base_pct = params["regime_base_position_pct"].get(regime_name, 50)
+# v2.2：优先采信市场分析师的 position_cap_pct（含拥挤度覆盖折扣）
+_cap = regime.get("position_cap_pct")
+if isinstance(_cap, (int, float)) and 0 < float(_cap) <= 100:
+    base_pct = float(_cap)
 lim = params["position_limits"]
 capital = params["capital"]["initial_sim_capital_cny"]
 print(f"regime={regime_name} base={base_pct}% capital={capital}")

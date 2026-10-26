@@ -111,4 +111,16 @@
 - check_pipeline.py：schema + 数据完整性 + 业务规则（仅查已 populate 文件）；支持 --base/--date；退出码 0/1。总控每日调用。
 - 所有 agent 第一步校验 trade_cal，非交易日只追加 data/skip_log.jsonl 后退出；报告按运行日期命名（daily_<run_date>.md / position_review_<run_date>.md）。
 - 告警：总控发现 critical → mcp__agent-mail__SendMessage 发邮件到 ikdp5836@agent.qq.com（skip_confirmation=true，日限 1 封）；关闭=删 prompt 告警段。
-- automation 执行记忆写在 .workbuddy/memory/automations/<automation_id>/memory.md。
+- automation 执行记忆写在 .workbuddy/memory/automations/<automation_id>/memory.md
+
+## 市场拥挤度（v2.2，2026-10-27 引入）
+- **定义**：成交额排名前 5% 个股成交额 ÷ 全市场成交额，**月度累计（MTD）口径**。禁用单日（单日偏高 3.5pp，套 45% 阈值会天天误报）。来源：邢不行《如何判断抱团行情？》YouTube `Fq4Le_j2E4g`。
+- **校准**：2026-06 实算 48.81% vs 视频 48.76%；2021-01 实算 48.54% vs 视频 49.51%。
+- **定位**：**覆盖层，不进六维方向总分**。45%+ 是双向信号（2008-09 熊底 48.99% 也触发），塞进方向轴会污染 regime。
+- **阈值**：<20 低迷 / 20-35 正常 / 35-45 升温（不干预）/ 45-50 警戒 / ≥50 恶化。45%+ 必须按上证 20 日涨跌幅区分性质：>0 抱团瓦解（收紧）、<-5% 低位反向集中（不收紧）。解除=回落 <45% 且连续 2 月环比下行。
+- **落点**：`scripts/compute_crowding.py` → `data/warehouse/crowding/{history.csv,latest.json}`；regime.json 输出 `crowding` 对象 + `position_cap_pct`；建仓经理与 build_orders_live.py **优先读 position_cap_pct**，缺失才回退 regime_base_position_pct。
+- **数据依赖**：数据员 23:00 步骤 2.5 跑 `update_warehouse.py --daily-only` 维护全市场日线。
+- **当前值（2026-10-26）**：41.18% watch/升温，环比 -1.69pp，距 45% 警戒 3.82pp；已从 2026-07 的 49.76% 连续三个月回落，抱团退潮中。
+
+## 测试隔离纪律（2026-10-27 教训）
+彩排脚本若需读正式状态文件（state/regime.json 等），**必须把模块 ROOT 指向 test/ 沙箱**，不要用「改正式文件→渲染→还原」的 try/finally 模式——渲染中途抛异常会跳过还原，正式文件被留在测试态（已发生一次）。。

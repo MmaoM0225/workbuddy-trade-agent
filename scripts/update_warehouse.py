@@ -109,6 +109,12 @@ def read_csv(p):
 
 
 def main():
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--daily-only", action="store_true",
+                    help="只增量更新 daily/*.csv（供数据员每日 23:00 调用，约 5 次 API）")
+    args, _ = ap.parse_known_args()
+
     client = find_client()
     # 1. recent open dates
     cal = client.call("trade_cal", {"exchange": "SSE", "start_date": "20260801",
@@ -135,6 +141,17 @@ def main():
                             r.get("low"), r.get("close"), r.get("amount")])
         print(f"daily {d}: {len(rows)} rows", flush=True)
         time.sleep(THROTTLE)
+
+    # 2b. daily-only 模式到此结束（数据员每日 23:00 用，供拥挤度/后续因子消费）
+    if args.daily_only:
+        meta_dir = os.path.join(WH, "meta")
+        os.makedirs(meta_dir, exist_ok=True)
+        summary = {"updated_at": time.strftime("%Y-%m-%d %H:%M"),
+                   "latest_trading_day": latest, "mode": "daily-only"}
+        with open(os.path.join(meta_dir, "last_daily_update.json"), "w", encoding="utf-8") as f:
+            json.dump(summary, f, ensure_ascii=False, indent=2)
+        print("warehouse daily-only done:", json.dumps(summary, ensure_ascii=False), flush=True)
+        return
 
     # 3. weekly: latest week
     wpath = os.path.join(WH, "weekly", f"{latest}.csv")

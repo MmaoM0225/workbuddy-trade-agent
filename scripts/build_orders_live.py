@@ -60,6 +60,13 @@ base_date = wl["date"]
 regime_name = regime.get("regime", "neutral")
 severity = "light" if regime_name == "bear" else None
 base_pct = float(PARAMS["regime_base_position_pct"].get(regime_name, 50))
+# v2.2：市场分析师输出 position_cap_pct，已把「市场拥挤度」覆盖折扣算进去，优先采信；
+# 缺失（旧版 regime.json）或越界时回退 params 的 regime_base_position_pct。
+_cap = regime.get("position_cap_pct")
+if isinstance(_cap, (int, float)) and 0 < float(_cap) <= 100:
+    if abs(float(_cap) - base_pct) > 0.01:
+        print(f"position_cap_pct={_cap}% (含拥挤度覆盖) 覆盖 base_position={base_pct}%")
+    base_pct = float(_cap)
 
 # 空头/重度熊市：禁止新建仓（R-001）
 if regime_name == "bear":
@@ -206,10 +213,36 @@ for x, wv in zip(selected, w_final):
     sector_total[s] = sector_total.get(s, 0) + wv
 
 # ---------- 生成订单 ----------
+# 重建 orders.json 时必须保留历史已成交买单，且新单序号接续，否则会：
+#   ① 抹掉成交记录（trades.jsonl 里的 order_id 指向已不存在的单）
+#   ② 新单复用旧 ID（ORD-20261023-002 既是已成交的中国动力又是新计划）
+#   2026-10-26 曾因此错位，手工 fix_orders.py 才救回来，这里从根上修。
 t1, t2 = PZ["tranche1"], PZ["tranche2"]
 guard = float(PZ["guard_drop_pct"]) / 100.0
-out_orders = []
-for idx, (i, w) in enumerate(zip(selected, w_final), 1):
+hist_filled, next_seq = [], 1
+if os.path.exists(ORDERS):
+    try:
+        _old = json.load(open(ORDERS, encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        _old = {}
+    for _o in (_old.get("orders") or []):
+        _tail = str(_o.get("id") or "").rsplit("-", 1)[-1]
+        if _tail.isdigit():
+            next_seq = max(next_seq, int(_tail) + 1)
+        if _o.get("side") == "buy" and _o.get("status") == "filled":
+            # 已成交单的止损止盈同样按实际成交价对齐（v2.1），与 positions.json 口径保持一致
+            _fp = _o.get("fill_price")
+            if isinstance(_fp, (int, float)) and _fp > 0:
+                _o["stop_loss"] = round(_fp * (1 - RISK["single_stop_loss_pct"] / 100.0), 2)
+                _o["take_profit"] = round(_fp * (1 + RISK["single_take_profit_pct"] / 100.0), 2)
+                _o["stop_loss_basis"] = "actual_fill_price"
+                _o["stop_loss_formula"] = f"成交价 {_fp} × (1-{RISK['single_stop_loss_pct']:g}%)"
+            hist_filled.append(_o)
+if hist_filled:
+    print(f"保留历史已成交买单 {len(hist_filled)} 张，新单起始序号 {next_seq:03d}")
+
+out_orders = list(hist_filled)
+for idx, (i, w) in enumerate(zip(selected, w_final), next_seq):
     code = i["code"]
     sec = (scores.get(code) or {}).get("industry", "未知")
     bars = daily.get(code, [])
@@ -275,7 +308,7 @@ for idx, (i, w) in enumerate(zip(selected, w_final), 1):
         "created_at": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
     })
 
-total_w = sum(o["target_weight_pct"] for o in out_orders)
+total_w = sum(o["target_weight_pct"] for o in out_orders if o.get("status") == "planned")
 orders_doc = {
     "date": base_date,
     "mode": "production",
@@ -284,7 +317,8 @@ orders_doc = {
     "base_position_pct": base_pct,
     "holdings_before": H,
     "target_holdings": target_n,
-    "planned_new_orders": len(out_orders),
+    "planned_new_orders": len([o for o in out_orders if o.get("status") == "planned"]),
+    "filled_orders_carried": len(hist_filled),
     "planned_total_weight_pct": round(total_w, 2),
     "cash_reserve_pct": round(100 - total_w, 2),
     "sector_weights": {k: round(v, 2) for k, v in sector_total.items()},

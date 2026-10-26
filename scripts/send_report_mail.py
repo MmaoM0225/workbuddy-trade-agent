@@ -239,6 +239,77 @@ def render_regime(date):
                    inline(str(v.get("detail") or ""))))
         html.append("</table>")
 
+    # 市场拥挤度（v2.2 第 7 维，覆盖层）
+    cr = d.get("crowding")
+    cv = None
+    if isinstance(cr, dict) and cr.get("value") is not None:
+        try:
+            cv = float(cr["value"])
+        except (TypeError, ValueError):
+            cv = None
+    if cv is not None:
+        lvl = (cr.get("level") or "normal").lower()
+        lvl_cn = {"normal": "正常", "watch": "偏高", "warn": "警戒", "alert": "极端"}.get(lvl, lvl)
+        warn_p = float(cr.get("warn_pct") or 45)
+        alert_p = float(cr.get("alert_pct") or 50)
+        mom = cr.get("mom")
+        mom_txt = ("%+.2fpp" % mom) if isinstance(mom, (int, float)) else "—"
+        mom_cls = "up" if isinstance(mom, (int, float)) and mom > 0 else "down"
+        prev = cr.get("prev_month")
+        pr = cr.get("pct_rank")
+        top1, top10 = cr.get("top1_pct"), cr.get("top10_pct")
+        src = {"mtd": "当月累计", "prev_month": "上月完整值"}.get(
+            str(cr.get("source") or ""), str(cr.get("source") or "—"))
+        overlay = cr.get("overlay") or "无干预"
+        nature_cn = {"high_position": "高位抱团瓦解风险",
+                     "reversal_concentration": "低位反向集中（恐慌底特征）",
+                     "unclear": "性质不明"}.get(str(cr.get("nature") or ""), "")
+        bar_cls = "b-bear" if lvl in ("warn", "alert") else "b-neutral"
+
+        html.append("<h2>市场拥挤度 <span style='font-weight:400;color:#8a9099;font-size:12px'>"
+                    "成交额前 %s%% 集中度 · %s</span></h2>" % (cr.get("top_pct") or 5, src))
+        html.append("<div class='strategy' style='margin-bottom:8px'><p style='margin:0 0 5px'>"
+                    "<span style='font-size:26px;font-weight:700'>%.2f%%</span> "
+                    "<span class='badge %s'>%s · %s</span>"
+                    "%s</p><p style='margin:0;font-size:12px;color:#5a626b'>覆盖判定：<b>%s</b></p></div>"
+                    % (cv, bar_cls, inline(str(cr.get("band") or "—")), lvl_cn,
+                       (" <span style='font-size:12px;color:#8a9099'>%s</span>" % inline(nature_cn)) if nature_cn else "",
+                       inline(str(overlay))))
+
+        # 水位条：0-60% 映射，标出 45 警戒 / 50 警报
+        scale, pos = 60.0, min(100.0, cv / 60.0 * 100.0)
+        wp, ap = min(100.0, warn_p / 60.0 * 100.0), min(100.0, alert_p / 60.0 * 100.0)
+        html.append(
+            "<div style='position:relative;height:20px;background:#eef1f4;border-radius:4px;margin:6px 0 2px'>"
+            "<div style='position:absolute;left:0;top:0;height:100%%;width:%.1f%%;"
+            "background:linear-gradient(90deg,#8fb3c9,#e8a33d 62%%,#c0392b);border-radius:4px'></div>"
+            "<div style='position:absolute;left:%.1f%%;top:-3px;height:26px;width:2px;background:#c0392b'></div>"
+            "<div style='position:absolute;left:%.1f%%;top:-3px;height:26px;width:2px;background:#7c1d13'></div>"
+            "</div><div style='font-size:11px;color:#8a9099;margin-bottom:8px'>"
+            "0%%<span style='float:right'>60%%</span>"
+            "红线 %g%% 警戒 · %g%% 警报 · 色条为当前水位</div>"
+            % (pos, wp, ap, warn_p, alert_p))
+
+        cells2 = [
+            ("环比", mom_txt, "上月 %s" % (("%.2f%%" % prev) if isinstance(prev, (int, float)) else "—")),
+            ("历史分位", ("%.1f%%" % pr) if isinstance(pr, (int, float)) else "—",
+             "%s 个月样本" % (cr.get("sample_months") or "—")),
+            ("抱团深度", "%.1f / %.1f" % (top1, top10) if isinstance(top1, (int, float)) and isinstance(top10, (int, float)) else "—",
+             "前1% / 前10% 占比"),
+            ("窗口", "%s 日" % (cr.get("mtd_days") or "—"), "当月已累计交易日"),
+        ]
+        html.append("<table class='mt'><tr>" + "".join(
+            "<td><div class='k'>%s</div><div class='v' style='font-size:16px'>%s</div>"
+            "<div class='s'>%s</div></td>" % (k, v, inline(str(s))) for k, v, s in cells2) + "</tr></table>")
+        if isinstance(mom, (int, float)):
+            html.append("<p class='detail' style='color:#8a9099;font-size:11.5px;margin:4px 0 0'>"
+                        "口径：月度累计成交额前 5%% 集中度（与邢不行视频 45%%/50%% 阈值可比，"
+                        "单日口径不可套用）。环比 %s 表示%s。</p>"
+                        % (("<span class='%s'>%s</span>" % (mom_cls, mom_txt)),
+                           "抱团加剧" if mom > 0 else "抱团退潮"))
+    elif isinstance(cr, dict):
+        html.append("<h2>市场拥挤度</h2><div class='warnbox'>本次拥挤度数据缺失，未套用覆盖层。</div>")
+
     kv = []
     for v in dims.values():
         if not isinstance(v, dict):

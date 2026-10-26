@@ -14,7 +14,8 @@
     "板块(neutral 偏空，sector_ranking.json)：124 个申万行业中上涨 60 个(48.39%，处于 20%-60% 中间区间，不满足 bull 的 >60%)；主力资金方向明确净流出——流入 Top10 合计 +50.26 亿，而跌幅榜 Top10 净流出合计达 -201.59 亿(元件 -65.21 亿、半导体 -51.09 亿、通信设备 -44.16 亿)。板块维度判 neutral(0)。",
     "总分 = 趋势(-2) + 宽度(0) + 情绪(+2) + 量能(0) + 资金(0) + 板块(0) = 0，落入 -6 < 总分 < +4 → regime=neutral，severity=null。趋势钳制已生效：收盘低于 MA20/MA60/MA250 且均线完全空头排列，即便情绪与北向偏正面也不得判 bull。与上一判断日 20261023 的 neutral 同向，confirmed_days 由 1 增至 2，本轮未发生 regime 切换（switched=false）。",
     "消息面交叉验证(hot_news.json/news.json)：「A股科技小登又狂跌，覆铜板大牛股直接摁死跌停」「大摩：半导体股或再跌10%至15%，调整预计11月中旬结束」印证元件/通信设备/半导体杀跌；「有基金经理止损科技 转身重仓银行股」印证国有大型银行Ⅱ +2.23%(6/6 全涨、主力净流入 3.73 亿) 与全指价值 20日 +1.43% 的防御风格；「4400亿医药巨头上调业绩指引」印证医药商业 +2.73%(30/32 上涨)、医疗服务主力净流入 7.69 亿；「股价创18年新高，中石油4个月大涨56%」印证油服工程 +3.38%(12/13 上涨)。",
-    "数据完整性说明：data/daily_20261026/meta.json 标记 degraded=false，9 个文件齐备；market_overview[margin](两融余额) row 为空(missing=true)，本轮未做任何数值补全，情绪维度改由涨跌停数值独立判定；market_overview[valuation] 源端日期为 2026-10-22(T+1 口径滞后 4 日)，仅作背景参考不参与打分。"
+    "数据完整性说明：data/daily_20261026/meta.json 标记 degraded=false，9 个文件齐备；market_overview[margin](两融余额) row 为空(missing=true)，本轮未做任何数值补全，情绪维度改由涨跌停数值独立判定；market_overview[valuation] 源端日期为 2026-10-22(T+1 口径滞后 4 日)，仅作背景参考不参与打分。",
+    "拥挤度【人工补录】(data/warehouse/crowding/latest.json)：成交额前 5% 集中度 41.18%（当月累计 13 日，上月 42.87%，环比 -1.69pp），落在 35-45% 升温档、level=watch，历史分位 74.7%（84 个月样本）。抱团深度 前1%=17.66% / 前10%=55.48%。距 45% 警戒线 3.82pp。因未达 45%，按覆盖规则 f「只记录不干预」，regime 维持 neutral、仓位上限 50% 不打折。性质参考：上证 20 日涨跌幅 -5.48%（<-5%）偏低位，若后续升破 45% 应优先按 reversal_concentration 判定，不做抱团瓦解式收紧。"
   ],
   "dimensions": {
     "trend": {
@@ -183,5 +184,26 @@
     }
   ],
   "risk_level": "medium",
-  "position_hint": "neutral→50%"
+  "position_hint": "neutral→50%",
+  "crowding": {
+    "value": 41.1761,
+    "source": "mtd",
+    "band": "升温",
+    "level": "watch",
+    "prev_month": 42.8679,
+    "mom": -1.6918,
+    "pct_rank": 74.7,
+    "top1_pct": 17.6637,
+    "top10_pct": 55.4761,
+    "nature": "reversal_concentration",
+    "cleared": false,
+    "overlay": "无干预（41.18% 落在 35-45 升温档，规则 f）",
+    "top_pct": 5,
+    "warn_pct": 45.0,
+    "alert_pct": 50.0,
+    "sample_months": 84,
+    "mtd_days": 13,
+    "manual_note": "人工补录：指标于 2026-10-27 引入，本块按当天真实数据补算，非市场分析师原判定"
+  },
+  "position_cap_pct": 50
 }
