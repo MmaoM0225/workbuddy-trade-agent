@@ -5,6 +5,8 @@
   - 商誉/净资产 > 30%      → avoid
   - 审计意见非"标准"        → avoid
   - 近 3 月减持占总股本 >1% → avoid（次数只作风险提示，不作否决）
+经营质量否决（v2.1 新增，阈值从 params.researcher_veto 读取）：
+  - ROE < 0 且 净利率 < 5% → avoid（主营没赚到钱，属价值陷阱而非困境反转）
 质量分 = ROE 35% + 净利率 25% + 毛利率 15% + 营收同比 25%（全市场横截面百分位加权）
 
 正式跑：POOL_IN=state/pool.json WATCHLIST_OUT=state/watchlist.json
@@ -16,12 +18,24 @@ import os
 
 ROOT = r"E:\cashfree\agent"
 WH = os.path.join(ROOT, "data", "warehouse")
+KN = os.path.join(ROOT, "knowledge")
 POOL = os.environ.get("POOL_IN") or os.path.join(ROOT, "test", "state", "pool.json")
 OUT = os.environ.get("WATCHLIST_OUT") or os.path.join(ROOT, "test", "state", "watchlist.json")
 SCORES = os.path.join(WH, "scores_full.csv")
 TOP_N = 60
 GOODWILL_MAX = 0.30
 REDUCTION_MAX = 0.01
+
+# 经营质量否决阈值：优先取当前生效 params 的 researcher_veto，缺失则用 v2.1 默认值
+_CUR_VER = open(os.path.join(KN, "params_current.txt"), encoding="utf-8").read().strip()
+try:
+    _P = json.load(open(os.path.join(KN, f"params_{_CUR_VER}.json"), encoding="utf-8"))
+except FileNotFoundError:
+    _P = {}
+_VETO = _P.get("researcher_veto") or {}
+ROE_VETO_BELOW = float(_VETO.get("roe_below", 0.0))
+NM_VETO_BELOW = float(_VETO.get("net_margin_below", 5.0))
+VETO_ENABLED = bool(_VETO.get("enabled", True))
 
 
 def read_csv(p):
@@ -116,6 +130,15 @@ for c in cands:
     if audit_note and "标准" not in str(audit_note):
         flags.append(f"审计意见：{audit_note}")
 
+    # ---------- 经营质量否决（v2.1）----------
+    # v2.0 的 target_zone 刻意选低 ROE / 低净利率分位（困境反转），但"亏损边缘"必须挡在买点外：
+    # ROE 为负说明主营还没赚到钱，不是"业绩暂时回落"，配低 PB/低 PS 就是典型价值陷阱。
+    if VETO_ENABLED and roe is not None and nm is not None:
+        if roe < ROE_VETO_BELOW and nm < NM_VETO_BELOW:
+            flags.append(
+                f"经营质量否决：ROE {roe:.2f}% < {ROE_VETO_BELOW:g}% 且 净利率 {nm:.1f}% < {NM_VETO_BELOW:g}%"
+            )
+
     # ---------- 质量分：全市场横截面百分位加权 ----------
     parts = []
     for v, arr, w in ((roe, roe_all, 0.35), (nm, nm_all, 0.25), (gm, gm_all, 0.15), (tryy, try_all, 0.25)):
@@ -172,8 +195,10 @@ for c in cands:
 items.sort(key=lambda x: -x["quality_score"])
 # v1.8: 池内相对排名取前 20 为 buy_watch（新池子由纯量价因子选出，财务绝对分整体偏低，
 # 用固定 55 分门槛会导致 buy_watch 恒为 0，故改为相对排名）
-buy = [dict(i, verdict="buy_watch") for i in items[:20]]
-watch_cnt = len([i for i in items if i["verdict"] == "watch"])
+BUY_N = 20
+buy = [dict(i, verdict="buy_watch") for i in items[:BUY_N]]
+# 修正（v2.1）：items 内 verdict 未被覆盖，原写法统计会与 buy 重复计数（曾出现 20+41 > pass 45）
+watch_cnt = max(0, len(items) - len(buy))
 
 out = {
     "date": base_date,
@@ -182,19 +207,28 @@ out = {
     "notes": {
         "mode": _mode,
         "strategy_version": pool.get("strategy_version"),
+        "params_version": _CUR_VER,
         "candidates_scanned": len(cands),
         "avoid_count": len(avoid),
         "avoid_summary": avoid,
         "watch_count": watch_cnt,
         "pass_count": len(items),
+        "buy_watch_count": len(buy),
         "due_diligence_coverage": {"goodwill": len(gw), "reduction": len(red), "audit": len(aud)},
         "dd_rules": {
             "goodwill_max": GOODWILL_MAX,
             "reduction_max_of_total_share": REDUCTION_MAX,
             "audit": "非标准无保留即 avoid",
+            "researcher_veto": {
+                "enabled": VETO_ENABLED,
+                "rule": f"ROE < {ROE_VETO_BELOW:g}% 且 净利率 < {NM_VETO_BELOW:g}% → avoid",
+                "logic": "AND（两条同时满足才否决；单条不满足只记风险提示）",
+                "rationale": "v2.0 target_zone 刻意选低 ROE 分位，但 ROE 为负 = 主营未盈利，配低 PB/PS 属价值陷阱",
+            },
             "unit_fix": "dec_vol(股) / (total_share(万股)*10000)",
         },
         "quality_formula": "ROE .35 / 净利率 .25 / 毛利率 .15 / 营收增速 .25 全市场横截面百分位加权，减持次数扣分",
+        "buy_watch_rule": f"通过排雷后按 quality_score 降序取前 {BUY_N} 只（v1.8 相对排名，非绝对门槛）",
     },
 }
 os.makedirs(os.path.dirname(OUT), exist_ok=True)

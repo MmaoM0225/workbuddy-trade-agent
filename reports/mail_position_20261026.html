@@ -1,0 +1,144 @@
+<!DOCTYPE html><html lang='zh-CN'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>持仓检视 20261026</title><style>
+body{margin:0;padding:0;background:#f5f6f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;color:#1f2329;}
+.wrap{max-width:880px;margin:0 auto;padding:24px 16px 44px;}
+.card{background:#fff;border-radius:10px;padding:20px 22px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+h1{font-size:19px;margin:0 0 14px;font-weight:600;border-left:3px solid #c8102e;padding-left:10px;}
+h2{font-size:14px;margin:18px 0 10px;font-weight:600;color:#1f2329;}
+h3{font-size:13px;margin:14px 0 8px;font-weight:600;color:#646a73;}
+h4{font-size:12.5px;margin:12px 0 6px;font-weight:600;color:#8a9099;}
+p{font-size:13px;line-height:1.75;margin:6px 0;color:#2b3038;}
+ul{margin:6px 0;padding-left:20px;}
+li{font-size:13px;line-height:1.75;color:#2b3038;}
+table{width:100%;border-collapse:collapse;font-size:12.5px;margin:8px 0;}
+th{background:#f7f8fa;color:#646a73;font-weight:500;text-align:left;padding:8px 10px;border-bottom:1px solid #eceef1;}
+td{padding:8px 10px;border-bottom:1px solid #f2f3f5;vertical-align:top;}
+code{background:#f2f3f5;border-radius:3px;padding:1px 5px;font-size:12px;font-family:ui-monospace,Menlo,monospace;}
+.metric{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:6px;}
+.metric div{flex:1 1 130px;background:#fafbfc;border:1px solid #eceef1;border-radius:8px;padding:11px 13px;}
+.metric .k{font-size:11px;color:#8a9099;margin-bottom:4px;}
+.metric .v{font-size:17px;font-weight:600;}
+.footer{text-align:center;color:#a8adb5;font-size:11px;margin-top:18px;}
+.mt{width:100%;border-collapse:separate;border-spacing:7px 0;margin:0 -7px 10px;}
+.mt td{background:#fafbfc;border:1px solid #eceef1;border-radius:8px;padding:11px 13px;vertical-align:top;border-bottom:1px solid #eceef1;}
+.mt .k{font-size:11px;color:#8a9099;margin-bottom:5px;font-weight:400;}
+.mt .v{font-size:18px;font-weight:600;line-height:1.2;}
+.mt .s{font-size:11px;color:#8a9099;margin-top:3px;}
+.up{color:#c8102e;}
+.down{color:#0a8f4d;}
+.badge{display:inline-block;padding:2px 9px;border-radius:10px;font-size:11px;font-weight:600;line-height:1.6;}
+.b-bull{background:#fdecef;color:#c8102e;}
+.b-bear{background:#e8f6ee;color:#0a8f4d;}
+.b-neutral{background:#f1f2f4;color:#646a73;}
+.warnbox{background:#fffbf0;border-left:3px solid #f0a020;border-radius:0 6px 6px 0;padding:10px 14px;margin:8px 0;}
+.warnbox ul{margin:2px 0;padding-left:18px;}
+.warnbox li{font-size:12.5px;line-height:1.7;margin:3px 0;}
+.strategy{background:#f6f9ff;border-left:3px solid #3b6ef0;border-radius:0 6px 6px 0;padding:12px 14px;margin:8px 0;}
+.strategy p{margin:4px 0;font-size:13px;}
+.sig{display:inline-block;min-width:46px;padding:1px 7px;border-radius:4px;font-size:11px;font-weight:600;margin-right:6px;}
+.sig-short{background:#e8f6ee;color:#0a8f4d;}
+.sig-long{background:#fdecef;color:#c8102e;}
+.sig-neutral{background:#f1f2f4;color:#646a73;}
+.dimrow td{font-size:12.5px;}
+.detail{color:#4e5561;font-size:12.5px;line-height:1.7;}
+hr.sep{border:0;border-top:1px dashed #e6e8eb;margin:16px 0;}
+</style></head><body><div class='wrap'><div class='card'><h1>持仓检视 20261026</h1><p style='color:#8a9099;font-size:12px;margin:0'>生成于 20261026</p><h2>持仓检视报告 20261026</h2>
+<ul>
+<li>运行时间：2026-10-26 23:45（交易日，基准日 20261026）</li>
+<li>上游依赖：data_officer(done/20261026) → market_analyst(done/20261026) → 本任务</li>
+<li>参数版本：v2.0（rotation.enabled=false，v1.9 起换仓已关闭）</li>
+<li>成交价来源：data/warehouse/daily/20261026.csv（本地仓库收盘价，5571 只）</li>
+</ul>
+<p>---</p>
+<h3>一、组合概览</h3>
+<table>
+<tr><th>项目</th><th>数值</th></tr>
+<tr><td>总资产</td><td>1,000,000.00 元</td></tr>
+<tr><td>现金</td><td>952,597.00 元</td></tr>
+<tr><td>持仓市值</td><td>47,403.00 元</td></tr>
+<tr><td>实际仓位</td><td>4.74%</td></tr>
+<tr><td>现金占比</td><td>95.26%</td></tr>
+<tr><td>累计收益率</td><td>0.00%</td></tr>
+<tr><td>持仓数量</td><td>2 只（目标 8-12）</td></tr>
+<tr><td>含在途标的</td><td>12（持仓 2 + 未成交 planned 买单 10），未超上限 12</td></tr>
+<tr><td>regime</td><td>neutral（severity=null，confirmed_days=2）</td></tr>
+<tr><td>regime 目标仓位</td><td>50%</td></tr>
+<tr><td>仓位偏差</td><td>-45.26 pct（低于目标 10 pct 以上，warn）</td></tr>
+</table>
+<p>说明：本次为框架建仓首日执行。10 张建仓买单按 v1.5 阶梯（ref=20261023 收盘价，首档 -1%、二档 -4%）挂单，今日仅 2 只回落达标并成交首档（各占目标权重 50%），其余 8 只未触发。仓位从 0% 抬升至 4.74%，与目标 50% 的差额属分批建仓的正常过程，非风险事件。</p>
+<p>---</p>
+<h3>二、未成交订单（8 只未触发 + 2 只部分成交）</h3>
+<table>
+<tr><th>订单</th><th>标的</th><th>收盘</th><th>下一档</th><th>触发价</th><th>尚需回落</th><th>状态</th></tr>
+<tr><td>ORD-20261023-001</td><td>中远海控 601919.SH</td><td>16.36</td><td>首档</td><td>15.69</td><td>-4.10%</td><td>planned</td></tr>
+<tr><td>ORD-20261023-002</td><td>中国动力 600482.SH</td><td>31.23</td><td>二档</td><td>30.58</td><td>-2.08%</td><td>partial（首档已成交）</td></tr>
+<tr><td>ORD-20261023-003</td><td>龙佰集团 002601.SZ</td><td>14.54</td><td>首档</td><td>14.31</td><td>-1.58%</td><td>planned</td></tr>
+<tr><td>ORD-20261023-004</td><td>国货航 001391.SZ</td><td>3.95</td><td>首档</td><td>3.79</td><td>-4.05%</td><td>planned</td></tr>
+<tr><td>ORD-20261023-005</td><td>中航机载 600372.SH</td><td>11.56</td><td>首档</td><td>11.16</td><td>-3.46%</td><td>planned</td></tr>
+<tr><td>ORD-20261023-006</td><td>淮河能源 600575.SH</td><td>3.17</td><td>首档</td><td>3.10</td><td>-2.21%</td><td>planned</td></tr>
+<tr><td>ORD-20261023-007</td><td>中国宝安 000009.SZ</td><td>6.66</td><td>首档</td><td>6.50</td><td>-2.40%</td><td>planned</td></tr>
+<tr><td>ORD-20261023-008</td><td>中科三环 000970.SZ</td><td>10.72</td><td>二档</td><td>10.62</td><td>-0.93%</td><td>partial（首档已成交）</td></tr>
+<tr><td>ORD-20261023-009</td><td>东华软件 002065.SZ</td><td>6.61</td><td>首档</td><td>6.56</td><td>-0.76%</td><td>planned</td></tr>
+<tr><td>ORD-20261023-010</td><td>一汽解放 000800.SZ</td><td>5.79</td><td>首档</td><td>5.67</td><td>-2.07%</td><td>planned</td></tr>
+</table>
+<ul>
+<li>保护线检查：10 只全部高于 ref×0.88，无一只触发「跌破 -12% 不买」。</li>
+<li>订单有效期（R-006）：订单基准日 20261023，至 20261026 仅经历 1 个交易日，全部在有效期内，今日无 expired。</li>
+<li>未上移任何 price_zone 追价（R-006 合规）。</li>
+</ul>
+<p>---</p>
+<h3>三、卖出决策记录</h3>
+<p>本轮<b>无卖出触发</b>，未生成任何 planned 卖单，orders.json 无新增 sell 单。</p>
+<table>
+<tr><th>触发条件</th><th>检查结果</th></tr>
+<tr><td>a. 收盘价 ≤ stop_loss</td><td>无。中国动力 31.23 vs 止损 28.82；中科三环 10.72 vs 止损 10.10</td></tr>
+<tr><td>b. 收盘价 ≥ take_profit</td><td>无。距止盈分别 +22.38% / +23.79%</td></tr>
+<tr><td>c. 逻辑破坏（news 客观利空）</td><td>无。50 条快讯中未检索到与两只持仓及其行业（船舶、矿物制品/磁材）相关的负面消息</td></tr>
+<tr><td>d. bear+heavy 降仓</td><td>不适用。regime=neutral，severity=null</td></tr>
+<tr><td>e. 单票 &gt;15% 或单行业 &gt;30%</td><td>无。最大单票 2.81%，无行业超限</td></tr>
+</table>
+<p>---</p>
+<h3>四、换仓记录</h3>
+<p>R-007 已关闭（v1.9）：六年回测 98 笔换仓平均 +0.75%，纯摩擦。</p>
+<p>本轮未做任何换仓比较、未生成 rotate_out 卖单、未生成 ORD-*-R* 买单。orders.json 中不存在历史遗留的 ORD-*-R* 计划单。</p>
+<p>---</p>
+<h3>五、逐持仓明细</h3>
+<table>
+<tr><th>标的</th><th>股数</th><th>成本</th><th>收盘</th><th>市值(元)</th><th>权重</th><th>盈亏</th><th>止损</th><th>止盈</th><th>止盈已移动</th><th>建仓日</th></tr>
+<tr><td>中国动力 600482.SH</td><td>900</td><td>31.23</td><td>31.23</td><td>28,107.00</td><td>2.81%</td><td>0.00%</td><td>28.82（-7.72%）</td><td>38.22（+22.38%）</td><td>否</td><td>20261026</td></tr>
+<tr><td>中科三环 000970.SZ</td><td>1800</td><td>10.72</td><td>10.72</td><td>19,296.00</td><td>1.93%</td><td>0.00%</td><td>10.10（-5.78%）</td><td>13.27（+23.79%）</td><td>否</td><td>20261026</td></tr>
+</table>
+<ul>
+<li>成交明细：中国动力首档金额 31,000 元 → 900 股 × 31.23 = 28,107 元；中科三环首档金额 20,200 元 → 1800 股 × 10.72 = 19,296 元。</li>
+<li>成交价一律取 20261026 本地仓库收盘价，未使用 ref_price 或上一交易日价格代成交。</li>
+<li>两只均为当日建仓，成本=收盘价，盈亏 0%（未计交易成本）。</li>
+</ul>
+<p>---</p>
+<h3>六、熔断状态</h3>
+<table>
+<tr><th>熔断线</th><th>阈值</th><th>当前</th><th>状态</th></tr>
+<tr><td>日亏损</td><td>≤ -3%</td><td>0.00%（无前收盘持仓，无日内亏损）</td><td>正常</td></tr>
+<tr><td>回撤减半</td><td>≤ -8%</td><td>0.00%（累计收益 0%，净值持平初始资金）</td><td>正常</td></tr>
+<tr><td>回撤清仓</td><td>≤ -12%</td><td>0.00%</td><td>正常，未冻结</td></tr>
+</table>
+<p>---</p>
+<h3>七、异常清单</h3>
+<h4>[CRITICAL]</h4>
+<p>无。</p>
+<h4>[WARN]</h4>
+<p>1. <b>持仓数量不足</b>：实际 2 只 &lt; 下限 8 只。10 张建仓买单仍在等待价格回落，仓位需分批到位。</p>
+<p>2. <b>仓位显著低于 regime 目标</b>：4.74% vs neutral 目标 50%，偏差 -45.26 pct。属建仓期正常状态，但需持续跟踪——若 10 个交易日内多数订单因价格未回落而过期（R-006），仓位将长期不达标，建议届时由建仓经理评估是否重设 ref_price（需总控批准，本 agent 不自行上移）。</p>
+<p>3. <b>次档买点与止损线重叠（遗留问题，待拍板）</b>：中国动力二档区间 [28.03, 30.58] 与止损 28.82 重叠（28.03~28.82 买入即在止损线下方）；中科三环二档区间 [9.73, 10.62] 与止损 10.10 重叠（9.73~10.10 同此问题）。两只的二档今日均只差 0.93%~2.08% 即触发，明日若继续回落将直接暴露该缺陷。建议尽快拍板方案 B（止损锚定实际成交成本价 ×0.92）。</p>
+<h4>[INFO]</h4>
+<p>1. <b>持仓碎片化</b>：中国动力 2.81%、中科三环 1.93%，均低于 min_single_weight_pct=3%。原因：仅成交首档（目标权重的 50%），二档成交后可达 5.6% / 3.9%。</p>
+<p>2. <b>含在途标的 12 只</b>：恰好等于上限 12，未超限；若后续候选池补入新标的需先评估上限。</p>
+<p>3. <b>当日无 expired 订单、无资金不足 1 手、无缺失收盘价标的</b>。</p>
+<p>---</p>
+<h3>八、明日关注</h3>
+<p>1. 中科三环（000970.SZ）：二档触发价 10.62，距收盘仅 -0.93%，明日最可能触发；触发后止损线重叠问题立即生效，需人工确认止损口径。</p>
+<p>2. 中国动力（600482.SH）：二档触发价 30.58，距收盘 -2.08%；同时注意其止损 28.82 位于二档区间内。</p>
+<p>3. 东华软件（002065.SZ）：首档触发价 6.56，距收盘仅 -0.76%，为 8 只未成交单中最接近者。</p>
+<p>4. 中远海控、国货航：分别需回落 -4.10% / -4.05%，短期触发概率低，注意 R-006 的 10 日期倒计时（剩余 9 个交易日）。</p>
+<p>5. 市场层面：regime 维持 neutral 但趋势维度已判 bear（均线完全空头排列，上证 20 日 -5.48%），若后续总分跌破 -6 进入 bear+light，将禁止新建仓——当前 8 只未成交买单的执行资格届时受影响，需提前预案。</p>
+<p>---</p>
+<h3>九、邮件发送状态</h3>
+<p>SENT/FAILED：<b>待发送</b>（本文件落盘后立即执行 send_report_mail.py --type position --date 20261026，发送结果在发送后回填本行）。</p></div><div class='footer'>多 Agent 协同交易框架自动生成 · 模拟盘研究记录，不构成投资建议</div></div></body></html>

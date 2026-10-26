@@ -28,7 +28,9 @@ STATE_SCHEMAS = {
     "watchlist.json": ["date", "source_pool_date", "items"],
     "regime.json": ["date", "regime", "confidence", "evidence",
                     "sector_signals", "risk_level", "confirmed_days"],
-    "positions.json": ["as_of", "cash_pct", "total_pnl_pct", "holdings"],
+    # 2026-10-26：金额口径统一。金额字段为唯一权威，cash_pct 由 amount 推导
+    "positions.json": ["as_of", "initial_capital_cny", "cash_cny",
+                       "total_asset_cny", "cash_pct", "total_pnl_pct", "holdings"],
     "orders.json": ["orders"],
 }
 
@@ -128,6 +130,20 @@ def check_business():
                 failures.append(f"positions.json: {code} stop_loss {sl} >= cost {cost}")
             if cost and tp and tp <= cost:
                 failures.append(f"positions.json: {code} take_profit {tp} <= cost {cost}")
+        # 金额口径一致性（金额为权威，cash_pct 由金额推导）
+        cash_cny = pos.get("cash_cny")
+        ta = pos.get("total_asset_cny")
+        if isinstance(cash_cny, (int, float)) and isinstance(ta, (int, float)) and ta > 0:
+            mv = sum((h.get("market_value_cny") or 0) for h in holdings)
+            if abs(cash_cny + mv - ta) > max(1.0, ta * 0.001):
+                failures.append(
+                    f"positions.json: cash_cny {cash_cny:.2f} + market_value {mv:.2f} "
+                    f"!= total_asset_cny {ta:.2f}")
+            calc_pct = cash_cny / ta * 100
+            if abs(calc_pct - (pos.get("cash_pct") or 0)) > 1.0:
+                failures.append(
+                    f"positions.json: cash_pct {pos.get('cash_pct') or 0:.2f} 与 "
+                    f"cash_cny/total_asset 推导值 {calc_pct:.2f} 不一致")
 
     orders = (load_json(STATE / "orders.json")).get("orders") or []
     for o in orders:

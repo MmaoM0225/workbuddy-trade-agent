@@ -8,7 +8,8 @@ watchlist → 建仓计划 → state/orders.json（status=planned，由持仓管
   3. 单行业 ≤ max_sector_weight_pct
   4. 买点 close_relative_ladder：ref=基准日收盘，tr1 触发 -1%，tr2 触发 -4%，-12% 以下不接
   5. 只给权重百分比，不给金额（R-011，金额由持仓管家按执行时实际总资产计算）
-  6. 每张单必须带 stop_loss 与 take_profit（R-003）
+  6. 每张单必须带 stop_loss 与 take_profit（R-003）；**两者均锚定实际成交加权成本，ref 值仅作未成交预览**
+     （v2.1：旧版锚 ref 且 min(low20×0.98) 会让次档成交即落在止损线下方，已修）
   7. 订单挂 10 个交易日未成交即 expired（R-006）
 
 写入边界：本脚本只写 buy 单，不删改持仓管家写入的 sell 单。
@@ -225,9 +226,17 @@ for idx, (i, w) in enumerate(zip(selected, w_final), 1):
     def zone(offsets):
         return [round(ref * (1 + offsets[0] / 100.0), 2), round(ref * (1 + offsets[1] / 100.0), 2)]
 
-    stop = min(round(ref * (1 - RISK["single_stop_loss_pct"] / 100.0), 2),
-               round(low20 * 0.98, 2))
-    tp = round(ref * (1 + RISK["single_take_profit_pct"] / 100.0), 2)
+    # ---------- 止损/止盈：锚定「实际成交成本」，ref 只做未成交前的预览（v2.1 修正） ----------
+    # 旧写法 stop = min(ref×0.92, low20×0.98) 有两个致命问题：
+    #   ① 锚 ref 而非成交价：次档下沿到 -12%，在 -8%~-12% 区间成交时买入瞬间已在止损线下方（10/10 张单全中）
+    #   ② 用 min 取的是更宽松的一条，与规则文案「取更严者」语义相反，20 日低会把止损往下拽
+    # 修正后：止损/止盈都只认成交加权成本；20 日低退化为风险提示字段，不参与计算。
+    sl_pct = RISK["single_stop_loss_pct"] / 100.0
+    tp_pct = RISK["single_take_profit_pct"] / 100.0
+    tr2_floor = zone(t2["zone_offset_pct"])[0]
+    stop_preview = round(ref * (1 - sl_pct), 2)
+    tp_preview = round(ref * (1 + tp_pct), 2)
+    stop_at_floor = round(tr2_floor * (1 - sl_pct), 2)
 
     out_orders.append({
         "id": f"ORD-{base_date}-{idx:03d}",
@@ -247,8 +256,16 @@ for idx, (i, w) in enumerate(zip(selected, w_final), 1):
         ],
         "fill_logic": PZ["fill_logic"],
         "guard_price": round(ref * (1 + guard), 2),
-        "stop_loss": stop,
-        "take_profit": tp,
+        "stop_loss": stop_preview,
+        "take_profit": tp_preview,
+        "stop_loss_basis": "actual_fill_price",
+        "stop_loss_formula": f"成交加权成本 × (1-{RISK['single_stop_loss_pct']:g}%)；成交回写时必须重算，禁止沿用上面 stop_loss 预览值（R-011）",
+        "stop_loss_recalc_required": True,
+        "stop_loss_if_tranche2_floor_filled": stop_at_floor,
+        "take_profit_basis": "actual_fill_price",
+        "take_profit_formula": f"成交加权成本 × (1+{RISK['single_take_profit_pct']:g}%)",
+        "twenty_day_low": round(low20, 2),
+        "twenty_day_low_note": "风险提示字段，不参与止损计算（v2.1：旧版 min(low20×0.98) 会反向放宽止损）",
         "quality_score": i["quality_score"],
         "rationale": i["thesis"],
         "risks": i["risks"],
@@ -275,7 +292,9 @@ orders_doc = {
     "notes": {
         "weight_formula": WA["formula"],
         "price_zone_rule": f"close_relative_ladder: ref={base_date} 收盘价，tr1={t1['offset_pct']}%，tr2={t2['offset_pct']}%，保护线 {PZ['guard_drop_pct']}%",
-        "hard_rules": "R-003 必带止损止盈 / R-006 10 日过期 / R-011 不给金额",
+        "stop_loss_rule": "实际成交加权成本 × (1-8%)；未成交前 orders.stop_loss 只是 ref 预览值，成交回写必须重算（v2.1 修复「次档买了就在止损线下方」）",
+        "take_profit_rule": "实际成交加权成本 × (1+20%)",
+        "hard_rules": "R-003 必带止损止盈 / R-006 10 日过期 / R-011 不给金额 / R-012 止损锚定成交成本",
         "writer": "position_builder 只写 buy 单，不删改持仓管家的 sell 单",
     },
 }

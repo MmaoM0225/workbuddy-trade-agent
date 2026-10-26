@@ -1,6 +1,34 @@
 {
-  "as_of": null,
-  "cash_pct": 100.0,
+  "as_of": "20261026",
+  "initial_capital_cny": 1000000,
+  "cash_cny": 952597.0,
+  "total_asset_cny": 1000000.0,
+  "cash_pct": 95.26,
   "total_pnl_pct": 0.0,
-  "holdings": []
+  "holdings": [
+    {
+      "code": "600482.SH",
+      "name": "中国动力",
+      "shares": 900,
+      "cost": 31.23,
+      "weight_pct": 2.81,
+      "market_value_cny": 28107.0,
+      "stop_loss": 28.82,
+      "take_profit": 38.22,
+      "take_profit_moved": false,
+      "filled_date": "20261026"
+    },
+    {
+      "code": "000970.SZ",
+      "name": "中科三环",
+      "shares": 1800,
+      "cost": 10.72,
+      "weight_pct": 1.93,
+      "market_value_cny": 19296.0,
+      "stop_loss": 10.1,
+      "take_profit": 13.27,
+      "take_profit_moved": false,
+      "filled_date": "20261026"
+    }
+  ]
 }
