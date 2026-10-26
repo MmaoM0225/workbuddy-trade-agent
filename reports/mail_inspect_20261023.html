@@ -17,4 +17,65 @@ code{background:#f2f3f5;border-radius:3px;padding:1px 5px;font-size:12px;font-fa
 .metric .k{font-size:11px;color:#8a9099;margin-bottom:4px;}
 .metric .v{font-size:17px;font-weight:600;}
 .footer{text-align:center;color:#a8adb5;font-size:11px;margin-top:18px;}
-</style></head><body><div class='wrap'><div class='card'><h1>总控巡检 20261023</h1><p style='color:#8a9099;font-size:12px;margin:0'>生成于 20261023</p></div><div class='footer'>多 Agent 协同交易框架自动生成 · 模拟盘研究记录，不构成投资建议</div></div></body></html>
+.mt{width:100%;border-collapse:separate;border-spacing:7px 0;margin:0 -7px 10px;}
+.mt td{background:#fafbfc;border:1px solid #eceef1;border-radius:8px;padding:11px 13px;vertical-align:top;border-bottom:1px solid #eceef1;}
+.mt .k{font-size:11px;color:#8a9099;margin-bottom:5px;font-weight:400;}
+.mt .v{font-size:18px;font-weight:600;line-height:1.2;}
+.mt .s{font-size:11px;color:#8a9099;margin-top:3px;}
+.up{color:#c8102e;}
+.down{color:#0a8f4d;}
+.badge{display:inline-block;padding:2px 9px;border-radius:10px;font-size:11px;font-weight:600;line-height:1.6;}
+.b-bull{background:#fdecef;color:#c8102e;}
+.b-bear{background:#e8f6ee;color:#0a8f4d;}
+.b-neutral{background:#f1f2f4;color:#646a73;}
+.warnbox{background:#fffbf0;border-left:3px solid #f0a020;border-radius:0 6px 6px 0;padding:10px 14px;margin:8px 0;}
+.warnbox ul{margin:2px 0;padding-left:18px;}
+.warnbox li{font-size:12.5px;line-height:1.7;margin:3px 0;}
+.strategy{background:#f6f9ff;border-left:3px solid #3b6ef0;border-radius:0 6px 6px 0;padding:12px 14px;margin:8px 0;}
+.strategy p{margin:4px 0;font-size:13px;}
+.sig{display:inline-block;min-width:46px;padding:1px 7px;border-radius:4px;font-size:11px;font-weight:600;margin-right:6px;}
+.sig-short{background:#e8f6ee;color:#0a8f4d;}
+.sig-long{background:#fdecef;color:#c8102e;}
+.sig-neutral{background:#f1f2f4;color:#646a73;}
+.dimrow td{font-size:12.5px;}
+.detail{color:#4e5561;font-size:12.5px;line-height:1.7;}
+hr.sep{border:0;border-top:1px dashed #e6e8eb;margin:16px 0;}
+</style></head><body><div class='wrap'><div class='card'><h1>总控巡检 20261023</h1><p style='color:#8a9099;font-size:12px;margin:0'>生成于 20261023</p><h1>每日巡检 20261023</h1>
+<p><i>本报告为框架上线前的手动试运行（dry-run）：由小Y 按各 agent 的 prompt 实际执行「市场分析师 → 持仓管家 → 总控巡检」，用于验证文件契约、schema 与校验脚本。周一 23:00 起由 automation 自动接管，本试运行产物将被自动运行结果接续覆盖。</i></p>
+<h2>流水线核验</h2>
+<table>
+<tr><th>环节</th><th>产出</th><th>状态</th></tr>
+<tr><td>数据员</td><td>data/daily_20261023/（indices 5 条 + market_overview 1 条 + news 14 条 + meta.json）</td><td>PASS</td></tr>
+<tr><td>市场分析师</td><td>state/regime.json（date=20261023，regime=neutral，confidence=0.60，证据 5 条）</td><td>PASS</td></tr>
+<tr><td>持仓管家</td><td>reports/position_review_20261023.md（空仓检视）</td><td>PASS</td></tr>
+<tr><td>卖出交易员</td><td>未激活（P2 预置暂停），跳过</td><td>SKIP</td></tr>
+</table>
+<h2>数据状态</h2>
+<ul>
+<li>record_counts：indices 5 / market_overview 1 / news 14</li>
+<li>degraded：false</li>
+<li>check_result（check_pipeline.py --date 20261023）：<b>RESULT: PASS，退出码 0</b></li>
+</ul>
+<p>  - state schema：5 个 JSON + trades.jsonl 全部合法</p>
+<p>  - 业务规则：regime.json 已 populate 并通过检查（regime ∈ {bull, neutral, bear}；confidence ∈ [0,1]；evidence ≥ 2）；positions/orders/pool/watchlist 为空壳，按规则跳过业务检查</p>
+<p>  - 数据目录：核心文件 indices.json 5 条；可选文件 market_overview 1 条、news 14 条</p>
+<h2>状态文件校验</h2>
+<table>
+<tr><th>文件</th><th>状态</th></tr>
+<tr><td>state/pool.json</td><td>PASS（空壳，待 P1 选股师）</td></tr>
+<tr><td>state/watchlist.json</td><td>PASS（空壳，待 P1 研究员）</td></tr>
+<tr><td>state/regime.json</td><td>PASS（已 populate，neutral / 0.60 / 5 条证据）</td></tr>
+<tr><td>state/positions.json</td><td>PASS（空仓：cash 100%，holdings []）</td></tr>
+<tr><td>state/orders.json</td><td>PASS（orders []）</td></tr>
+<tr><td>state/trades.jsonl</td><td>PASS（0 条记录，append-only 就绪）</td></tr>
+</table>
+<h2>异常清单</h2>
+<ul>
+<li>info：本次为手动 dry-run，非 automation 自动产出（已在报告头注明）</li>
+<li>info：pool/watchlist/orders/trades 为空壳属预期（P1 选股链路未激活）</li>
+<li>info：regime 判定存在内在矛盾信号（个股普涨 vs 板块全面下跌、价值主导 vs 创业板领涨），已按 prompt 要求全部列入 evidence，最终取 neutral + confidence 0.60</li>
+</ul>
+<h2>下一步动作</h2>
+<p>1. 周一 23:00 automation 自动接管：数据员 → 市场分析师 23:10 → 持仓管家 23:20 → 总控 23:40</p>
+<p>2. 周一市场分析师的 regime 判定会与本次 dry-run 的 neutral 做防抖比对（confirmed_days 从 1 起累计）</p>
+<p>3. P1 激活前置（用户决策）：首发选股策略方向 + 模拟资金规模</p></div><div class='footer'>多 Agent 协同交易框架自动生成 · 模拟盘研究记录，不构成投资建议</div></div></body></html>

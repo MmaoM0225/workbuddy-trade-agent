@@ -18,6 +18,7 @@ type 说明：
   pick     建仓经理    → 直接复用 reports/pick_report_<date>.html
 """
 import argparse
+import datetime
 import glob
 import json
 import os
@@ -37,6 +38,7 @@ body{margin:0;padding:0;background:#f5f6f8;font-family:-apple-system,BlinkMacSys
 h1{font-size:19px;margin:0 0 14px;font-weight:600;border-left:3px solid #c8102e;padding-left:10px;}
 h2{font-size:14px;margin:18px 0 10px;font-weight:600;color:#1f2329;}
 h3{font-size:13px;margin:14px 0 8px;font-weight:600;color:#646a73;}
+h4{font-size:12.5px;margin:12px 0 6px;font-weight:600;color:#8a9099;}
 p{font-size:13px;line-height:1.75;margin:6px 0;color:#2b3038;}
 ul{margin:6px 0;padding-left:20px;}
 li{font-size:13px;line-height:1.75;color:#2b3038;}
@@ -49,6 +51,29 @@ code{background:#f2f3f5;border-radius:3px;padding:1px 5px;font-size:12px;font-fa
 .metric .k{font-size:11px;color:#8a9099;margin-bottom:4px;}
 .metric .v{font-size:17px;font-weight:600;}
 .footer{text-align:center;color:#a8adb5;font-size:11px;margin-top:18px;}
+.mt{width:100%;border-collapse:separate;border-spacing:7px 0;margin:0 -7px 10px;}
+.mt td{background:#fafbfc;border:1px solid #eceef1;border-radius:8px;padding:11px 13px;vertical-align:top;border-bottom:1px solid #eceef1;}
+.mt .k{font-size:11px;color:#8a9099;margin-bottom:5px;font-weight:400;}
+.mt .v{font-size:18px;font-weight:600;line-height:1.2;}
+.mt .s{font-size:11px;color:#8a9099;margin-top:3px;}
+.up{color:#c8102e;}
+.down{color:#0a8f4d;}
+.badge{display:inline-block;padding:2px 9px;border-radius:10px;font-size:11px;font-weight:600;line-height:1.6;}
+.b-bull{background:#fdecef;color:#c8102e;}
+.b-bear{background:#e8f6ee;color:#0a8f4d;}
+.b-neutral{background:#f1f2f4;color:#646a73;}
+.warnbox{background:#fffbf0;border-left:3px solid #f0a020;border-radius:0 6px 6px 0;padding:10px 14px;margin:8px 0;}
+.warnbox ul{margin:2px 0;padding-left:18px;}
+.warnbox li{font-size:12.5px;line-height:1.7;margin:3px 0;}
+.strategy{background:#f6f9ff;border-left:3px solid #3b6ef0;border-radius:0 6px 6px 0;padding:12px 14px;margin:8px 0;}
+.strategy p{margin:4px 0;font-size:13px;}
+.sig{display:inline-block;min-width:46px;padding:1px 7px;border-radius:4px;font-size:11px;font-weight:600;margin-right:6px;}
+.sig-short{background:#e8f6ee;color:#0a8f4d;}
+.sig-long{background:#fdecef;color:#c8102e;}
+.sig-neutral{background:#f1f2f4;color:#646a73;}
+.dimrow td{font-size:12.5px;}
+.detail{color:#4e5561;font-size:12.5px;line-height:1.7;}
+hr.sep{border:0;border-top:1px dashed #e6e8eb;margin:16px 0;}
 """
 
 
@@ -94,11 +119,11 @@ def md_to_html(md):
             flush_ul()
             continue
         if s.startswith("### "):
-            flush_ul(); out.append("<h3>%s</h3>" % inline(s[4:]))
+            flush_ul(); out.append("<h4>%s</h4>" % inline(s[4:]))
         elif s.startswith("## "):
-            flush_ul(); out.append("<h2>%s</h2>" % inline(s[3:]))
+            flush_ul(); out.append("<h3>%s</h3>" % inline(s[3:]))
         elif s.startswith("# "):
-            flush_ul(); out.append("<h1>%s</h1>" % inline(s[2:]))
+            flush_ul(); out.append("<h2>%s</h2>" % inline(s[2:]))
         elif s.startswith(("- ", "* ")):
             if not ul_open:
                 out.append("<ul>"); ul_open = True
@@ -112,14 +137,56 @@ def md_to_html(md):
 
 
 def wrap(title, body_html, subtitle=""):
+    sub = ("<p style='color:#8a9099;font-size:12px;margin:0'>%s</p>" % subtitle) if subtitle else ""
     return ("<!DOCTYPE html><html lang='zh-CN'><head><meta charset='utf-8'>"
             "<meta name='viewport' content='width=device-width,initial-scale=1'>"
             "<title>%s</title><style>%s</style></head><body><div class='wrap'>"
-            "<div class='card'>%s%s</div>"
+            "<div class='card'><h1>%s</h1>%s%s</div>"
             "<div class='footer'>多 Agent 协同交易框架自动生成 · 模拟盘研究记录，不构成投资建议</div>"
-            "</div></body></html>" % (title, CSS,
-                                      "<h1>%s</h1>" % title,
-                                      ("<p style='color:#8a9099;font-size:12px;margin:0'>%s</p>" % subtitle) if subtitle else ""))
+            "</div></body></html>" % (title, CSS, title, sub, body_html))
+
+
+VERDICT_CN = {"bull": "看多", "bear": "看空", "neutral": "中性"}
+DIM_CN = {"trend": "趋势", "breadth": "宽度", "sentiment": "情绪",
+          "volume": "量能", "capital": "资金", "sector": "板块"}
+BADGE = {"bull": "b-bull", "bear": "b-bear", "neutral": "b-neutral"}
+KEY_CN = {
+    "close_szzs": "上证收盘", "MA5": "MA5", "MA20": "MA20", "MA60": "MA60",
+    "MA250": "MA250", "RSI_12": "RSI12", "MACD": "MACD",
+    "CHG_5D_SZZS": "上证5日", "CHG_20D_SZZS": "上证20日", "CHG_60D_SZZS": "上证60日",
+    "MONEY": "两市成交额", "RATIO_UP": "上涨占比", "RATIO_UPDOWN": "涨跌比",
+    "CNT_REACH_UPLIMIT": "涨停数", "CNT_REACH_DNLIMIT": "跌停数",
+    "north_money_yi": "北向净额",
+}
+PCT_KEYS = {"RATIO_UP", "RATIO_UPDOWN", "CHG_5D_SZZS", "CHG_20D_SZZS",
+            "CHG_60D_SZZS", "CHG_120D_SZZS", "CHG_250D_SZZS"}
+
+
+def _num_text(k, v):
+    if not isinstance(v, (int, float)):
+        return str(v)
+    if k in PCT_KEYS:
+        cls = "up" if v > 0 else ("down" if v < 0 else "")
+        return "<span class='%s'>%+.2f%%</span>" % (cls, v)
+    if k == "north_money_yi":
+        cls = "up" if v > 0 else ("down" if v < 0 else "")
+        return "<span class='%s'>%+.2f 亿</span>" % (cls, v)
+    if k == "MONEY":
+        return "%.0f 亿" % v
+    if k.startswith("MA") or k == "close_szzs":
+        return "%.2f" % v
+    return ("%g" % v)
+
+
+def _regime_sentence(regime, sev, hint):
+    base = {"bull": "六维综合偏强，趋势与量能共振向上。",
+            "neutral": "六维综合中性，多空分歧，未见趋势性方向。",
+            "bear": "六维综合偏弱，趋势与资金面承压。"}.get(regime, "六维综合中性。")
+    if regime == "bear" and sev == "light":
+        base += "轻度熊市（light）：只禁止新建仓，不强制降仓。"
+    elif regime == "bear" and sev == "heavy":
+        base += "重度熊市（heavy）：禁止新建仓，连续 2 日确认后降至 20%。"
+    return "%s按规则建议总仓位 %s。" % (base, hint)
 
 
 def render_regime(date):
@@ -127,37 +194,99 @@ def render_regime(date):
     if not os.path.exists(p):
         return None, "regime.json 不存在"
     d = json.load(open(p, encoding="utf-8"))
+    regime = (d.get("regime") or "neutral").lower()
     sev = d.get("severity")
-    rows = [("regime", d.get("regime")), ("severity", sev or "—"),
-            ("confidence", d.get("confidence")), ("总分", d.get("score")),
-            ("已确认天数", d.get("confirmed_days")), ("风险级别", d.get("risk_level")),
-            ("仓位提示", d.get("position_hint"))]
-    cards = "".join("<div><div class='k'>%s</div><div class='v'>%s</div></div>" % (k, v if v is not None else "—")
-                    for k, v in rows[:4])
-    html = ["<div class='metric'>%s</div>" % cards, "<h2>判定依据</h2><ul>"]
-    for e in (d.get("evidence") or []):
-        html.append("<li>%s</li>" % inline(str(e)))
-    html.append("</ul>")
+    badge = BADGE.get(regime, "b-neutral")
+    conf = d.get("confidence")
+    score = d.get("score")
+    hint = d.get("position_hint") or "—"
+
+    cells = [
+        ("市场状态", "%s%s" % (regime.upper(), (" / " + sev) if sev else ""),
+         "六维总分 %s" % (score if score is not None else "—")),
+        ("置信度", ("%.2f" % conf) if isinstance(conf, (int, float)) else "—",
+         "已确认 %s 个交易日" % d.get("confirmed_days", "—")),
+        ("风险级别", str(d.get("risk_level") or "—").upper(), "风险敞口评估"),
+        ("建议仓位", hint, "rules.md 仓位映射"),
+    ]
+    html = ["<table class='mt'><tr>" + "".join(
+        "<td><div class='k'>%s</div><div class='v'>%s</div><div class='s'>%s</div></td>"
+        % (k, inline(str(v)), inline(str(s))) for k, v, s in cells) + "</tr></table>"]
+
+    html.append("<div class='strategy'><p style='margin:0 0 5px'>当前判定 "
+                "<span class='badge %s'>%s</span></p><p style='margin:0'>%s</p></div>"
+                % (badge, VERDICT_CN.get(regime, regime),
+                   inline(_regime_sentence(regime, sev, hint))))
+
     dims = d.get("dimensions") or {}
     if dims:
-        html.append("<h2>六维打分</h2><table><tr><th>维度</th><th>取值</th></tr>")
+        html.append("<h2>六维打分</h2><table><tr><th style='width:56px'>维度</th>"
+                    "<th style='width:58px'>判定</th><th style='width:48px'>得分</th>"
+                    "<th>依据</th></tr>")
         for k, v in dims.items():
-            html.append("<tr><td>%s</td><td>%s</td></tr>" % (k, inline(json.dumps(v, ensure_ascii=False)[:200])))
+            if not isinstance(v, dict):
+                continue
+            vd = (v.get("verdict") or "neutral").lower()
+            sc = v.get("score")
+            sc_cls = ""
+            if isinstance(sc, (int, float)):
+                sc_cls = "up" if sc > 0 else ("down" if sc < 0 else "")
+            html.append(
+                "<tr class='dimrow'><td><b>%s</b></td><td><span class='badge %s'>%s</span></td>"
+                "<td class='%s'><b>%s</b></td><td class='detail'>%s</td></tr>"
+                % (DIM_CN.get(k, k), BADGE.get(vd, "b-neutral"), VERDICT_CN.get(vd, vd),
+                   sc_cls, ("%+d" % sc) if isinstance(sc, (int, float)) else "—",
+                   inline(str(v.get("detail") or ""))))
         html.append("</table>")
+
+    kv = []
+    for v in dims.values():
+        if not isinstance(v, dict):
+            continue
+        for kk, vv in (v.get("values") or {}).items():
+            if kk in KEY_CN and isinstance(vv, (int, float)) and len(kv) < 8:
+                kv.append((KEY_CN[kk], _num_text(kk, vv)))
+    if kv:
+        html.append("<h2>关键数值</h2><table class='mt'><tr>" + "".join(
+            "<td><div class='k'>%s</div><div class='v' style='font-size:15px'>%s</div></td>"
+            % (k, v) for k, v in kv) + "</tr></table>")
+
+    if d.get("evidence"):
+        html.append("<h2>判定依据</h2><ol style='margin:6px 0;padding-left:20px'>")
+        for e in d["evidence"]:
+            html.append("<li style='font-size:12.5px;line-height:1.8'>%s</li>" % inline(str(e)))
+        html.append("</ol>")
+
+    sigs = d.get("sector_signals") or []
+    if sigs:
+        html.append("<h2>板块信号</h2><table>")
+        for s in sigs:
+            if not isinstance(s, dict):
+                continue
+            dr = (s.get("direction") or "neutral").lower()
+            html.append("<tr><td style='width:92px'><b>%s</b><br><span class='sig sig-%s'>%s</span></td>"
+                        "<td class='detail'>%s</td></tr>"
+                        % (inline(str(s.get("sector") or "—")), dr,
+                           {"long": "看多", "short": "看空"}.get(dr, "中性"),
+                           inline(str(s.get("note") or ""))))
+        html.append("</table>")
+
     if d.get("tag_conflicts"):
-        html.append("<h2>标签与数值冲突</h2><ul>")
+        html.append("<h2>标签与数值冲突（%d 条）</h2><div class='warnbox'><ul>" % len(d["tag_conflicts"]))
         for t in d["tag_conflicts"]:
             html.append("<li>%s</li>" % inline(str(t)))
-        html.append("</ul>")
-    extra = [("风险级别", d.get("risk_level")), ("仓位提示", d.get("position_hint")),
-             ("已确认天数", d.get("confirmed_days"))]
-    html.append("<h2>操作含义</h2><ul>")
-    for k, v in extra:
-        if v is not None:
-            html.append("<li><b>%s</b>：%s</li>" % (k, inline(str(v))))
-    html.append("</ul>")
-    title = "市场环境判断 %s · %s%s" % (d.get("date"), d.get("regime"), ("/" + sev) if sev else "")
-    return wrap(title, "\n".join(html), "基准日 %s · 生成于 %s" % (d.get("date"), "now")), None
+        html.append("</ul></div>")
+
+    html.append("<hr class='sep'><p class='detail' style='color:#8a9099;font-size:11.5px'>"
+                "数据来源：data/daily_%s/（indices / market_overview / sector_ranking / "
+                "dragon_tiger / northbound）。判定规则见 knowledge/params_current.txt 与 rules.md。</p>"
+                % inline(str(d.get("date") or date)))
+
+    title = "市场环境判断 %s · %s%s" % (d.get("date"), regime,
+                                        ("/" + sev) if sev else "")
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    return wrap(title, "\n".join(html),
+                "基准日 %s · 生成于 %s" % (d.get("date"), now)), None
 
 
 def render_md(path, title, subtitle=""):

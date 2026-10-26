@@ -5,6 +5,7 @@ body{margin:0;padding:0;background:#f5f6f8;font-family:-apple-system,BlinkMacSys
 h1{font-size:19px;margin:0 0 14px;font-weight:600;border-left:3px solid #c8102e;padding-left:10px;}
 h2{font-size:14px;margin:18px 0 10px;font-weight:600;color:#1f2329;}
 h3{font-size:13px;margin:14px 0 8px;font-weight:600;color:#646a73;}
+h4{font-size:12.5px;margin:12px 0 6px;font-weight:600;color:#8a9099;}
 p{font-size:13px;line-height:1.75;margin:6px 0;color:#2b3038;}
 ul{margin:6px 0;padding-left:20px;}
 li{font-size:13px;line-height:1.75;color:#2b3038;}
@@ -17,4 +18,64 @@ code{background:#f2f3f5;border-radius:3px;padding:1px 5px;font-size:12px;font-fa
 .metric .k{font-size:11px;color:#8a9099;margin-bottom:4px;}
 .metric .v{font-size:17px;font-weight:600;}
 .footer{text-align:center;color:#a8adb5;font-size:11px;margin-top:18px;}
-</style></head><body><div class='wrap'><div class='card'><h1>市场环境判断 20261026 · neutral</h1><p style='color:#8a9099;font-size:12px;margin:0'>基准日 20261026 · 生成于 now</p></div><div class='footer'>多 Agent 协同交易框架自动生成 · 模拟盘研究记录，不构成投资建议</div></div></body></html>
+.mt{width:100%;border-collapse:separate;border-spacing:7px 0;margin:0 -7px 10px;}
+.mt td{background:#fafbfc;border:1px solid #eceef1;border-radius:8px;padding:11px 13px;vertical-align:top;border-bottom:1px solid #eceef1;}
+.mt .k{font-size:11px;color:#8a9099;margin-bottom:5px;font-weight:400;}
+.mt .v{font-size:18px;font-weight:600;line-height:1.2;}
+.mt .s{font-size:11px;color:#8a9099;margin-top:3px;}
+.up{color:#c8102e;}
+.down{color:#0a8f4d;}
+.badge{display:inline-block;padding:2px 9px;border-radius:10px;font-size:11px;font-weight:600;line-height:1.6;}
+.b-bull{background:#fdecef;color:#c8102e;}
+.b-bear{background:#e8f6ee;color:#0a8f4d;}
+.b-neutral{background:#f1f2f4;color:#646a73;}
+.warnbox{background:#fffbf0;border-left:3px solid #f0a020;border-radius:0 6px 6px 0;padding:10px 14px;margin:8px 0;}
+.warnbox ul{margin:2px 0;padding-left:18px;}
+.warnbox li{font-size:12.5px;line-height:1.7;margin:3px 0;}
+.strategy{background:#f6f9ff;border-left:3px solid #3b6ef0;border-radius:0 6px 6px 0;padding:12px 14px;margin:8px 0;}
+.strategy p{margin:4px 0;font-size:13px;}
+.sig{display:inline-block;min-width:46px;padding:1px 7px;border-radius:4px;font-size:11px;font-weight:600;margin-right:6px;}
+.sig-short{background:#e8f6ee;color:#0a8f4d;}
+.sig-long{background:#fdecef;color:#c8102e;}
+.sig-neutral{background:#f1f2f4;color:#646a73;}
+.dimrow td{font-size:12.5px;}
+.detail{color:#4e5561;font-size:12.5px;line-height:1.7;}
+hr.sep{border:0;border-top:1px dashed #e6e8eb;margin:16px 0;}
+</style></head><body><div class='wrap'><div class='card'><h1>市场环境判断 20261026 · neutral</h1><p style='color:#8a9099;font-size:12px;margin:0'>基准日 20261026 · 生成于 2026-10-26 23:35</p><table class='mt'><tr><td><div class='k'>市场状态</div><div class='v'>NEUTRAL</div><div class='s'>六维总分 0</div></td><td><div class='k'>置信度</div><div class='v'>0.55</div><div class='s'>已确认 2 个交易日</div></td><td><div class='k'>风险级别</div><div class='v'>MEDIUM</div><div class='s'>风险敞口评估</div></td><td><div class='k'>建议仓位</div><div class='v'>neutral→50%</div><div class='s'>rules.md 仓位映射</div></td></tr></table>
+<div class='strategy'><p style='margin:0 0 5px'>当前判定 <span class='badge b-neutral'>中性</span></p><p style='margin:0'>六维综合中性，多空分歧，未见趋势性方向。按规则建议总仓位 neutral→50%。</p></div>
+<h2>六维打分</h2><table><tr><th style='width:56px'>维度</th><th style='width:58px'>判定</th><th style='width:48px'>得分</th><th>依据</th></tr>
+<tr class='dimrow'><td><b>趋势</b></td><td><span class='badge b-bear'>看空</span></td><td class='down'><b>-2</b></td><td class='detail'>MA5&lt;MA10&lt;MA20&lt;MA60&lt;MA120&lt;MA250 完全空头排列，收盘低于全部均线；20日涨跌幅上证 -5.48% &lt; -5% 门槛</td></tr>
+<tr class='dimrow'><td><b>宽度</b></td><td><span class='badge b-neutral'>中性</span></td><td class=''><b>+0</b></td><td class='detail'>涨股比 40.38% 居中(30%-70%)；20日新高 332 &gt; 20日新低 212，未触发 bear 的「新低&gt;新高×3」</td></tr>
+<tr class='dimrow'><td><b>情绪</b></td><td><span class='badge b-bull'>看多</span></td><td class='up'><b>+2</b></td><td class='detail'>涨停 53 只(&gt;50) 且 跌停 3 只(&lt;5)；同批涨股比仅 40.38%，属结构性躁动</td></tr>
+<tr class='dimrow'><td><b>量能</b></td><td><span class='badge b-neutral'>中性</span></td><td class=''><b>+0</b></td><td class='detail'>成交额/20日均值 97.65% 落在 80-110%；指数未普涨不给 bull。中长期口径 60/120/250 日分别为 82.34%/64.76%/68.20%，实为显著缩量</td></tr>
+<tr class='dimrow'><td><b>资金</b></td><td><span class='badge b-neutral'>中性</span></td><td class=''><b>+0</b></td><td class='detail'>北向净流入 25.39 亿(未达 +30 亿 bull 门槛)；龙虎榜 73 只个股净额合计 -11.47 亿，净卖(18.55 亿) &gt; 净买(11.79 亿)，游资偏防守</td></tr>
+<tr class='dimrow'><td><b>板块</b></td><td><span class='badge b-neutral'>中性</span></td><td class=''><b>+0</b></td><td class='detail'>上涨行业 60/124=48.39% 居中(20%-60%)；主力资金明确净流出(流入 Top10 +50.26 亿 vs 跌幅榜 -201.59 亿)</td></tr>
+</table>
+<h2>关键数值</h2><table class='mt'><tr><td><div class='k'>上证收盘</div><div class='v' style='font-size:15px'>3697.52</div></td><td><div class='k'>MA5</div><div class='v' style='font-size:15px'>3698.89</div></td><td><div class='k'>MA20</div><div class='v' style='font-size:15px'>3793.17</div></td><td><div class='k'>MA60</div><div class='v' style='font-size:15px'>3869.62</div></td><td><div class='k'>MA250</div><div class='v' style='font-size:15px'>3984.78</div></td><td><div class='k'>MACD</div><div class='v' style='font-size:15px'>-16.65</div></td><td><div class='k'>RSI12</div><div class='v' style='font-size:15px'>33.3233</div></td><td><div class='k'>上证5日</div><div class='v' style='font-size:15px'><span class='down'>-0.90%</span></div></td></tr></table>
+<h2>判定依据</h2><ol style='margin:6px 0;padding-left:20px'>
+<li style='font-size:12.5px;line-height:1.8'>趋势(bear，market_overview.json/technical+interval + indices.json)：上证收盘 3697.52，低于 MA5(3698.89)、MA10(3721.72)、MA20(3793.17)、MA60(3869.62)、MA120(3962.43)、MA250(3984.78)，形成 MA5&lt;MA10&lt;MA20&lt;MA60&lt;MA120&lt;MA250 完全空头排列；区间涨跌幅 20日 上证 -5.48%(&lt;-5% 门槛)、深证成指 -15.44%、创业板指 -21.78%，60日 上证 -3.06%、120日 -9.52%；MACD=-16.65 且 DIF(-56.51)&lt;DEA(-48.19) 死叉，RSI_12=33.32 偏弱。趋势维度判 bear(-2)。</li>
+<li style='font-size:12.5px;line-height:1.8'>情绪(bull，market_overview.json/updown)：涨停 53 只(&gt;50)、跌停 3 只(&lt;5)，涨跌停比 17.7:1，无恐慌性抛售。但同批数据显示涨股比仅 40.38%、下跌 3157 只 &gt; 上涨 2252 只、涨跌比 0.71，属结构性躁动而非全面狂热，故风险等级不因该标签下调。情绪维度按数值判 bull(+2)。</li>
+<li style='font-size:12.5px;line-height:1.8'>宽度(neutral，market_overview.json/updown)：RATIO_UP=40.38% 落在 30%-70% 中间区间；20日新高 332 只 &gt; 20日新低 212 只(未触发「新低&gt;新高×3」的 bear 门槛)，5日新高 1241 只亦远多于 5日新低 286 只。宽度维度判 neutral(0)。</li>
+<li style='font-size:12.5px;line-height:1.8'>量能(neutral，market_overview.json/trade + indices.json)：MONEY=16087.93 亿，/20日均值 97.65%、/5日 100.81%、/10日 102.50%，落在 80-110% 中性区间；但 /60日 82.34%、/120日 64.76%、/250日 68.20%，中长期实为显著缩量。当日仅上证 +0.19% 收红，深成 -1.19%、创业板 -1.71%、沪深300 -0.04%、中证500 -1.49%，指数未普涨故不给 bull。量能维度判 neutral(0)。</li>
+<li style='font-size:12.5px;line-height:1.8'>资金(neutral，northbound.json + dragon_tiger.json)：北向净流入 25.39 亿(north_money_yi，未达 +30 亿 bull 门槛，亦非 &gt;50 亿净流出)。龙虎榜净买 Top10 合计 +11.79 亿(万向钱潮 +3.74 亿居首)、净卖 Top10 合计 -18.55 亿(天娱数科 -3.70 亿居首)，73 只上榜个股净额合计 -11.47 亿，游资整体偏防守。资金维度判 neutral(0)。</li>
+<li style='font-size:12.5px;line-height:1.8'>板块(neutral 偏空，sector_ranking.json)：124 个申万行业中上涨 60 个(48.39%，处于 20%-60% 中间区间，不满足 bull 的 &gt;60%)；主力资金方向明确净流出——流入 Top10 合计 +50.26 亿，而跌幅榜 Top10 净流出合计达 -201.59 亿(元件 -65.21 亿、半导体 -51.09 亿、通信设备 -44.16 亿)。板块维度判 neutral(0)。</li>
+<li style='font-size:12.5px;line-height:1.8'>总分 = 趋势(-2) + 宽度(0) + 情绪(+2) + 量能(0) + 资金(0) + 板块(0) = 0，落入 -6 &lt; 总分 &lt; +4 → regime=neutral，severity=null。趋势钳制已生效：收盘低于 MA20/MA60/MA250 且均线完全空头排列，即便情绪与北向偏正面也不得判 bull。与上一判断日 20261023 的 neutral 同向，confirmed_days 由 1 增至 2，本轮未发生 regime 切换（switched=false）。</li>
+<li style='font-size:12.5px;line-height:1.8'>消息面交叉验证(hot_news.json/news.json)：「A股科技小登又狂跌，覆铜板大牛股直接摁死跌停」「大摩：半导体股或再跌10%至15%，调整预计11月中旬结束」印证元件/通信设备/半导体杀跌；「有基金经理止损科技 转身重仓银行股」印证国有大型银行Ⅱ +2.23%(6/6 全涨、主力净流入 3.73 亿) 与全指价值 20日 +1.43% 的防御风格；「4400亿医药巨头上调业绩指引」印证医药商业 +2.73%(30/32 上涨)、医疗服务主力净流入 7.69 亿；「股价创18年新高，中石油4个月大涨56%」印证油服工程 +3.38%(12/13 上涨)。</li>
+<li style='font-size:12.5px;line-height:1.8'>数据完整性说明：data/daily_20261026/meta.json 标记 degraded=false，9 个文件齐备；market_overview[margin](两融余额) row 为空(missing=true)，本轮未做任何数值补全，情绪维度改由涨跌停数值独立判定；market_overview[valuation] 源端日期为 2026-10-22(T+1 口径滞后 4 日)，仅作背景参考不参与打分。</li>
+</ol>
+<h2>板块信号</h2><table>
+<tr><td style='width:92px'><b>元件</b><br><span class='sig sig-short'>看空</span></td><td class='detail'>全市场最弱方向：-6.79%，仅 4/61 只上涨；主力净流出 65.21 亿、5日净流出 134.52 亿(5日流出规模全市场最大)。消息面「覆铜板大牛股直接摁死跌停」印证，属资金撤离主战场。</td></tr>
+<tr><td style='width:92px'><b>通信设备</b><br><span class='sig sig-short'>看空</span></td><td class='detail'>-3.67%，16/85 只上涨；主力净流出 44.16 亿、5日净流出 130.52 亿，抛压具持续性而非单日扰动。</td></tr>
+<tr><td style='width:92px'><b>半导体</b><br><span class='sig sig-short'>看空</span></td><td class='detail'>-3.55%，仅 14/183 只上涨；主力净流出 51.09 亿、5日净流出 32.14 亿。大摩预计板块或再跌 10%-15%、调整至 11 月中旬结束，短期不宜接刀。</td></tr>
+<tr><td style='width:92px'><b>油服工程 / 炼化及贸易</b><br><span class='sig sig-long'>看多</span></td><td class='detail'>油服工程 +3.38%(12/13 上涨，主力净流入 0.71 亿、5日 +1.30 亿)；炼化及贸易 +1.99%(主力净流入 4.60 亿、5日 +2.23 亿)。资源能源链为当日少数同时具备涨幅与资金持续净流入的方向，中石油股价创 18 年新高。</td></tr>
+<tr><td style='width:92px'><b>国有大型银行Ⅱ</b><br><span class='sig sig-long'>看多</span></td><td class='detail'>+2.23%，6/6 全线上涨，主力净流入 3.73 亿；保险Ⅱ 亦 +1.82%。全指价值 20日 +1.43% 是各区间唯一正收益风格，防御性大盘金融占优，消息面「基金经理止损科技转重仓银行股」印证。注意：该板块 5日主力资金为净流出 13.05 亿，短线资金持续性待观察。</td></tr>
+</table>
+<h2>标签与数值冲突（6 条）</h2><div class='warnbox'><ul>
+<li>SECTOR_WIDTH_STATUS=全面下跌(上涨板块&lt;20%) vs 实测 up_sectors=60/124=48.39%(sector_ranking.json)：接近半数板块上涨，与「全面下跌」直接矛盾，判定以数值为准(不计 bear)。</li>
+<li>STOCK_WIDTH_STATUS=普涨 vs 实测 RATIO_UP=40.38%、下跌 3157 只 &gt; 上涨 2252 只、涨跌比 0.71(market_overview.json/updown)：实为跌多涨少，标签仅由「20日新高 332 只&gt;200」触发，与涨跌家数矛盾。</li>
+<li>SENTIMENT_STATUS=情绪狂热 vs 实测 RATIO_UP=40.38%(远低于 70% 门槛)：涨停 53 只触发了标签前半条件，但涨股比完全不支持「狂热」，属结构性躁动——本维度仍按涨停/跌停数值给 +2，但风险等级不因该标签下调。</li>
+<li>VOLUME_ENERGE_STATUS=缩量震荡(90~110%均值) vs 中长期口径 MONEY_60DAVG_RATIO=82.34%/120D=64.76%/250D=68.20%：短期口径确在 90-110%，但相对 120/250 日均值实为大幅缩量(仅 65%-68%)，标签掩盖了中期量能萎缩。</li>
+<li>（一致，非冲突）STYLE_ROTATION_STATUS=价值主导：CHG_20D_QZJZ=+1.43% vs QZCZ=-12.03%，差 13.46 pct &gt; 5%，与数值一致；CAP_ROTATION_STATUS=大盘占优：CHG_20D_HS300=-8.96% vs ZZ1000=-13.75%，差 4.79 pct，落在 3%-8% 区间，一致。</li>
+<li>（一致，非冲突）VALUATION_STATUS=合理区间：PE_TTM=18.5，3/5/10 年分位分别 50.13%/68.25%/57.02%，均在 30%-70%(注：源端日期 2026-10-22，滞后 4 日)；TECHNICAL_STATUS=偏弱 与 MACD 死叉(DIF -56.51 &lt; DEA -48.19)、RSI_12=33.32 一致；TREND_LONG_DIRECTION_STATUS=暴跌 与均线完全空头排列一致。</li>
+</ul></div>
+<hr class='sep'><p class='detail' style='color:#8a9099;font-size:11.5px'>数据来源：data/daily_20261026/（indices / market_overview / sector_ranking / dragon_tiger / northbound）。判定规则见 knowledge/params_current.txt 与 rules.md。</p></div><div class='footer'>多 Agent 协同交易框架自动生成 · 模拟盘研究记录，不构成投资建议</div></div></body></html>

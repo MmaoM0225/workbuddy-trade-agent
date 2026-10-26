@@ -5,6 +5,7 @@ body{margin:0;padding:0;background:#f5f6f8;font-family:-apple-system,BlinkMacSys
 h1{font-size:19px;margin:0 0 14px;font-weight:600;border-left:3px solid #c8102e;padding-left:10px;}
 h2{font-size:14px;margin:18px 0 10px;font-weight:600;color:#1f2329;}
 h3{font-size:13px;margin:14px 0 8px;font-weight:600;color:#646a73;}
+h4{font-size:12.5px;margin:12px 0 6px;font-weight:600;color:#8a9099;}
 p{font-size:13px;line-height:1.75;margin:6px 0;color:#2b3038;}
 ul{margin:6px 0;padding-left:20px;}
 li{font-size:13px;line-height:1.75;color:#2b3038;}
@@ -17,4 +18,60 @@ code{background:#f2f3f5;border-radius:3px;padding:1px 5px;font-size:12px;font-fa
 .metric .k{font-size:11px;color:#8a9099;margin-bottom:4px;}
 .metric .v{font-size:17px;font-weight:600;}
 .footer{text-align:center;color:#a8adb5;font-size:11px;margin-top:18px;}
-</style></head><body><div class='wrap'><div class='card'><h1>持仓检视 20261023</h1><p style='color:#8a9099;font-size:12px;margin:0'>生成于 20261023</p></div><div class='footer'>多 Agent 协同交易框架自动生成 · 模拟盘研究记录，不构成投资建议</div></div></body></html>
+.mt{width:100%;border-collapse:separate;border-spacing:7px 0;margin:0 -7px 10px;}
+.mt td{background:#fafbfc;border:1px solid #eceef1;border-radius:8px;padding:11px 13px;vertical-align:top;border-bottom:1px solid #eceef1;}
+.mt .k{font-size:11px;color:#8a9099;margin-bottom:5px;font-weight:400;}
+.mt .v{font-size:18px;font-weight:600;line-height:1.2;}
+.mt .s{font-size:11px;color:#8a9099;margin-top:3px;}
+.up{color:#c8102e;}
+.down{color:#0a8f4d;}
+.badge{display:inline-block;padding:2px 9px;border-radius:10px;font-size:11px;font-weight:600;line-height:1.6;}
+.b-bull{background:#fdecef;color:#c8102e;}
+.b-bear{background:#e8f6ee;color:#0a8f4d;}
+.b-neutral{background:#f1f2f4;color:#646a73;}
+.warnbox{background:#fffbf0;border-left:3px solid #f0a020;border-radius:0 6px 6px 0;padding:10px 14px;margin:8px 0;}
+.warnbox ul{margin:2px 0;padding-left:18px;}
+.warnbox li{font-size:12.5px;line-height:1.7;margin:3px 0;}
+.strategy{background:#f6f9ff;border-left:3px solid #3b6ef0;border-radius:0 6px 6px 0;padding:12px 14px;margin:8px 0;}
+.strategy p{margin:4px 0;font-size:13px;}
+.sig{display:inline-block;min-width:46px;padding:1px 7px;border-radius:4px;font-size:11px;font-weight:600;margin-right:6px;}
+.sig-short{background:#e8f6ee;color:#0a8f4d;}
+.sig-long{background:#fdecef;color:#c8102e;}
+.sig-neutral{background:#f1f2f4;color:#646a73;}
+.dimrow td{font-size:12.5px;}
+.detail{color:#4e5561;font-size:12.5px;line-height:1.7;}
+hr.sep{border:0;border-top:1px dashed #e6e8eb;margin:16px 0;}
+</style></head><body><div class='wrap'><div class='card'><h1>持仓检视 20261023</h1><p style='color:#8a9099;font-size:12px;margin:0'>生成于 20261023</p><h2>持仓检视 20261023</h2>
+<h3>组合概览</h3>
+<ul>
+<li>总仓位：0%（空仓）</li>
+<li>现金：100%</li>
+<li>持仓数：0</li>
+<li>当日成交：无</li>
+</ul>
+<h3>空仓原因</h3>
+<ul>
+<li>P1 选股链路未激活（等待用户确认首发策略方向与模拟资金规模），watchlist.json 与 orders.json 均为空壳，无建仓计划可执行。</li>
+</ul>
+<h3>逐持仓明细</h3>
+<p>（空仓，无明细）</p>
+<h3>熔断状态</h3>
+<ul>
+<li>组合损益 0.0%，未触发任何熔断线（日亏 -3% / 回撤 -8% / 回撤 -12%）</li>
+</ul>
+<h3>市场环境参考（引自 state/regime.json）</h3>
+<ul>
+<li>regime = neutral（confidence 0.60，confirmed_days 1），risk_level = medium</li>
+<li>当日五大指数全线上涨、深市领涨（创业板指 +4.16%）、个股普涨、情绪狂热；但中长期趋势仍偏弱（均线空头排列）、缩量、板块分化严重</li>
+<li>结论：属于弱趋势中的放量不足反弹，neutral 判断下不急于建仓</li>
+</ul>
+<h3>异常清单</h3>
+<ul>
+<li>info：空仓状态，无检视对象；框架处于 P1 激活前阶段，本报告为试运行产物</li>
+</ul>
+<h3>明日关注</h3>
+<ul>
+<li>反弹持续性：缩量普涨能否获得成交量确认（VOLUME_ENERGE_STATUS 是否从缩量震荡转放量上攻）</li>
+<li>板块分化收敛还是扩大（SECTOR_WIDTH_STATUS 是否从全面下跌修复）</li>
+<li>P1 激活后，本报告将包含真实持仓检视与模拟成交记录</li>
+</ul></div><div class='footer'>多 Agent 协同交易框架自动生成 · 模拟盘研究记录，不构成投资建议</div></div></body></html>
