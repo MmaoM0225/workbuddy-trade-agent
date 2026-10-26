@@ -1,514 +1,514 @@
 {
   "date": "20261023",
-  "strategy_version": "v1.8",
+  "strategy_version": "v2.0",
   "universe_size": 2499,
   "count": 50,
   "stocks": [
     {
-      "code": "603368.SH",
-      "name": "柳药集团",
-      "score": 0.9293,
+      "code": "600399.SH",
+      "name": "抚顺特钢",
+      "score": 1.0,
       "reasons": [
-        "vol_20d_inv 百分位93%",
-        "mdd_20d_inv 百分位100%",
-        "mom_10d 百分位98%"
+        "roe_ttm 分位4%（目标 0-20）",
+        "net_margin_ttm 分位12%（目标 0-20）",
+        "turnover_trend_20d 分位56%（目标 40-60）"
       ]
     },
     {
-      "code": "002307.SZ",
-      "name": "北新路桥",
-      "score": 0.8896,
+      "code": "600594.SH",
+      "name": "益佰制药",
+      "score": 0.995,
       "reasons": [
-        "mom_20d 百分位98%",
-        "pv_corr_20d 百分位98%",
-        "mom_10d 百分位98%"
+        "roe_ttm 分位16%（目标 0-20）",
+        "net_margin_ttm 分位10%（目标 0-20）",
+        "turnover_trend_20d 分位41%（目标 40-60）"
       ]
     },
     {
-      "code": "000528.SZ",
-      "name": "柳工",
-      "score": 0.8754,
+      "code": "601996.SH",
+      "name": "丰林集团",
+      "score": 0.9868,
       "reasons": [
-        "mom_10d 百分位95%",
-        "mdd_20d_inv 百分位95%",
-        "mom_20d 百分位95%"
+        "roe_ttm 分位9%（目标 0-20）",
+        "net_margin_ttm 分位10%（目标 0-20）",
+        "turnover_trend_20d 分位52%（目标 40-60）"
       ]
     },
     {
-      "code": "000570.SZ",
-      "name": "苏常柴A",
-      "score": 0.8661,
+      "code": "600688.SH",
+      "name": "上海石化",
+      "score": 0.9726,
       "reasons": [
-        "vol_20d_inv 百分位94%",
-        "mdd_20d_inv 百分位100%",
-        "mom_10d 百分位99%"
+        "roe_ttm 分位17%（目标 0-20）",
+        "net_margin_ttm 分位16%（目标 0-20）",
+        "turnover_trend_20d 分位53%（目标 40-60）"
       ]
     },
     {
-      "code": "600853.SH",
-      "name": "龙建股份",
-      "score": 0.8599,
+      "code": "002459.SZ",
+      "name": "晶澳科技",
+      "score": 0.9629,
       "reasons": [
-        "mom_10d 百分位99%",
-        "turnover_trend_20d 百分位99%",
-        "mom_20d 百分位96%"
+        "roe_ttm 分位1%（目标 0-20）",
+        "net_margin_ttm 分位1%（目标 0-20）",
+        "turnover_trend_20d 分位48%（目标 40-60）"
       ]
     },
     {
-      "code": "002376.SZ",
-      "name": "新北洋",
-      "score": 0.85,
+      "code": "002798.SZ",
+      "name": "帝欧水华",
+      "score": 0.9614,
       "reasons": [
-        "mom_20d 百分位98%",
-        "mom_10d 百分位98%",
-        "pv_corr_20d 百分位97%"
+        "roe_ttm 分位25%（目标 0-20）",
+        "net_margin_ttm 分位25%（目标 0-20）",
+        "turnover_trend_20d 分位56%（目标 40-60）"
       ]
     },
     {
-      "code": "600271.SH",
-      "name": "航天信息",
-      "score": 0.8457,
+      "code": "000923.SZ",
+      "name": "河钢资源",
+      "score": 0.9605,
       "reasons": [
-        "mdd_20d_inv 百分位98%",
-        "mom_20d 百分位97%",
-        "pv_corr_20d 百分位97%"
+        "roe_ttm 分位16%（目标 0-20）",
+        "net_margin_ttm 分位4%（目标 0-20）",
+        "turnover_trend_20d 分位51%（目标 40-60）"
       ]
     },
     {
-      "code": "000948.SZ",
-      "name": "南天信息",
-      "score": 0.8365,
+      "code": "002065.SZ",
+      "name": "东华软件",
+      "score": 0.9603,
       "reasons": [
-        "mom_20d 百分位98%",
-        "mom_10d 百分位98%",
-        "pv_corr_20d 百分位96%"
+        "roe_ttm 分位24%（目标 0-20）",
+        "net_margin_ttm 分位26%（目标 0-20）",
+        "turnover_trend_20d 分位60%（目标 40-60）"
       ]
     },
     {
-      "code": "603089.SH",
-      "name": "正裕工业",
-      "score": 0.8302,
+      "code": "000517.SZ",
+      "name": "荣安地产",
+      "score": 0.9597,
       "reasons": [
-        "mom_10d 百分位100%",
-        "mom_20d 百分位100%",
-        "pv_corr_20d 百分位91%"
+        "roe_ttm 分位12%（目标 0-20）",
+        "net_margin_ttm 分位4%（目标 0-20）",
+        "turnover_trend_20d 分位37%（目标 40-60）"
       ]
     },
     {
-      "code": "000860.SZ",
-      "name": "顺鑫农业",
-      "score": 0.8275,
+      "code": "000800.SZ",
+      "name": "一汽解放",
+      "score": 0.9586,
       "reasons": [
-        "mom_10d 百分位96%",
-        "mom_20d 百分位95%",
-        "turnover_trend_20d 百分位95%"
+        "roe_ttm 分位17%（目标 0-20）",
+        "net_margin_ttm 分位16%（目标 0-20）",
+        "turnover_trend_20d 分位51%（目标 40-60）"
       ]
     },
     {
-      "code": "600511.SH",
-      "name": "国药股份",
-      "score": 0.8263,
+      "code": "002408.SZ",
+      "name": "齐翔腾达",
+      "score": 0.956,
       "reasons": [
-        "vol_20d_inv 百分位91%",
-        "mdd_20d_inv 百分位100%",
-        "pv_corr_20d 百分位93%"
+        "roe_ttm 分位20%（目标 0-20）",
+        "net_margin_ttm 分位20%（目标 0-20）",
+        "turnover_trend_20d 分位59%（目标 40-60）"
       ]
     },
     {
-      "code": "000028.SZ",
-      "name": "国药一致",
-      "score": 0.823,
+      "code": "000931.SZ",
+      "name": "中关村",
+      "score": 0.9539,
       "reasons": [
-        "vol_20d_inv 百分位94%",
-        "mdd_20d_inv 百分位99%",
-        "pv_corr_20d 百分位92%"
+        "roe_ttm 分位24%（目标 0-20）",
+        "net_margin_ttm 分位27%（目标 0-20）",
+        "turnover_trend_20d 分位42%（目标 40-60）"
       ]
     },
     {
-      "code": "002351.SZ",
-      "name": "漫步者",
-      "score": 0.8228,
+      "code": "000539.SZ",
+      "name": "粤电力A",
+      "score": 0.9525,
       "reasons": [
-        "mom_10d 百分位97%",
-        "vol_20d_inv 百分位85%",
-        "pv_corr_20d 百分位96%"
+        "roe_ttm 分位5%（目标 0-20）",
+        "net_margin_ttm 分位11%（目标 0-20）",
+        "turnover_trend_20d 分位64%（目标 40-60）"
       ]
     },
     {
-      "code": "002727.SZ",
-      "name": "一心堂",
-      "score": 0.821,
+      "code": "600307.SH",
+      "name": "酒钢宏兴",
+      "score": 0.9471,
       "reasons": [
-        "mdd_20d_inv 百分位98%",
-        "mom_20d 百分位98%",
-        "mom_10d 百分位97%"
+        "roe_ttm 分位6%（目标 0-20）",
+        "net_margin_ttm 分位20%（目标 0-20）",
+        "turnover_trend_20d 分位52%（目标 40-60）"
       ]
     },
     {
-      "code": "001283.SZ",
-      "name": "豪鹏科技",
-      "score": 0.811,
+      "code": "000731.SZ",
+      "name": "四川美丰",
+      "score": 0.9421,
       "reasons": [
-        "pv_corr_20d 百分位98%",
-        "mom_20d 百分位98%",
-        "mom_10d 百分位97%"
+        "roe_ttm 分位24%（目标 0-20）",
+        "net_margin_ttm 分位24%（目标 0-20）",
+        "turnover_trend_20d 分位41%（目标 40-60）"
       ]
     },
     {
-      "code": "002526.SZ",
-      "name": "山东矿机",
-      "score": 0.8098,
+      "code": "002022.SZ",
+      "name": "科华生物",
+      "score": 0.9373,
       "reasons": [
-        "vol_20d_inv 百分位89%",
-        "mom_10d 百分位98%",
-        "mdd_20d_inv 百分位96%"
+        "roe_ttm 分位14%（目标 0-20）",
+        "net_margin_ttm 分位9%（目标 0-20）",
+        "turnover_trend_20d 分位28%（目标 40-60）"
       ]
     },
     {
-      "code": "002403.SZ",
-      "name": "爱仕达",
-      "score": 0.8087,
+      "code": "001278.SZ",
+      "name": "一彬科技",
+      "score": 0.932,
       "reasons": [
-        "mom_20d 百分位99%",
-        "mom_10d 百分位99%",
-        "mdd_20d_inv 百分位94%"
+        "roe_ttm 分位12%（目标 0-20）",
+        "net_margin_ttm 分位13%（目标 0-20）",
+        "turnover_trend_20d 分位71%（目标 40-60）"
       ]
     },
     {
-      "code": "600558.SH",
-      "name": "大西洋",
-      "score": 0.8086,
+      "code": "600372.SH",
+      "name": "中航机载",
+      "score": 0.932,
       "reasons": [
-        "mdd_20d_inv 百分位98%",
-        "pv_corr_20d 百分位94%",
-        "mom_20d 百分位92%"
+        "roe_ttm 分位14%（目标 0-20）",
+        "net_margin_ttm 分位25%（目标 0-20）",
+        "turnover_trend_20d 分位61%（目标 40-60）"
       ]
     },
     {
-      "code": "002791.SZ",
-      "name": "坚朗五金",
-      "score": 0.8084,
+      "code": "000925.SZ",
+      "name": "众合科技",
+      "score": 0.9302,
       "reasons": [
-        "mom_20d 百分位98%",
-        "mom_10d 百分位91%",
-        "turnover_trend_20d 百分位84%"
+        "roe_ttm 分位27%（目标 0-20）",
+        "net_margin_ttm 分位27%（目标 0-20）",
+        "turnover_trend_20d 分位40%（目标 40-60）"
       ]
     },
     {
-      "code": "002363.SZ",
-      "name": "隆基机械",
-      "score": 0.8034,
+      "code": "002183.SZ",
+      "name": "怡亚通",
+      "score": 0.9283,
       "reasons": [
-        "vol_20d_inv 百分位86%",
-        "mdd_20d_inv 百分位95%",
-        "mom_10d 百分位92%"
+        "roe_ttm 分位23%（目标 0-20）",
+        "net_margin_ttm 分位22%（目标 0-20）",
+        "turnover_trend_20d 分位41%（目标 40-60）"
       ]
     },
     {
-      "code": "601177.SH",
-      "name": "杭齿前进",
-      "score": 0.8013,
+      "code": "603324.SH",
+      "name": "盛剑科技",
+      "score": 0.9235,
       "reasons": [
-        "mom_10d 百分位98%",
-        "mom_20d 百分位94%",
-        "turnover_trend_20d 百分位89%"
+        "roe_ttm 分位8%（目标 0-20）",
+        "net_margin_ttm 分位9%（目标 0-20）",
+        "turnover_trend_20d 分位54%（目标 40-60）"
       ]
     },
     {
-      "code": "000400.SZ",
-      "name": "许继电气",
-      "score": 0.7987,
+      "code": "000959.SZ",
+      "name": "首钢股份",
+      "score": 0.9234,
       "reasons": [
-        "mdd_20d_inv 百分位99%",
-        "mom_20d 百分位96%",
-        "turnover_trend_20d 百分位93%"
+        "roe_ttm 分位17%（目标 0-20）",
+        "net_margin_ttm 分位17%（目标 0-20）",
+        "turnover_trend_20d 分位50%（目标 40-60）"
       ]
     },
     {
-      "code": "000065.SZ",
-      "name": "北方国际",
-      "score": 0.7946,
+      "code": "000723.SZ",
+      "name": "美锦能源",
+      "score": 0.9234,
       "reasons": [
-        "mom_10d 百分位92%",
-        "mom_20d 百分位87%",
-        "turnover_trend_20d 百分位85%"
+        "roe_ttm 分位2%（目标 0-20）",
+        "net_margin_ttm 分位5%（目标 0-20）",
+        "turnover_trend_20d 分位31%（目标 40-60）"
       ]
     },
     {
-      "code": "603101.SH",
-      "name": "汇嘉时代",
-      "score": 0.7942,
+      "code": "600470.SH",
+      "name": "六国化工",
+      "score": 0.9219,
       "reasons": [
-        "mom_20d 百分位99%",
-        "turnover_trend_20d 百分位99%",
-        "mom_10d 百分位95%"
+        "roe_ttm 分位9%（目标 0-20）",
+        "net_margin_ttm 分位19%（目标 0-20）",
+        "turnover_trend_20d 分位48%（目标 40-60）"
       ]
     },
     {
-      "code": "600501.SH",
-      "name": "航天晨光",
-      "score": 0.7919,
+      "code": "002739.SZ",
+      "name": "儒意电影",
+      "score": 0.9217,
       "reasons": [
-        "mom_10d 百分位98%",
-        "turnover_trend_20d 百分位97%",
-        "mom_20d 百分位97%"
+        "roe_ttm 分位9%（目标 0-20）",
+        "net_margin_ttm 分位13%（目标 0-20）",
+        "turnover_trend_20d 分位45%（目标 40-60）"
       ]
     },
     {
-      "code": "002322.SZ",
-      "name": "理工能科",
-      "score": 0.7901,
+      "code": "000932.SZ",
+      "name": "华菱钢铁",
+      "score": 0.9197,
       "reasons": [
-        "mom_20d 百分位99%",
-        "mom_10d 百分位98%",
-        "turnover_trend_20d 百分位97%"
+        "roe_ttm 分位15%（目标 0-20）",
+        "net_margin_ttm 分位17%（目标 0-20）",
+        "turnover_trend_20d 分位48%（目标 40-60）"
       ]
     },
     {
-      "code": "002249.SZ",
-      "name": "大洋电机",
-      "score": 0.7887,
+      "code": "000009.SZ",
+      "name": "中国宝安",
+      "score": 0.9172,
       "reasons": [
-        "pv_corr_20d 百分位98%",
-        "mom_20d 百分位96%",
-        "mom_10d 百分位95%"
+        "roe_ttm 分位15%（目标 0-20）",
+        "net_margin_ttm 分位31%（目标 0-20）",
+        "turnover_trend_20d 分位50%（目标 40-60）"
       ]
     },
     {
-      "code": "600422.SH",
-      "name": "昆药集团",
-      "score": 0.7883,
+      "code": "000970.SZ",
+      "name": "中科三环",
+      "score": 0.9168,
       "reasons": [
-        "vol_20d_inv 百分位88%",
-        "mdd_20d_inv 百分位99%",
-        "mom_10d 百分位94%"
+        "roe_ttm 分位26%（目标 0-20）",
+        "net_margin_ttm 分位26%（目标 0-20）",
+        "turnover_trend_20d 分位41%（目标 40-60）"
       ]
     },
     {
-      "code": "000928.SZ",
-      "name": "中钢国际",
-      "score": 0.7881,
+      "code": "002840.SZ",
+      "name": "华统股份",
+      "score": 0.9161,
       "reasons": [
-        "vol_20d_inv 百分位96%",
-        "mdd_20d_inv 百分位98%",
-        "mom_10d 百分位89%"
+        "roe_ttm 分位3%（目标 0-20）",
+        "net_margin_ttm 分位4%（目标 0-20）",
+        "turnover_trend_20d 分位35%（目标 40-60）"
       ]
     },
     {
-      "code": "002184.SZ",
-      "name": "海得控制",
-      "score": 0.7875,
+      "code": "000936.SZ",
+      "name": "华西股份",
+      "score": 0.9143,
       "reasons": [
-        "mom_20d 百分位99%",
-        "mom_10d 百分位99%",
-        "turnover_trend_20d 百分位90%"
+        "roe_ttm 分位13%（目标 0-20）",
+        "net_margin_ttm 分位10%（目标 0-20）",
+        "turnover_trend_20d 分位31%（目标 40-60）"
       ]
     },
     {
-      "code": "601668.SH",
-      "name": "中国建筑",
-      "score": 0.7867,
+      "code": "000709.SZ",
+      "name": "河钢股份",
+      "score": 0.9139,
       "reasons": [
-        "mdd_20d_inv 百分位93%",
-        "turnover_trend_20d 百分位91%",
-        "vol_20d_inv 百分位78%"
+        "roe_ttm 分位20%（目标 0-20）",
+        "net_margin_ttm 分位19%（目标 0-20）",
+        "turnover_trend_20d 分位49%（目标 40-60）"
       ]
     },
     {
-      "code": "603883.SH",
-      "name": "老百姓",
-      "score": 0.7858,
+      "code": "601919.SH",
+      "name": "中远海控",
+      "score": 0.9136,
       "reasons": [
-        "mdd_20d_inv 百分位100%",
-        "mom_20d 百分位97%",
-        "mom_10d 百分位93%"
+        "roe_ttm 分位20%（目标 0-20）",
+        "net_margin_ttm 分位35%（目标 0-20）",
+        "turnover_trend_20d 分位64%（目标 40-60）"
       ]
     },
     {
-      "code": "002722.SZ",
-      "name": "物产金轮",
-      "score": 0.7854,
+      "code": "000825.SZ",
+      "name": "太钢不锈",
+      "score": 0.9117,
       "reasons": [
-        "mdd_20d_inv 百分位97%",
-        "vol_20d_inv 百分位83%",
-        "mom_10d 百分位91%"
+        "roe_ttm 分位17%（目标 0-20）",
+        "net_margin_ttm 分位18%（目标 0-20）",
+        "turnover_trend_20d 分位44%（目标 40-60）"
       ]
     },
     {
-      "code": "002362.SZ",
-      "name": "汉王科技",
-      "score": 0.7832,
+      "code": "000898.SZ",
+      "name": "鞍钢股份",
+      "score": 0.9107,
       "reasons": [
-        "mom_10d 百分位99%",
-        "vol_20d_inv 百分位80%",
-        "mdd_20d_inv 百分位86%"
+        "roe_ttm 分位1%（目标 0-20）",
+        "net_margin_ttm 分位10%（目标 0-20）",
+        "turnover_trend_20d 分位47%（目标 40-60）"
       ]
     },
     {
-      "code": "601166.SH",
-      "name": "兴业银行",
-      "score": 0.7829,
+      "code": "603033.SH",
+      "name": "三维股份",
+      "score": 0.9106,
       "reasons": [
-        "pv_corr_20d 百分位97%",
-        "mdd_20d_inv 百分位91%",
-        "turnover_trend_20d 百分位90%"
+        "roe_ttm 分位3%（目标 0-20）",
+        "net_margin_ttm 分位11%（目标 0-20）",
+        "turnover_trend_20d 分位44%（目标 40-60）"
       ]
     },
     {
-      "code": "600963.SH",
-      "name": "岳阳林纸",
-      "score": 0.7822,
+      "code": "600655.SH",
+      "name": "豫园股份",
+      "score": 0.9088,
       "reasons": [
-        "vol_20d_inv 百分位82%",
-        "mom_10d 百分位90%",
-        "mdd_20d_inv 百分位86%"
+        "roe_ttm 分位19%（目标 0-20）",
+        "net_margin_ttm 分位20%（目标 0-20）",
+        "turnover_trend_20d 分位49%（目标 40-60）"
       ]
     },
     {
-      "code": "603276.SH",
-      "name": "恒兴新材",
-      "score": 0.7803,
+      "code": "000966.SZ",
+      "name": "长源电力",
+      "score": 0.9087,
       "reasons": [
-        "mdd_20d_inv 百分位96%",
-        "mom_10d 百分位94%",
-        "mom_20d 百分位93%"
+        "roe_ttm 分位27%（目标 0-20）",
+        "net_margin_ttm 分位28%（目标 0-20）",
+        "turnover_trend_20d 分位40%（目标 40-60）"
       ]
     },
     {
-      "code": "002291.SZ",
-      "name": "遥望科技",
-      "score": 0.7783,
+      "code": "000625.SZ",
+      "name": "长安汽车",
+      "score": 0.9034,
       "reasons": [
-        "turnover_trend_20d 百分位98%",
-        "mdd_20d_inv 百分位90%",
-        "mom_10d 百分位86%"
+        "roe_ttm 分位11%（目标 0-20）",
+        "net_margin_ttm 分位10%（目标 0-20）",
+        "turnover_trend_20d 分位71%（目标 40-60）"
       ]
     },
     {
-      "code": "600192.SH",
-      "name": "长城电工",
-      "score": 0.7775,
+      "code": "002601.SZ",
+      "name": "龙佰集团",
+      "score": 0.9032,
       "reasons": [
-        "mom_10d 百分位99%",
-        "mom_20d 百分位98%",
-        "turnover_trend_20d 百分位98%"
+        "roe_ttm 分位31%（目标 0-20）",
+        "net_margin_ttm 分位33%（目标 0-20）",
+        "turnover_trend_20d 分位40%（目标 40-60）"
       ]
     },
     {
-      "code": "600312.SH",
-      "name": "平高电气",
-      "score": 0.7775,
+      "code": "002765.SZ",
+      "name": "蓝黛科技",
+      "score": 0.9027,
       "reasons": [
-        "mdd_20d_inv 百分位96%",
-        "mom_20d 百分位95%",
-        "turnover_trend_20d 百分位93%"
+        "roe_ttm 分位30%（目标 0-20）",
+        "net_margin_ttm 分位33%（目标 0-20）",
+        "turnover_trend_20d 分位61%（目标 40-60）"
       ]
     },
     {
-      "code": "002045.SZ",
-      "name": "国光电器",
-      "score": 0.777,
+      "code": "000050.SZ",
+      "name": "深天马A",
+      "score": 0.9021,
       "reasons": [
-        "mom_10d 百分位92%",
-        "mom_5d 百分位98%",
-        "price_pos_20d 百分位97%"
+        "roe_ttm 分位8%（目标 0-20）",
+        "net_margin_ttm 分位11%（目标 0-20）",
+        "turnover_trend_20d 分位46%（目标 40-60）"
       ]
     },
     {
-      "code": "002833.SZ",
-      "name": "弘亚数控",
-      "score": 0.7765,
+      "code": "600676.SH",
+      "name": "久事动娱",
+      "score": 0.9012,
       "reasons": [
-        "mom_20d 百分位93%",
-        "vol_20d_inv 百分位80%",
-        "mdd_20d_inv 百分位84%"
+        "roe_ttm 分位31%（目标 0-20）",
+        "net_margin_ttm 分位33%（目标 0-20）",
+        "turnover_trend_20d 分位47%（目标 40-60）"
       ]
     },
     {
-      "code": "600993.SH",
-      "name": "马应龙",
-      "score": 0.7764,
+      "code": "600482.SH",
+      "name": "中国动力",
+      "score": 0.901,
       "reasons": [
-        "pv_corr_20d 百分位98%",
-        "mom_10d 百分位94%",
-        "mom_20d 百分位92%"
+        "roe_ttm 分位19%（目标 0-20）",
+        "net_margin_ttm 分位29%（目标 0-20）",
+        "turnover_trend_20d 分位30%（目标 40-60）"
       ]
     },
     {
-      "code": "600267.SH",
-      "name": "海正药业",
-      "score": 0.7761,
+      "code": "002182.SZ",
+      "name": "宝武镁业",
+      "score": 0.8994,
       "reasons": [
-        "mom_20d 百分位97%",
-        "mom_10d 百分位96%",
-        "turnover_trend_20d 百分位94%"
+        "roe_ttm 分位19%（目标 0-20）",
+        "net_margin_ttm 分位19%（目标 0-20）",
+        "turnover_trend_20d 分位76%（目标 40-60）"
       ]
     },
     {
-      "code": "600027.SH",
-      "name": "华电国际",
-      "score": 0.7754,
+      "code": "002157.SZ",
+      "name": "正邦科技",
+      "score": 0.8978,
       "reasons": [
-        "mdd_20d_inv 百分位98%",
-        "mom_20d 百分位90%",
-        "vol_20d_inv 百分位76%"
+        "roe_ttm 分位0%（目标 0-20）",
+        "net_margin_ttm 分位0%（目标 0-20）",
+        "turnover_trend_20d 分位41%（目标 40-60）"
       ]
     },
     {
-      "code": "603239.SH",
-      "name": "浙江仙通",
-      "score": 0.7742,
+      "code": "001391.SZ",
+      "name": "国货航",
+      "score": 0.8977,
       "reasons": [
-        "mom_20d 百分位99%",
-        "mom_10d 百分位99%",
-        "pv_corr_20d 百分位95%"
+        "roe_ttm 分位25%（目标 0-20）",
+        "net_margin_ttm 分位30%（目标 0-20）",
+        "turnover_trend_20d 分位63%（目标 40-60）"
       ]
     },
     {
-      "code": "002405.SZ",
-      "name": "四维图新",
-      "score": 0.7734,
+      "code": "002861.SZ",
+      "name": "瀛通通讯",
+      "score": 0.8963,
       "reasons": [
-        "mdd_20d_inv 百分位97%",
-        "vol_20d_inv 百分位83%",
-        "mom_10d 百分位89%"
+        "roe_ttm 分位10%（目标 0-20）",
+        "net_margin_ttm 分位13%（目标 0-20）",
+        "turnover_trend_20d 分位63%（目标 40-60）"
       ]
     },
     {
-      "code": "002474.SZ",
-      "name": "榕基软件",
-      "score": 0.7724,
+      "code": "603169.SH",
+      "name": "兰石重装",
+      "score": 0.8962,
       "reasons": [
-        "mom_20d 百分位99%",
-        "mom_10d 百分位99%",
-        "turnover_trend_20d 百分位90%"
+        "roe_ttm 分位3%（目标 0-20）",
+        "net_margin_ttm 分位6%（目标 0-20）",
+        "turnover_trend_20d 分位59%（目标 40-60）"
       ]
     },
     {
-      "code": "601328.SH",
-      "name": "交通银行",
-      "score": 0.7723,
+      "code": "600339.SH",
+      "name": "中油工程",
+      "score": 0.8957,
       "reasons": [
-        "pv_corr_20d 百分位94%",
-        "turnover_trend_20d 百分位89%",
-        "mom_20d 百分位88%"
+        "roe_ttm 分位23%（目标 0-20）",
+        "net_margin_ttm 分位20%（目标 0-20）",
+        "turnover_trend_20d 分位59%（目标 40-60）"
       ]
     },
     {
-      "code": "002332.SZ",
-      "name": "仙琚制药",
-      "score": 0.7716,
+      "code": "600575.SH",
+      "name": "淮河能源",
+      "score": 0.893,
       "reasons": [
-        "vol_20d_inv 百分位99%",
-        "mdd_20d_inv 百分位100%",
-        "mom_10d 百分位84%"
+        "roe_ttm 分位28%（目标 0-20）",
+        "net_margin_ttm 分位27%（目标 0-20）",
+        "turnover_trend_20d 分位53%（目标 40-60）"
       ]
     }
   ],
   "notes": {
     "mode": "production",
-    "run_at": "2026-10-26T01:25:59",
-    "params_file": "params_v1.8.json",
+    "run_at": "2026-10-26T22:52:08",
+    "params_file": "params_v2.0.json",
     "source": "local warehouse (data/warehouse), zero MCP calls during scoring",
     "universe_filter": {
       "all": 5577,
@@ -522,19 +522,15 @@
       "ILLIQ": 521
     },
     "factor_coverage": {
-      "mom_5d": 1.0,
-      "mom_10d": 1.0,
-      "mom_20d": 1.0,
-      "mom_60d": 1.0,
-      "vol_20d_inv": 1.0,
-      "mdd_20d_inv": 1.0,
-      "price_pos_20d": 1.0,
-      "pv_corr_20d": 1.0,
-      "turnover_trend_20d": 1.0,
-      "ep_ttm": 0.741,
       "bp_ttm": 0.997,
+      "mom_20d": 1.0,
+      "net_margin_ttm": 0.724,
+      "pv_corr_20d": 1.0,
+      "roe_ttm": 0.723,
       "sp_ttm": 0.999,
-      "turnover_rate": 1.0
+      "turnover_rate": 1.0,
+      "turnover_trend_20d": 1.0,
+      "vol_20d_inv": 1.0
     },
     "factors_dropped": [],
     "fina_report_period": "Q3 20260930 优先，缺失回退 H1 20260630",
