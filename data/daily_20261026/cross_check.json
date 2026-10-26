@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-26",
+  "items": [
+    {
+      "dimension": "STOCK_WIDTH",
+      "label": "普涨(创新高>200只，或者破位<10只)",
+      "verdict": "CONFLICT",
+      "evidence": "CNT_RED=2252(40.38%) / CNT_GREEN=3157(56.61%) / CNT_ZERO=168 / 涨跌比=0.71"
+    },
+    {
+      "dimension": "VOLUME_ENERGE",
+      "label": "缩量震荡(成交额90~110%均值)",
+      "verdict": "OK",
+      "evidence": "两市成交额 MONEY=16087.93亿；20日均值=16475.72亿；当日/20日均值=97.65%（标签口径90~110%）；5日=100.81% / 10日=102.50% / 60日=82.34% / 250日=68.20%"
+    },
+    {
+      "dimension": "SENTIMENT",
+      "label": "情绪狂热(涨停>50只，或者涨股比>70%，两融周增>2% )",
+      "verdict": "WEAK_SUPPORT",
+      "evidence": "涨停数 CNT_REACH_UPLIMIT=53（>50，满足触发项）；但上涨占比 RATIO_UP=40.38%（<70%阈值不成立）；跌停=3；下跌家数占优"
+    },
+    {
+      "dimension": "SECTOR_WIDTH",
+      "label": "全面下跌(上涨板块<20%)",
+      "verdict": "CONFLICT",
+      "evidence": "申万二级行业 124 个，其中上涨(changePct>0) 60 个，占比 48.39%；下跌 64 个"
+    },
+    {
+      "dimension": "STYLE_ROTATION",
+      "label": "价值主导(价值指数 > 成长指数 +5%)",
+      "verdict": "OK(20日口径)",
+      "evidence": "20日 全指价值1.43% - 全指成长-12.03% = +13.46 pct；10日 = +4.35 pct（10日口径未达 +5% 门槛）"
+    },
+    {
+      "dimension": "CAP_ROTATION",
+      "label": "大盘占优(沪深300 > 中证1000 +3%~+8%)",
+      "verdict": "OK(20日口径)",
+      "evidence": "20日 沪深300 -8.96% - 中证1000 -13.75% = +4.79 pct（标签口径 +3%~+8%，需转义无关）；10日 = +1.26 pct"
+    }
+  ]
+}

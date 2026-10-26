@@ -1,18 +1,187 @@
 {
-  "date": "20261023",
+  "date": "20261026",
   "regime": "neutral",
-  "confidence": 0.6,
+  "severity": null,
+  "confidence": 0.55,
+  "score": 0,
+  "confirmed_days": 2,
   "evidence": [
-    "五大指数全线上涨且深市领涨：创业板指 +4.16%、深证成指 +2.79%、中证500 +2.39%、沪深300 +1.71%、上证指数 +0.89%",
-    "STOCK_WIDTH_STATUS=普涨(创新高>200只)、SENTIMENT_STATUS=情绪狂热(涨停>50只或涨股比>70%)",
-    "TREND_LONG_DIRECTION_STATUS=暴跌(均线空头排列且距离中间均线以下距离很大)、TECHNICAL_STATUS=偏弱(MACD死叉或RSI恐慌抛售)",
-    "VOLUME_ENERGE_STATUS=缩量震荡(成交额90~110%均值)，当日反弹未获成交量确认",
-    "矛盾信号：SECTOR_WIDTH_STATUS=全面下跌(上涨板块<20%) 与个股普涨相悖，SECTOR_ROTATION_STATUS=分化严重，普涨集中在少数方向；STYLE_ROTATION_STATUS=价值主导 与创业板指领涨亦相悖"
+    "趋势(bear，market_overview.json/technical+interval + indices.json)：上证收盘 3697.52，低于 MA5(3698.89)、MA10(3721.72)、MA20(3793.17)、MA60(3869.62)、MA120(3962.43)、MA250(3984.78)，形成 MA5<MA10<MA20<MA60<MA120<MA250 完全空头排列；区间涨跌幅 20日 上证 -5.48%(<-5% 门槛)、深证成指 -15.44%、创业板指 -21.78%，60日 上证 -3.06%、120日 -9.52%；MACD=-16.65 且 DIF(-56.51)<DEA(-48.19) 死叉，RSI_12=33.32 偏弱。趋势维度判 bear(-2)。",
+    "情绪(bull，market_overview.json/updown)：涨停 53 只(>50)、跌停 3 只(<5)，涨跌停比 17.7:1，无恐慌性抛售。但同批数据显示涨股比仅 40.38%、下跌 3157 只 > 上涨 2252 只、涨跌比 0.71，属结构性躁动而非全面狂热，故风险等级不因该标签下调。情绪维度按数值判 bull(+2)。",
+    "宽度(neutral，market_overview.json/updown)：RATIO_UP=40.38% 落在 30%-70% 中间区间；20日新高 332 只 > 20日新低 212 只(未触发「新低>新高×3」的 bear 门槛)，5日新高 1241 只亦远多于 5日新低 286 只。宽度维度判 neutral(0)。",
+    "量能(neutral，market_overview.json/trade + indices.json)：MONEY=16087.93 亿，/20日均值 97.65%、/5日 100.81%、/10日 102.50%，落在 80-110% 中性区间；但 /60日 82.34%、/120日 64.76%、/250日 68.20%，中长期实为显著缩量。当日仅上证 +0.19% 收红，深成 -1.19%、创业板 -1.71%、沪深300 -0.04%、中证500 -1.49%，指数未普涨故不给 bull。量能维度判 neutral(0)。",
+    "资金(neutral，northbound.json + dragon_tiger.json)：北向净流入 25.39 亿(north_money_yi，未达 +30 亿 bull 门槛，亦非 >50 亿净流出)。龙虎榜净买 Top10 合计 +11.79 亿(万向钱潮 +3.74 亿居首)、净卖 Top10 合计 -18.55 亿(天娱数科 -3.70 亿居首)，73 只上榜个股净额合计 -11.47 亿，游资整体偏防守。资金维度判 neutral(0)。",
+    "板块(neutral 偏空，sector_ranking.json)：124 个申万行业中上涨 60 个(48.39%，处于 20%-60% 中间区间，不满足 bull 的 >60%)；主力资金方向明确净流出——流入 Top10 合计 +50.26 亿，而跌幅榜 Top10 净流出合计达 -201.59 亿(元件 -65.21 亿、半导体 -51.09 亿、通信设备 -44.16 亿)。板块维度判 neutral(0)。",
+    "总分 = 趋势(-2) + 宽度(0) + 情绪(+2) + 量能(0) + 资金(0) + 板块(0) = 0，落入 -6 < 总分 < +4 → regime=neutral，severity=null。趋势钳制已生效：收盘低于 MA20/MA60/MA250 且均线完全空头排列，即便情绪与北向偏正面也不得判 bull。与上一判断日 20261023 的 neutral 同向，confirmed_days 由 1 增至 2，本轮未发生 regime 切换（switched=false）。",
+    "消息面交叉验证(hot_news.json/news.json)：「A股科技小登又狂跌，覆铜板大牛股直接摁死跌停」「大摩：半导体股或再跌10%至15%，调整预计11月中旬结束」印证元件/通信设备/半导体杀跌；「有基金经理止损科技 转身重仓银行股」印证国有大型银行Ⅱ +2.23%(6/6 全涨、主力净流入 3.73 亿) 与全指价值 20日 +1.43% 的防御风格；「4400亿医药巨头上调业绩指引」印证医药商业 +2.73%(30/32 上涨)、医疗服务主力净流入 7.69 亿；「股价创18年新高，中石油4个月大涨56%」印证油服工程 +3.38%(12/13 上涨)。",
+    "数据完整性说明：data/daily_20261026/meta.json 标记 degraded=false，9 个文件齐备；market_overview[margin](两融余额) row 为空(missing=true)，本轮未做任何数值补全，情绪维度改由涨跌停数值独立判定；market_overview[valuation] 源端日期为 2026-10-22(T+1 口径滞后 4 日)，仅作背景参考不参与打分。"
+  ],
+  "dimensions": {
+    "trend": {
+      "score": -2,
+      "verdict": "bear",
+      "detail": "MA5<MA10<MA20<MA60<MA120<MA250 完全空头排列，收盘低于全部均线；20日涨跌幅上证 -5.48% < -5% 门槛",
+      "values": {
+        "close_szzs": 3697.52,
+        "MA5": 3698.886,
+        "MA10": 3721.72,
+        "MA20": 3793.166,
+        "MA60": 3869.6218,
+        "MA120": 3962.431,
+        "MA250": 3984.7766,
+        "MACD": -16.6458,
+        "DIF": -56.5138,
+        "DEA": -48.1909,
+        "RSI_6": 35.8375,
+        "RSI_12": 33.3233,
+        "RSI_24": 37.2827,
+        "KDJ_K": 36.0376,
+        "KDJ_D": 28.2921,
+        "BOLL_LOWER": 3615.1402,
+        "BOLL_MID": 3793.166,
+        "BOLL_UPPER": 3971.1918,
+        "CHG_5D_SZZS": -0.9,
+        "CHG_10D_SZZS": -2.63,
+        "CHG_20D_SZZS": -5.48,
+        "CHG_60D_SZZS": -3.06,
+        "CHG_120D_SZZS": -9.52,
+        "CHG_250D_SZZS": -4.34,
+        "CHG_20D_SZCZ": -15.44,
+        "CHG_20D_CYBZ": -21.78,
+        "52WEEK_LOW_SZZS": 3574.27,
+        "52WEEK_HIGH_SZZS": 4258.86
+      },
+      "source": "market_overview.json[technical,interval] + indices.json"
+    },
+    "breadth": {
+      "score": 0,
+      "verdict": "neutral",
+      "detail": "涨股比 40.38% 居中(30%-70%)；20日新高 332 > 20日新低 212，未触发 bear 的「新低>新高×3」",
+      "values": {
+        "RATIO_UP": 40.38,
+        "RATIO_DOWN": 56.61,
+        "CNT_RED": 2252,
+        "CNT_GREEN": 3157,
+        "CNT_ZERO": 168,
+        "CNT_TOTAL": 5577,
+        "RATIO_UPDOWN": 0.71,
+        "CNT_HIGH5": 1241,
+        "CNT_LOW5": 286,
+        "CNT_HIGH20": 332,
+        "CNT_LOW20": 212,
+        "CNT_HIGH60": 150,
+        "CNT_LOW60": 107,
+        "CNT_HIGH250": 13,
+        "CNT_LOW250": 36
+      },
+      "source": "market_overview.json[updown]"
+    },
+    "sentiment": {
+      "score": 2,
+      "verdict": "bull",
+      "detail": "涨停 53 只(>50) 且 跌停 3 只(<5)；同批涨股比仅 40.38%，属结构性躁动",
+      "values": {
+        "CNT_REACH_UPLIMIT": 53,
+        "CNT_REACH_DNLIMIT": 3,
+        "RATIO_UPLIMIT": 0.95,
+        "RATIO_DOWNLIMIT": 0.05,
+        "uplimit_dnlimit_ratio": 17.67,
+        "RATIO_UP_cross_check": 40.38,
+        "margin_dimension": "missing(两融 row 为空，未补全)"
+      },
+      "source": "market_overview.json[updown]"
+    },
+    "volume": {
+      "score": 0,
+      "verdict": "neutral",
+      "detail": "成交额/20日均值 97.65% 落在 80-110%；指数未普涨不给 bull。中长期口径 60/120/250 日分别为 82.34%/64.76%/68.20%，实为显著缩量",
+      "values": {
+        "MONEY_yi": 16087.93,
+        "MONEY_5DAVG_RATIO": 100.81,
+        "MONEY_10DAVG_RATIO": 102.5,
+        "MONEY_20DAVG_RATIO": 97.65,
+        "MONEY_60DAVG_RATIO": 82.34,
+        "MONEY_120DAVG_RATIO": 64.76,
+        "MONEY_250DAVG_RATIO": 68.2,
+        "index_pct_chg": {
+          "SZZS": 0.1909,
+          "SZCZ": -1.1945,
+          "CYBZ": -1.7088,
+          "HS300": -0.0435,
+          "ZZ500": -1.4926
+        }
+      },
+      "source": "market_overview.json[trade] + indices.json"
+    },
+    "capital": {
+      "score": 0,
+      "verdict": "neutral",
+      "detail": "北向净流入 25.39 亿(未达 +30 亿 bull 门槛)；龙虎榜 73 只个股净额合计 -11.47 亿，净卖(18.55 亿) > 净买(11.79 亿)，游资偏防守",
+      "values": {
+        "north_money_yi": 25.39,
+        "south_money_yi": 5.52,
+        "dragon_tiger_net_buy_top10_sum_yi": 11.79,
+        "dragon_tiger_net_sell_top10_sum_yi": -18.55,
+        "dragon_tiger_all_unique_net_sum_yi": -11.47,
+        "dragon_tiger_records": 89,
+        "dragon_tiger_unique_stocks": 73,
+        "top_net_buy": "万向钱潮 +3.74亿",
+        "top_net_sell": "天娱数科 -3.70亿"
+      },
+      "source": "northbound.json + dragon_tiger.json"
+    },
+    "sector": {
+      "score": 0,
+      "verdict": "neutral",
+      "detail": "上涨行业 60/124=48.39% 居中(20%-60%)；主力资金明确净流出(流入 Top10 +50.26 亿 vs 跌幅榜 -201.59 亿)",
+      "values": {
+        "sector_count": 124,
+        "up_sectors": 60,
+        "up_ratio_pct": 48.39,
+        "main_inflow_top10_sum_yi": 50.26,
+        "bottom_losers_net_flow_sum_yi": -201.59,
+        "top_gainer": "油服工程 +3.38%",
+        "bottom_loser": "元件 -6.79%",
+        "spread_pct": 10.17
+      },
+      "source": "sector_ranking.json"
+    }
+  },
+  "tag_conflicts": [
+    "SECTOR_WIDTH_STATUS=全面下跌(上涨板块<20%) vs 实测 up_sectors=60/124=48.39%(sector_ranking.json)：接近半数板块上涨，与「全面下跌」直接矛盾，判定以数值为准(不计 bear)。",
+    "STOCK_WIDTH_STATUS=普涨 vs 实测 RATIO_UP=40.38%、下跌 3157 只 > 上涨 2252 只、涨跌比 0.71(market_overview.json/updown)：实为跌多涨少，标签仅由「20日新高 332 只>200」触发，与涨跌家数矛盾。",
+    "SENTIMENT_STATUS=情绪狂热 vs 实测 RATIO_UP=40.38%(远低于 70% 门槛)：涨停 53 只触发了标签前半条件，但涨股比完全不支持「狂热」，属结构性躁动——本维度仍按涨停/跌停数值给 +2，但风险等级不因该标签下调。",
+    "VOLUME_ENERGE_STATUS=缩量震荡(90~110%均值) vs 中长期口径 MONEY_60DAVG_RATIO=82.34%/120D=64.76%/250D=68.20%：短期口径确在 90-110%，但相对 120/250 日均值实为大幅缩量(仅 65%-68%)，标签掩盖了中期量能萎缩。",
+    "（一致，非冲突）STYLE_ROTATION_STATUS=价值主导：CHG_20D_QZJZ=+1.43% vs QZCZ=-12.03%，差 13.46 pct > 5%，与数值一致；CAP_ROTATION_STATUS=大盘占优：CHG_20D_HS300=-8.96% vs ZZ1000=-13.75%，差 4.79 pct，落在 3%-8% 区间，一致。",
+    "（一致，非冲突）VALUATION_STATUS=合理区间：PE_TTM=18.5，3/5/10 年分位分别 50.13%/68.25%/57.02%，均在 30%-70%(注：源端日期 2026-10-22，滞后 4 日)；TECHNICAL_STATUS=偏弱 与 MACD 死叉(DIF -56.51 < DEA -48.19)、RSI_12=33.32 一致；TREND_LONG_DIRECTION_STATUS=暴跌 与均线完全空头排列一致。"
   ],
   "sector_signals": [
-    {"sector": "AI算力/消费电子", "direction": "long", "note": "创业板指领涨 +4.16%；快讯：AWS 2027 容量基本售罄(AI 基建需求)、歌尔股份三季报营收净利齐升、上半年全球智能眼镜出货量同比 +70.5%"},
-    {"sector": "黄金", "direction": "short", "note": "现货黄金跌破 4000 美元/盎司，国内品牌金饰克价一个月跌约 100 元"}
+    {
+      "sector": "元件",
+      "direction": "short",
+      "note": "全市场最弱方向：-6.79%，仅 4/61 只上涨；主力净流出 65.21 亿、5日净流出 134.52 亿(5日流出规模全市场最大)。消息面「覆铜板大牛股直接摁死跌停」印证，属资金撤离主战场。"
+    },
+    {
+      "sector": "通信设备",
+      "direction": "short",
+      "note": "-3.67%，16/85 只上涨；主力净流出 44.16 亿、5日净流出 130.52 亿，抛压具持续性而非单日扰动。"
+    },
+    {
+      "sector": "半导体",
+      "direction": "short",
+      "note": "-3.55%，仅 14/183 只上涨；主力净流出 51.09 亿、5日净流出 32.14 亿。大摩预计板块或再跌 10%-15%、调整至 11 月中旬结束，短期不宜接刀。"
+    },
+    {
+      "sector": "油服工程 / 炼化及贸易",
+      "direction": "long",
+      "note": "油服工程 +3.38%(12/13 上涨，主力净流入 0.71 亿、5日 +1.30 亿)；炼化及贸易 +1.99%(主力净流入 4.60 亿、5日 +2.23 亿)。资源能源链为当日少数同时具备涨幅与资金持续净流入的方向，中石油股价创 18 年新高。"
+    },
+    {
+      "sector": "国有大型银行Ⅱ",
+      "direction": "long",
+      "note": "+2.23%，6/6 全线上涨，主力净流入 3.73 亿；保险Ⅱ 亦 +1.82%。全指价值 20日 +1.43% 是各区间唯一正收益风格，防御性大盘金融占优，消息面「基金经理止损科技转重仓银行股」印证。注意：该板块 5日主力资金为净流出 13.05 亿，短线资金持续性待观察。"
+    }
   ],
   "risk_level": "medium",
-  "confirmed_days": 1
+  "position_hint": "neutral→50%"
 }

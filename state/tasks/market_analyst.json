@@ -1,8 +1,8 @@
 {
   "task": "market_analyst",
-  "status": "doing",
+  "status": "done",
   "date": "20261026",
-  "reason": null,
-  "artifact": null,
-  "updated_at": "2026-10-26T23:11:07"
+  "reason": "ok",
+  "artifact": "state/regime.json",
+  "updated_at": "2026-10-26T23:31:04"
 }

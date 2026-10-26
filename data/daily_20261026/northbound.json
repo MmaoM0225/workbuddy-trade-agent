@@ -1,11 +1,16 @@
 {
-  "trade_date": "20261026",
-  "ggt_ss": "32325.87",
-  "ggt_sz": "22861.23",
-  "hgt": "124964.19",
-  "sgt": "128948.13",
-  "north_money": "253912.32",
-  "south_money": "55187.11",
-  "north_money_yi": 25.39,
-  "source": "tushare"
+  "date": "20261026",
+  "source": "tushare:moneyflow_hsgt",
+  "data": {
+    "trade_date": "20261026",
+    "ggt_ss": "32325.87",
+    "ggt_sz": "22861.23",
+    "hgt": "124964.19",
+    "sgt": "128948.13",
+    "north_money": "253912.32",
+    "south_money": "55187.11",
+    "north_money_yi": 25.39,
+    "south_money_yi": 5.52,
+    "unit_note": "原始字段单位为万元，*_yi 为换算后的亿元"
+  }
 }

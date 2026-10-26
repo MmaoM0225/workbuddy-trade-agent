@@ -1,108 +1,109 @@
 {
-  "source": "westock",
+  "source": "westock-mcp:data_hot(kind=board)",
   "note": "实时榜不可回看历史",
   "rank_time": "2026-10-26 23:05:00",
+  "count": 15,
   "items": [
     {
-      "rank": "1",
+      "rank": 1,
       "name": "昨日连板",
       "zdf": "7.50",
       "zxj": "3984063.75",
       "rankdelta": "0"
     },
     {
-      "rank": "2",
+      "rank": 2,
       "name": "汽车零部件",
       "zdf": "-0.50",
       "zxj": "6577.63",
       "rankdelta": "0"
     },
     {
-      "rank": "3",
+      "rank": 3,
       "name": "半导体",
       "zdf": "-3.55",
       "zxj": "7569.61",
       "rankdelta": "1"
     },
     {
-      "rank": "4",
+      "rank": 4,
       "name": "机器人概念",
       "zdf": "-0.71",
       "zxj": "5784.85",
       "rankdelta": "1"
     },
     {
-      "rank": "5",
+      "rank": 5,
       "name": "汽车制造",
       "zdf": "5.14",
-      "zxj": "216.68",
+      "zxj": "216.67",
       "rankdelta": "-2"
     },
     {
-      "rank": "6",
+      "rank": 6,
       "name": "白酒Ⅱ",
       "zdf": "1.59",
       "zxj": "37080.39",
       "rankdelta": "0"
     },
     {
-      "rank": "7",
+      "rank": 7,
       "name": "人形机器人",
       "zdf": "-0.81",
       "zxj": "1613.89",
       "rankdelta": "0"
     },
     {
-      "rank": "8",
+      "rank": 8,
       "name": "昨日涨停",
       "zdf": "2.48",
       "zxj": "243860.86",
       "rankdelta": "0"
     },
     {
-      "rank": "9",
+      "rank": 9,
       "name": "半导体",
-      "zdf": "2.54",
-      "zxj": "382.10",
+      "zdf": "2.58",
+      "zxj": "382.37",
       "rankdelta": "0"
     },
     {
-      "rank": "10",
+      "rank": 10,
       "name": "元件",
       "zdf": "-6.79",
       "zxj": "16697.78",
       "rankdelta": "0"
     },
     {
-      "rank": "11",
+      "rank": 11,
       "name": "证券Ⅱ",
       "zdf": "0.84",
       "zxj": "5759.17",
       "rankdelta": "0"
     },
     {
-      "rank": "12",
+      "rank": 12,
       "name": "游戏Ⅱ",
       "zdf": "2.11",
       "zxj": "2589.04",
       "rankdelta": "1"
     },
     {
-      "rank": "13",
+      "rank": 13,
       "name": "物理AI",
       "zdf": "1.80",
       "zxj": "868.38",
       "rankdelta": "-1"
     },
     {
-      "rank": "14",
+      "rank": 14,
       "name": "一般零售",
       "zdf": "1.32",
       "zxj": "2583.02",
       "rankdelta": "0"
     },
     {
-      "rank": "15",
+      "rank": 15,
       "name": "医疗服务",
       "zdf": "0.47",
       "zxj": "7751.07",

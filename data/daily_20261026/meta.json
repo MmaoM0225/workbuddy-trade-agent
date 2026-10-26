@@ -1,29 +1,93 @@
 {
   "date": "20261026",
-  "fetched_at": "2026-10-26 23:09:52",
+  "fetched_at": "2026-10-26T23:19:56+08:00",
   "trading_day": true,
-  "source_script": "scripts/fetch_daily_mcp.py",
   "sources": {
-    "indices": "tushare/index_daily",
-    "market_overview": "westock/data_market_overview",
-    "sector_ranking": "westock/data_sector",
-    "news": "westock/data_flash_news_search",
-    "hot_news": "westock/data_hot",
-    "hot_board": "westock/data_hot",
-    "dragon_tiger": "tushare/top_list",
-    "northbound": "tushare/moneyflow_hsgt"
+    "trade_cal": "tushare:trade_cal(is_open=1)",
+    "indices": "tushare:index_daily",
+    "market_overview": "westock-mcp:data_market_overview(type=all)",
+    "sector_ranking": "westock-mcp:data_sector(mode=ranking,kind=industry,type=changePct)",
+    "news": "westock-mcp:data_flash_news_search(limit=50)",
+    "hot_news": "westock-mcp:data_hot(kind=news,limit=20)",
+    "hot_board": "westock-mcp:data_hot(kind=board,limit=15)",
+    "dragon_tiger": "tushare:top_list",
+    "northbound": "tushare:moneyflow_hsgt"
   },
   "record_counts": {
     "indices": 5,
     "market_overview_dimensions": 8,
+    "sector_ranking_industries": 124,
     "sector_top_gainers": 15,
     "sector_bottom_losers": 10,
+    "sector_main_inflow_top10": 10,
     "news": 50,
     "hot_news": 20,
     "hot_board": 15,
-    "dragon_tiger_unique": 73,
+    "dragon_tiger_records": 89,
+    "dragon_tiger_unique_stocks": 73,
     "northbound": 1
   },
+  "files": [
+    "indices.json",
+    "market_overview.json",
+    "sector_ranking.json",
+    "news.json",
+    "hot_news.json",
+    "hot_board.json",
+    "dragon_tiger.json",
+    "northbound.json",
+    "meta.json"
+  ],
+  "cross_check": [
+    {
+      "dimension": "STOCK_WIDTH",
+      "label": "普涨(创新高>200只，或者破位<10只)",
+      "verdict": "CONFLICT",
+      "evidence": "CNT_RED=2252(40.38%) / CNT_GREEN=3157(56.61%) / CNT_ZERO=168 / 涨跌比=0.71"
+    },
+    {
+      "dimension": "VOLUME_ENERGE",
+      "label": "缩量震荡(成交额90~110%均值)",
+      "verdict": "OK",
+      "evidence": "两市成交额 MONEY=16087.93亿；20日均值=16475.72亿；当日/20日均值=97.65%（标签口径90~110%）；5日=100.81% / 10日=102.50% / 60日=82.34% / 250日=68.20%"
+    },
+    {
+      "dimension": "SENTIMENT",
+      "label": "情绪狂热(涨停>50只，或者涨股比>70%，两融周增>2% )",
+      "verdict": "WEAK_SUPPORT",
+      "evidence": "涨停数 CNT_REACH_UPLIMIT=53（>50，满足触发项）；但上涨占比 RATIO_UP=40.38%（<70%阈值不成立）；跌停=3；下跌家数占优"
+    },
+    {
+      "dimension": "SECTOR_WIDTH",
+      "label": "全面下跌(上涨板块<20%)",
+      "verdict": "CONFLICT",
+      "evidence": "申万二级行业 124 个，其中上涨(changePct>0) 60 个，占比 48.39%；下跌 64 个"
+    },
+    {
+      "dimension": "STYLE_ROTATION",
+      "label": "价值主导(价值指数 > 成长指数 +5%)",
+      "verdict": "OK(20日口径)",
+      "evidence": "20日 全指价值1.43% - 全指成长-12.03% = +13.46 pct；10日 = +4.35 pct（10日口径未达 +5% 门槛）"
+    },
+    {
+      "dimension": "CAP_ROTATION",
+      "label": "大盘占优(沪深300 > 中证1000 +3%~+8%)",
+      "verdict": "OK(20日口径)",
+      "evidence": "20日 沪深300 -8.96% - 中证1000 -13.75% = +4.79 pct（标签口径 +3%~+8%，需转义无关）；10日 = +1.26 pct"
+    }
+  ],
   "degraded": false,
-  "notes": []
+  "notes": [
+    "market_overview 维度[margin] row 为空（源端无数据），已标记 missing=True，未做任何数值补全",
+    "[标签-数值冲突] STOCK_WIDTH 标签=「普涨(创新高>200只，或者破位<10只)」，原始数值：CNT_RED=2252(40.38%) / CNT_GREEN=3157(56.61%) / CNT_ZERO=168 / 涨跌比=0.71",
+    "[标签-数值弱支撑] SENTIMENT 标签=「情绪狂热(涨停>50只，或者涨股比>70%，两融周增>2% )」，原始数值：涨停数 CNT_REACH_UPLIMIT=53（>50，满足触发项）；但上涨占比 RATIO_UP=40.38%（<70%阈值不成立）；跌停=3；下跌家数占优",
+    "[标签-数值冲突] SECTOR_WIDTH 标签=「全面下跌(上涨板块<20%)」，原始数值：申万二级行业 124 个，其中上涨(changePct>0) 60 个，占比 48.39%；下跌 64 个",
+    "market_overview[valuation] 维度源端返回日期为 2026-10-22（非当日 2026-10-26），中证全指估值存在 4 日滞后，使用请注意"
+  ],
+  "check_result": {
+    "exit_code": 0,
+    "verdict": "PASS",
+    "ran_at": "2026-10-26T23:12:00+08:00",
+    "summary": "check_pipeline.py --date 20261026 全项通过：state schema 5 文件 + trades.jsonl、tasks 9 个状态、data 8 个文件记录数校验通过"
+  }
 }
