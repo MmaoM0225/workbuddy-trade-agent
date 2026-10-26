@@ -1,0 +1,132 @@
+<!DOCTYPE html><html lang='zh-CN'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>总控巡检 20261026</title><style>
+body{margin:0;padding:0;background:#f5f6f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;color:#1f2329;}
+.wrap{max-width:880px;margin:0 auto;padding:24px 16px 44px;}
+.card{background:#fff;border-radius:10px;padding:20px 22px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+h1{font-size:19px;margin:0 0 14px;font-weight:600;border-left:3px solid #c8102e;padding-left:10px;}
+h2{font-size:14px;margin:18px 0 10px;font-weight:600;color:#1f2329;}
+h3{font-size:13px;margin:14px 0 8px;font-weight:600;color:#646a73;}
+h4{font-size:12.5px;margin:12px 0 6px;font-weight:600;color:#8a9099;}
+p{font-size:13px;line-height:1.75;margin:6px 0;color:#2b3038;}
+ul{margin:6px 0;padding-left:20px;}
+li{font-size:13px;line-height:1.75;color:#2b3038;}
+table{width:100%;border-collapse:collapse;font-size:12.5px;margin:8px 0;}
+th{background:#f7f8fa;color:#646a73;font-weight:500;text-align:left;padding:8px 10px;border-bottom:1px solid #eceef1;}
+td{padding:8px 10px;border-bottom:1px solid #f2f3f5;vertical-align:top;}
+code{background:#f2f3f5;border-radius:3px;padding:1px 5px;font-size:12px;font-family:ui-monospace,Menlo,monospace;}
+.metric{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:6px;}
+.metric div{flex:1 1 130px;background:#fafbfc;border:1px solid #eceef1;border-radius:8px;padding:11px 13px;}
+.metric .k{font-size:11px;color:#8a9099;margin-bottom:4px;}
+.metric .v{font-size:17px;font-weight:600;}
+.footer{text-align:center;color:#a8adb5;font-size:11px;margin-top:18px;}
+.mt{width:100%;border-collapse:separate;border-spacing:7px 0;margin:0 -7px 10px;}
+.mt td{background:#fafbfc;border:1px solid #eceef1;border-radius:8px;padding:11px 13px;vertical-align:top;border-bottom:1px solid #eceef1;}
+.mt .k{font-size:11px;color:#8a9099;margin-bottom:5px;font-weight:400;}
+.mt .v{font-size:18px;font-weight:600;line-height:1.2;}
+.mt .s{font-size:11px;color:#8a9099;margin-top:3px;}
+.up{color:#c8102e;}
+.down{color:#0a8f4d;}
+.badge{display:inline-block;padding:2px 9px;border-radius:10px;font-size:11px;font-weight:600;line-height:1.6;}
+.b-bull{background:#fdecef;color:#c8102e;}
+.b-bear{background:#e8f6ee;color:#0a8f4d;}
+.b-neutral{background:#f1f2f4;color:#646a73;}
+.warnbox{background:#fffbf0;border-left:3px solid #f0a020;border-radius:0 6px 6px 0;padding:10px 14px;margin:8px 0;}
+.warnbox ul{margin:2px 0;padding-left:18px;}
+.warnbox li{font-size:12.5px;line-height:1.7;margin:3px 0;}
+.strategy{background:#f6f9ff;border-left:3px solid #3b6ef0;border-radius:0 6px 6px 0;padding:12px 14px;margin:8px 0;}
+.strategy p{margin:4px 0;font-size:13px;}
+.sig{display:inline-block;min-width:46px;padding:1px 7px;border-radius:4px;font-size:11px;font-weight:600;margin-right:6px;}
+.sig-short{background:#e8f6ee;color:#0a8f4d;}
+.sig-long{background:#fdecef;color:#c8102e;}
+.sig-neutral{background:#f1f2f4;color:#646a73;}
+.dimrow td{font-size:12.5px;}
+.detail{color:#4e5561;font-size:12.5px;line-height:1.7;}
+hr.sep{border:0;border-top:1px dashed #e6e8eb;margin:16px 0;}
+</style></head><body><div class='wrap'><div class='card'><h1>总控巡检 20261026</h1><p style='color:#8a9099;font-size:12px;margin:0'>生成于 20261026</p><h2>每日巡检 20261026</h2>
+<ul>
+<li>运行时间：2026-10-26 23:53（交易日，tushare trade_cal SSE is_open=1，pretrade_date=20261023）</li>
+<li>数据基准日：20261026（data/daily_20261026/ 存在，无滞后）</li>
+<li>上游依赖：data_officer(done) → market_analyst(done) → position_manager(done) → 本任务</li>
+<li>参数版本：v2.0 / v2.1（选股），regime=neutral</li>
+</ul>
+<p>---</p>
+<h3>流水线核验</h3>
+<table>
+<tr><th>环节</th><th>产出</th><th>缺失/降级</th><th>状态</th></tr>
+<tr><td>数据员</td><td>data/daily_20261026/ 共 10 个文件（indices / market_overview / sector_ranking / news / hot_news / hot_board / dragon_tiger / northbound / cross_check / meta）</td><td>无缺失；degraded=false</td><td>PASS</td></tr>
+<tr><td>市场分析师</td><td>state/regime.json（date=20261026，regime=neutral，confidence=0.55，confirmed_days=2，evidence 9 条）</td><td>severity 字段存在，值为 null（neutral 无需 light/heavy，符合 v1.7 口径）</td><td>PASS</td></tr>
+<tr><td>持仓管家</td><td>reports/position_review_20261026.md（九个章节完整，含卖出决策表与换仓记录）</td><td>无缺失</td><td>PASS</td></tr>
+<tr><td>任务状态</td><td>9 个任务全部 done（inspector 本轮 doing）</td><td>无</td><td>PASS</td></tr>
+</table>
+<p>补充说明：</p>
+<ul>
+<li>卖出决策核验：本轮无卖出触发，未生成任何 sell 单；持仓管家已在报告第三节逐条列出五项触发条件的检查结果（止损/止盈/逻辑破坏/bear降仓/权重超限），记录完整，无需补记。</li>
+<li>换仓核验：R-007 自 v1.9 起关闭（六年回测 98 笔换仓平均 +0.75%，判定为纯摩擦），本轮未做换仓、无 qs 对比属预期，持仓管家已在第四节明示，不记缺失。</li>
+<li>regime 切换核验：20261023 neutral → 20261026 neutral，confirmed_days 由 1 增至 2，本轮未发生切换（switched=false）。</li>
+</ul>
+<p>---</p>
+<h3>任务状态（task_status list 快照）</h3>
+<table>
+<tr><th>任务</th><th>状态</th><th>说明</th></tr>
+<tr><td>data_officer</td><td>done</td><td>20261026</td></tr>
+<tr><td>market_analyst</td><td>done</td><td>20261026</td></tr>
+<tr><td>position_manager</td><td>done</td><td>20261026</td></tr>
+<tr><td>inspector</td><td>doing</td><td>本轮运行中</td></tr>
+<tr><td>stock_picker</td><td>done</td><td>pool.json（20261023 基准，10-26 22:52 生成）</td></tr>
+<tr><td>researcher</td><td>done</td><td>watchlist.json（20 只 buy_watch，30 只 avoid）</td></tr>
+<tr><td>position_builder</td><td>done</td><td>orders.json 10 张 planned 买单</td></tr>
+<tr><td>reviewer</td><td>done</td><td>—</td></tr>
+<tr><td>archivist</td><td>done</td><td>—</td></tr>
+</table>
+<p>无 undo / 无未完成任务。</p>
+<p>---</p>
+<h3>数据状态</h3>
+<ul>
+<li>degraded：false</li>
+<li>record_counts：indices 5 / market_overview 8 维度 / sector_ranking 124 行业 / news 50 / hot_news 20 / hot_board 15 / dragon_tiger 89 条（73 只个股）/ northbound 1</li>
+<li>check_result（数据员自校验）：exit_code=0，verdict=PASS</li>
+<li>本轮复核 <code>python scripts/check_pipeline.py --date 20261026</code>：<b>RESULT: PASS，退出码 0</b></li>
+</ul>
+<p>  - state schema：5 个 JSON + trades.jsonl 全部合法</p>
+<p>  - tasks：9 个状态文件校验通过</p>
+<p>  - data：8 个核心文件记录数校验通过</p>
+<p>数据质量备注（源端口径，非框架缺陷）：</p>
+<p>1. market_overview[margin]（两融余额）源端 row 为空，标记 missing=true，未做任何数值补全；情绪维度改由涨跌停数值独立判定。</p>
+<p>2. market_overview[valuation] 源端返回日期为 2026-10-22，中证全指估值滞后 4 日，仅作背景参考未参与打分。</p>
+<p>3. 标签-数值冲突 3 项（STOCK_WIDTH / SECTOR_WIDTH / SENTIMENT），数据员已在 cross_check.json 与 meta.notes 中标注，分析师判定以数值为准。</p>
+<p>---</p>
+<h3>状态文件校验</h3>
+<table>
+<tr><th>文件</th><th>校验点</th><th>状态</th></tr>
+<tr><td>state/pool.json</td><td>date=20261023，strategy_version=v2.0，universe 2499，count=50，stocks 50</td><td>PASS</td></tr>
+<tr><td>state/watchlist.json</td><td>date=20261023，items 20（pass 20 / avoid 30），排雷三件套覆盖 50/50/50</td><td>PASS</td></tr>
+<tr><td>state/regime.json</td><td>date 匹配 20261026；regime ∈ 枚举；confidence 0.55 ∈ [0,1]；evidence 9 条 ≥2；severity 键存在</td><td>PASS</td></tr>
+<tr><td>state/positions.json</td><td>as_of=20261026；现金 952,597 + 持仓 47,403 = 1,000,000 恒等成立；2 只持仓均带 stop_loss/take_profit</td><td>PASS</td></tr>
+<tr><td>state/orders.json</td><td>10 张 buy 单，全部带 stop_loss 与 take_profit（缺项 0）；status 8 planned + 2 filled；全部含 expires_after_trading_days=10</td><td>PASS（止损止盈完整性）</td></tr>
+<tr><td>state/trades.jsonl</td><td>2 条 buy 成交（中国动力 900 股 @31.23、中科三环 1800 股 @10.72），与 positions 一致，append-only 未被覆盖</td><td>PASS</td></tr>
+</table>
+<p>风控口径复核：最大单票 2.81%（≤15%），无行业超 30%（当前仅水运、船舶、矿物制品各 1 只，均在 3% 以内），三级熔断全部正常（日亏 0%、回撤 0%）。</p>
+<p>---</p>
+<h3>异常清单</h3>
+<h4>[CRITICAL]</h4>
+<p>无。本轮未触发任一 critical 条件：orders.json 无缺止损订单；数据未出现连续 2 个交易日缺失（20261024 非交易日已按 non-trading-day 记 skip_log）；regime 未发生切换。</p>
+<h4>[WARN]</h4>
+<p>1. <b>订单档位状态不一致（新增，本轮发现）</b>：ORD-20261023-002（中国动力）与 ORD-20261023-008（中科三环）订单级 status 已置为 filled，但两单的 tranches[0].status 仍为 pending，仅靠 filled_tranches=[1] 表达首档已成交。风险点：若明日执行逻辑以 tranche status 判定是否可成交，存在首档被重复买入的可能。建议持仓管家在下一轮补齐 tranches 状态（或改为以 tranches 为唯一真值源），本 agent 不代为修改 state/。</p>
+<p>2. <b>orders.json 今日被重建（单一写者原则被破坏）</b>：orders.json.notes.rebuild_note 记录「2026-10-26 修复：持仓管家重写订单导致 ID 错位，按 git 50d9b89 基线 + trades.jsonl 成交回填重建」，对应提交 9345043。事故已修复且结果正确，但暴露持仓管家越界重写 position_builder 产物的问题。建议明确 orders.json 仅由持仓管家写状态、position_builder 写计划，二者不得整文件覆盖。备份文件 state/orders.json.bak_20261026 尚未纳入 git 跟踪。</p>
+<p>3. <b>仓位显著低于 regime 目标</b>：实际 4.74% vs neutral 目标 50%，偏差 -45.26 pct。属建仓首日的分批过程，但若 10 个交易日内多数订单因价格未回落而过期（R-006），仓位将长期不达标，届时需由建仓经理评估重设 ref_price（须总控批准，禁止自行上移 price_zone）。</p>
+<p>4. <b>次档买点与止损线重叠（遗留待拍板）</b>：中国动力二档区间 [28.03, 30.58] 与止损 28.82 重叠；中科三环二档区间 [9.73, 10.62] 与止损 10.10 重叠。中科三环二档距收盘仅 -0.93%，明日触发概率高，一旦触发即暴露该缺陷。建议尽快拍板方案 B（止损锚定实际成交成本价 ×0.92）。</p>
+<p>5. <b>趋势维度已判 bear</b>：上证收盘低于全部均线（MA5&lt;MA10&lt;MA20&lt;MA60&lt;MA120&lt;MA250 完全空头排列），20 日 -5.48%，总分 0 仅靠情绪 +2 拉回 neutral。若后续总分跌破 -6 进入 bear+light，将禁止新建仓，届时 8 张未成交买单的执行资格受影响，需提前预案。</p>
+<h4>[INFO]</h4>
+<p>1. 持仓碎片化：中国动力 2.81%、中科三环 1.93%，均低于 min_single_weight_pct=3%，二档成交后可分别达 5.6% / 3.9%。</p>
+<p>2. 含在途标的 12 只（持仓 2 + planned 10），恰等于上限 12，未超限。</p>
+<p>3. cross_check.json 为数据员新增的交叉校验产出，未列入 meta.json 的 files 列表，属无害冗余。</p>
+<p>4. 本轮为 automation 首次正式运行（此前 20261023 为手动 dry-run），全链路文件契约与 schema 均已按自动化口径验证通过。</p>
+<p>---</p>
+<h3>邮件发送状态</h3>
+<p><b>SENT</b> — 2026-10-26 23:57 通过 <code>send_report_mail.py --type inspect --date 20261026</code> 发至 1920442561@qq.com，服务端返回 queued=true（subject「[巡检] 总控巡检 20261026」）。已复核 reports/mail_inspect_20261026.html 正文 9,484 字符，七个章节均完整渲染，非空壳。</p>
+<p>---</p>
+<h3>下一步动作</h3>
+<p>1. 明日（20261027）持仓管家执行前，先确认 ORD-20261023-002 / -008 的 tranches[0] 状态口径，避免首档重复成交；建议顺带将 orders.json.bak_20261026 纳入 git 跟踪或清理。</p>
+<p>2. 紧盯三只临近触发标的：中科三环（二档 -0.93%）、东华软件（首档 -0.76%）、中国动力（二档 -2.08%）；触发即涉及止损口径问题，需人工确认。</p>
+<p>3. regime 若转 bear+light，须提前明确 8 张未成交买单的处置（保留等待 / 全部作废），避免临场决策。</p>
+<p>4. 参数侧待拍板项：次档买点与止损线重叠（推荐方案 B）、初始模拟资金规模（当前按 100 万默认执行）。</p>
+<p>5. 本轮未触发实时会商条件（无缺止损订单 / 无连续 2 日数据缺失 / regime 未切换），不发起会商。</p></div><div class='footer'>多 Agent 协同交易框架自动生成 · 模拟盘研究记录，不构成投资建议</div></div></body></html>
