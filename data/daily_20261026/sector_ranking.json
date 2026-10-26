@@ -1,0 +1,327 @@
+{
+  "date": "2026-10-26",
+  "source": "westock",
+  "sector_count": 124,
+  "up_sectors": 60,
+  "top_gainers": [
+    {
+      "name": "油服工程",
+      "code": "pt01801962",
+      "changePct": 3.38,
+      "upCount": "12/13",
+      "mainNetInflow_wan": 7082.4,
+      "mainNetInflow5d_wan": 13000.44,
+      "leader": "中海油服(7.23)"
+    },
+    {
+      "name": "房地产服务",
+      "code": "pt01801183",
+      "changePct": 2.98,
+      "upCount": "9/12",
+      "mainNetInflow_wan": 23298.16,
+      "mainNetInflow5d_wan": 6843.8,
+      "leader": "*ST皇庭(7.91)"
+    },
+    {
+      "name": "休闲食品",
+      "code": "pt01801128",
+      "changePct": 2.93,
+      "upCount": "21/22",
+      "mainNetInflow_wan": 7627.78,
+      "mainNetInflow5d_wan": -9451.66,
+      "leader": "桂发祥(10.04)"
+    },
+    {
+      "name": "医药商业",
+      "code": "pt01801154",
+      "changePct": 2.73,
+      "upCount": "30/32",
+      "mainNetInflow_wan": 17942.32,
+      "mainNetInflow5d_wan": -15327.75,
+      "leader": "百洋医药(10.62)"
+    },
+    {
+      "name": "国有大型银行Ⅱ",
+      "code": "pt01801782",
+      "changePct": 2.23,
+      "upCount": "6/6",
+      "mainNetInflow_wan": 37330.69,
+      "mainNetInflow5d_wan": -130482.64,
+      "leader": "工商银行(3.13)"
+    },
+    {
+      "name": "游戏Ⅱ",
+      "code": "pt01801764",
+      "changePct": 2.11,
+      "upCount": "21/26",
+      "mainNetInflow_wan": 71056.05,
+      "mainNetInflow5d_wan": -100848.57,
+      "leader": "盛天网络(14.62)"
+    },
+    {
+      "name": "医疗器械",
+      "code": "pt01801153",
+      "changePct": 2.05,
+      "upCount": "91/129",
+      "mainNetInflow_wan": -5854.33,
+      "mainNetInflow5d_wan": -40008.77,
+      "leader": "山外山(12.49)"
+    },
+    {
+      "name": "炼化及贸易",
+      "code": "pt01801963",
+      "changePct": 1.99,
+      "upCount": "17/30",
+      "mainNetInflow_wan": 46023.1,
+      "mainNetInflow5d_wan": 22311.54,
+      "leader": "统一股份(4.99)"
+    },
+    {
+      "name": "物流",
+      "code": "pt01801178",
+      "changePct": 1.96,
+      "upCount": "36/47",
+      "mainNetInflow_wan": -1864.86,
+      "mainNetInflow5d_wan": -43424.12,
+      "leader": "*ST瑞茂(9.82)"
+    },
+    {
+      "name": "航运港口",
+      "code": "pt01801992",
+      "changePct": 1.92,
+      "upCount": "24/34",
+      "mainNetInflow_wan": 4335.42,
+      "mainNetInflow5d_wan": -39000.96,
+      "leader": "中远海能(3.75)"
+    },
+    {
+      "name": "专业连锁Ⅱ",
+      "code": "pt01801204",
+      "changePct": 1.91,
+      "upCount": "4/7",
+      "mainNetInflow_wan": 12984.52,
+      "mainNetInflow5d_wan": -1379.91,
+      "leader": "天音控股(6.45)"
+    },
+    {
+      "name": "摩托车及其他",
+      "code": "pt01801881",
+      "changePct": 1.88,
+      "upCount": "13/16",
+      "mainNetInflow_wan": 4359.99,
+      "mainNetInflow5d_wan": 331.82,
+      "leader": "征和工业(5.26)"
+    },
+    {
+      "name": "数字媒体",
+      "code": "pt01801767",
+      "changePct": 1.83,
+      "upCount": "10/14",
+      "mainNetInflow_wan": 35185.69,
+      "mainNetInflow5d_wan": -46322.63,
+      "leader": "凡拓数创(10.43)"
+    },
+    {
+      "name": "保险Ⅱ",
+      "code": "pt01801194",
+      "changePct": 1.82,
+      "upCount": "5/5",
+      "mainNetInflow_wan": 5543.61,
+      "mainNetInflow5d_wan": -77678.12,
+      "leader": "中国太保(3.5)"
+    },
+    {
+      "name": "酒店餐饮",
+      "code": "pt01801219",
+      "changePct": 1.74,
+      "upCount": "6/9",
+      "mainNetInflow_wan": -1791.04,
+      "mainNetInflow5d_wan": -7550.4,
+      "leader": "首旅酒店(2.69)"
+    }
+  ],
+  "bottom_losers": [
+    {
+      "name": "通用设备",
+      "code": "pt01801072",
+      "changePct": -3.03,
+      "upCount": "40/220",
+      "mainNetInflow_wan": 14803.3,
+      "mainNetInflow5d_wan": 37733.6,
+      "leader": "大西洋(10.1)"
+    },
+    {
+      "name": "小金属",
+      "code": "pt01801054",
+      "changePct": -3.04,
+      "upCount": "1/27",
+      "mainNetInflow_wan": -110138.81,
+      "mainNetInflow5d_wan": -115269.99,
+      "leader": "华阳新材(2.54)"
+    },
+    {
+      "name": "半导体",
+      "code": "pt01801081",
+      "changePct": -3.55,
+      "upCount": "14/183",
+      "mainNetInflow_wan": -510854.37,
+      "mainNetInflow5d_wan": -321352.64,
+      "leader": "芯海科技(6.82)"
+    },
+    {
+      "name": "通信设备",
+      "code": "pt01801102",
+      "changePct": -3.67,
+      "upCount": "16/85",
+      "mainNetInflow_wan": -441612.48,
+      "mainNetInflow5d_wan": -1305205.19,
+      "leader": "科瑞思(20.01)"
+    },
+    {
+      "name": "其他电子Ⅱ",
+      "code": "pt01801082",
+      "changePct": -3.79,
+      "upCount": "2/33",
+      "mainNetInflow_wan": -35511.97,
+      "mainNetInflow5d_wan": 5.11,
+      "leader": "汉朔科技(5.07)"
+    },
+    {
+      "name": "非金属材料Ⅱ",
+      "code": "pt01801039",
+      "changePct": -3.83,
+      "upCount": "1/8",
+      "mainNetInflow_wan": -8194.28,
+      "mainNetInflow5d_wan": -26020.69,
+      "leader": "长江材料(2.39)"
+    },
+    {
+      "name": "贵金属",
+      "code": "pt01801053",
+      "changePct": -4.27,
+      "upCount": "0/11",
+      "mainNetInflow_wan": -64692.96,
+      "mainNetInflow5d_wan": -189030.06,
+      "leader": "恒邦股份(-1.73)"
+    },
+    {
+      "name": "电子化学品Ⅱ",
+      "code": "pt01801086",
+      "changePct": -4.33,
+      "upCount": "0/36",
+      "mainNetInflow_wan": -64152.72,
+      "mainNetInflow5d_wan": -173052.65,
+      "leader": "濮阳惠成(-0.63)"
+    },
+    {
+      "name": "玻璃玻纤",
+      "code": "pt01801712",
+      "changePct": -5.4,
+      "upCount": "2/16",
+      "mainNetInflow_wan": -143522.33,
+      "mainNetInflow5d_wan": -319356.31,
+      "leader": "南  玻Ａ(0.85)"
+    },
+    {
+      "name": "元件",
+      "code": "pt01801083",
+      "changePct": -6.79,
+      "upCount": "4/61",
+      "mainNetInflow_wan": -652056.42,
+      "mainNetInflow5d_wan": -1345176.05,
+      "leader": "胜宏科技(2.47)"
+    }
+  ],
+  "main_inflow_top10": [
+    {
+      "name": "汽车零部件",
+      "code": "pt01801093",
+      "changePct": -0.5,
+      "upCount": "84/244",
+      "mainNetInflow_wan": 97739.91,
+      "mainNetInflow5d_wan": 100283.13,
+      "leader": "德尔股份(12.54)"
+    },
+    {
+      "name": "医疗服务",
+      "code": "pt01801156",
+      "changePct": 0.47,
+      "upCount": "26/51",
+      "mainNetInflow_wan": 76898.42,
+      "mainNetInflow5d_wan": -50355.84,
+      "leader": "百诚医药(6.03)"
+    },
+    {
+      "name": "游戏Ⅱ",
+      "code": "pt01801764",
+      "changePct": 2.11,
+      "upCount": "21/26",
+      "mainNetInflow_wan": 71056.05,
+      "mainNetInflow5d_wan": -100848.57,
+      "leader": "盛天网络(14.62)"
+    },
+    {
+      "name": "自动化设备",
+      "code": "pt01801078",
+      "changePct": -0.84,
+      "upCount": "21/82",
+      "mainNetInflow_wan": 50038.67,
+      "mainNetInflow5d_wan": 91325.88,
+      "leader": "江苏北人(15.98)"
+    },
+    {
+      "name": "炼化及贸易",
+      "code": "pt01801963",
+      "changePct": 1.99,
+      "upCount": "17/30",
+      "mainNetInflow_wan": 46023.1,
+      "mainNetInflow5d_wan": 22311.54,
+      "leader": "统一股份(4.99)"
+    },
+    {
+      "name": "个护用品",
+      "code": "pt01801981",
+      "changePct": -0.01,
+      "upCount": "8/12",
+      "mainNetInflow_wan": 42810.05,
+      "mainNetInflow5d_wan": 199953.51,
+      "leader": "登康口腔(3.69)"
+    },
+    {
+      "name": "国有大型银行Ⅱ",
+      "code": "pt01801782",
+      "changePct": 2.23,
+      "upCount": "6/6",
+      "mainNetInflow_wan": 37330.69,
+      "mainNetInflow5d_wan": -130482.64,
+      "leader": "工商银行(3.13)"
+    },
+    {
+      "name": "数字媒体",
+      "code": "pt01801767",
+      "changePct": 1.83,
+      "upCount": "10/14",
+      "mainNetInflow_wan": 35185.69,
+      "mainNetInflow5d_wan": -46322.63,
+      "leader": "凡拓数创(10.43)"
+    },
+    {
+      "name": "房地产服务",
+      "code": "pt01801183",
+      "changePct": 2.98,
+      "upCount": "9/12",
+      "mainNetInflow_wan": 23298.16,
+      "mainNetInflow5d_wan": 6843.8,
+      "leader": "*ST皇庭(7.91)"
+    },
+    {
+      "name": "生物制品",
+      "code": "pt01801152",
+      "changePct": 0.9,
+      "upCount": "32/52",
+      "mainNetInflow_wan": 22241.3,
+      "mainNetInflow5d_wan": -55429.6,
+      "leader": "近岸蛋白(13.08)"
+    }
+  ]
+}

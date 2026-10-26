@@ -1,0 +1,29 @@
+{
+  "date": "20261026",
+  "fetched_at": "2026-10-26 23:09:52",
+  "trading_day": true,
+  "source_script": "scripts/fetch_daily_mcp.py",
+  "sources": {
+    "indices": "tushare/index_daily",
+    "market_overview": "westock/data_market_overview",
+    "sector_ranking": "westock/data_sector",
+    "news": "westock/data_flash_news_search",
+    "hot_news": "westock/data_hot",
+    "hot_board": "westock/data_hot",
+    "dragon_tiger": "tushare/top_list",
+    "northbound": "tushare/moneyflow_hsgt"
+  },
+  "record_counts": {
+    "indices": 5,
+    "market_overview_dimensions": 8,
+    "sector_top_gainers": 15,
+    "sector_bottom_losers": 10,
+    "news": 50,
+    "hot_news": 20,
+    "hot_board": 15,
+    "dragon_tiger_unique": 73,
+    "northbound": 1
+  },
+  "degraded": false,
+  "notes": []
+}
