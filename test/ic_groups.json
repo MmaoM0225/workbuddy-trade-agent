@@ -1,0 +1,178 @@
+[
+  {
+    "factor": "mom_5d",
+    "groups_bps": [
+      77.0,
+      121.9,
+      122.1,
+      109.5,
+      33.1
+    ],
+    "spread_bps": -43.9
+  },
+  {
+    "factor": "mom_10d",
+    "groups_bps": [
+      88.8,
+      122.3,
+      124.7,
+      106.4,
+      21.1
+    ],
+    "spread_bps": -67.8
+  },
+  {
+    "factor": "mom_20d",
+    "groups_bps": [
+      101.7,
+      123.6,
+      126.7,
+      97.6,
+      7.9
+    ],
+    "spread_bps": -93.8
+  },
+  {
+    "factor": "vol_20d_inv",
+    "groups_bps": [
+      3.8,
+      105.2,
+      133.5,
+      129.5,
+      85.4
+    ],
+    "spread_bps": 81.6
+  },
+  {
+    "factor": "mdd_20d_inv",
+    "groups_bps": [
+      57.0,
+      98.9,
+      111.2,
+      99.1,
+      74.2
+    ],
+    "spread_bps": 17.2
+  },
+  {
+    "factor": "price_pos_20d",
+    "groups_bps": [
+      80.7,
+      109.7,
+      112.1,
+      91.4,
+      55.2
+    ],
+    "spread_bps": -25.5
+  },
+  {
+    "factor": "pv_corr_20d",
+    "groups_bps": [
+      122.1,
+      119.6,
+      104.2,
+      86.5,
+      24.9
+    ],
+    "spread_bps": -97.2
+  },
+  {
+    "factor": "turnover_trend_20d",
+    "groups_bps": [
+      70.1,
+      129.4,
+      155.9,
+      113.5,
+      -11.6
+    ],
+    "spread_bps": -81.7
+  },
+  {
+    "factor": "ep_ttm",
+    "groups_bps": [
+      83.3,
+      100.1,
+      94.0,
+      87.5,
+      61.4
+    ],
+    "spread_bps": -21.9
+  },
+  {
+    "factor": "bp_ttm",
+    "groups_bps": [
+      39.3,
+      85.6,
+      114.2,
+      124.2,
+      102.2
+    ],
+    "spread_bps": 62.8
+  },
+  {
+    "factor": "sp_ttm",
+    "groups_bps": [
+      50.0,
+      83.9,
+      107.8,
+      116.3,
+      110.8
+    ],
+    "spread_bps": 60.8
+  },
+  {
+    "factor": "turnover_rate",
+    "groups_bps": [
+      98.1,
+      126.1,
+      137.3,
+      122.5,
+      -17.6
+    ],
+    "spread_bps": -115.7
+  },
+  {
+    "factor": "roe_ttm",
+    "groups_bps": [
+      159.4,
+      120.6,
+      107.1,
+      84.5,
+      39.9
+    ],
+    "spread_bps": -119.5
+  },
+  {
+    "factor": "net_margin_ttm",
+    "groups_bps": [
+      157.6,
+      111.8,
+      106.7,
+      82.9,
+      47.9
+    ],
+    "spread_bps": -109.8
+  },
+  {
+    "factor": "gross_margin_ttm",
+    "groups_bps": [
+      124.5,
+      112.3,
+      123.1,
+      92.9,
+      65.7
+    ],
+    "spread_bps": -58.7
+  },
+  {
+    "factor": "tr_yoy",
+    "groups_bps": [
+      98.4,
+      83.7,
+      93.0,
+      119.7,
+      119.0
+    ],
+    "spread_bps": 20.5
+  }
+]

@@ -19,8 +19,8 @@ from pathlib import Path
 BASE = "E:/cashfree/agent/"
 DAILY_DIR = BASE + "data/warehouse/daily/"
 IDX_FILE = BASE + "test/index_000001SH.json"
-OUT_JSON = BASE + "test/replay_6y_v19.json"
-OUT_MD = BASE + "test/reports/replay_6y_v19.md"
+OUT_JSON = BASE + "test/replay_6y_v21.json"
+OUT_MD = BASE + "test/reports/replay_6y_v21.md"
 
 VER = os.environ.get("REPLAY_VER", "v3")   # v1=daily derisk, v2=once, v3=layered
 
@@ -192,9 +192,13 @@ def regime_of(d, prev):
 # Financial quality is decided by the researcher on the Top50, not by the picker.
 FINA_HIST.update(load_fina_hist())
 
-W = {"mom_5d": .06, "mom_10d": .07, "mom_20d": .07, "vol_20d_inv": .08, "mdd_20d_inv": .07,
-     "price_pos_20d": .06, "pv_corr_20d": .07, "turnover_trend_20d": .07,
-     "ep_ttm": .06, "bp_ttm": .05, "sp_ttm": .04, "turnover_rate": .05}
+W = {"vol_20d_inv": .1470, "turnover_rate": .1500, "mom_20d": .1150,
+     "pv_corr_20d": .1081, "bp_ttm": .0963, "mom_10d": .0841,
+     "turnover_trend_20d": .0736, "sp_ttm": .0670, "mom_5d": .0598,
+     "price_pos_20d": .0583, "ep_ttm": .0409}
+SIGN = {"mom_5d": -1, "mom_10d": -1, "mom_20d": -1, "vol_20d_inv": 1,
+        "price_pos_20d": -1, "pv_corr_20d": -1, "turnover_trend_20d": -1,
+        "ep_ttm": 1, "bp_ttm": 1, "sp_ttm": 1, "turnover_rate": -1}
 FIN_W = {"roe_ttm": .35, "net_margin_ttm": .25, "gross_margin_ttm": .15, "tr_yoy": .25}
 _s = sum(W.values())
 W = {k: v / _s for k, v in W.items()}
@@ -281,19 +285,55 @@ def pick_and_screen(base):
             "sp_ttm": (1 / ps) if ps and ps > 0 else None,
             "turnover_rate": f("turnover_rate", db),
         })
-    for fac in W:
+    # ---- v2.1：补全排除器（只用跨期验证稳定的"最差组"）----
+    PCT_FACTORS = ["mom_20d", "turnover_rate", "turnover_trend_20d", "pv_corr_20d",
+                   "roe_ttm", "net_margin_ttm", "vol_20d_inv", "bp_ttm", "sp_ttm"]
+    for fac in PCT_FACTORS:
         vals = sorted(r[fac] for r in rows if r[fac] is not None)
         for r in rows:
-            r["_p_" + fac] = pctl(vals, r[fac])
+            r["_p_" + fac] = pctl(vals, r[fac]) if r[fac] is not None else None
+
+    EXCL_Q5 = ["mom_20d", "turnover_rate", "turnover_trend_20d", "pv_corr_20d",
+               "roe_ttm", "net_margin_ttm"]
+    EXCL_Q1 = ["vol_20d_inv", "bp_ttm", "sp_ttm"]
+    kept = []
     for r in rows:
-        tot = wt = 0.0
-        for fac, w in W.items():
-            p = r["_p_" + fac]
-            if p is not None:
-                tot += p * w
-                wt += w
-        r["score"] = tot / wt if wt else 0
-    rows.sort(key=lambda x: -x["score"])
+        skip = False
+        for fac in EXCL_Q5:
+            p = r.get("_p_" + fac)
+            if p is not None and p > 80:
+                skip = True
+                break
+        if not skip:
+            for fac in EXCL_Q1:
+                p = r.get("_p_" + fac)
+                if p is not None and p < 20:
+                    skip = True
+                    break
+        if skip:
+            continue
+        if r.get("roe_ttm") is not None and r["roe_ttm"] < -15:
+            continue
+        if r.get("net_margin_ttm") is not None and r["net_margin_ttm"] < -30:
+            continue
+        kept.append(r)
+
+    # 选择器：只用跨期最优组稳定的因子
+    TARGET = {"roe_ttm": (0, 20), "net_margin_ttm": (0, 20),
+              "turnover_trend_20d": (40, 60), "bp_ttm": (60, 80), "sp_ttm": (60, 80)}
+    for r in kept:
+        tot = 0.0
+        for fac, (lo, hi) in TARGET.items():
+            p = r.get("_p_" + fac)
+            if p is None:
+                tot += 50.0
+            elif lo <= p <= hi:
+                tot += 100.0
+            else:
+                tot += max(0.0, 100.0 - min(abs(p - lo), abs(p - hi)) * 2.0)
+        r["score"] = tot / len(TARGET) / 100.0
+    kept.sort(key=lambda x: -x["score"])
+    rows = kept
 
     # ---- researcher stage: risk screen + financial quality (within Top50) ----
     survived = []
@@ -328,7 +368,7 @@ def pick_and_screen(base):
         qs = sum((r["_q_" + k] if r["_q_" + k] is not None else 50) * w for k, w in FIN_W.items())
         # 一半看财务质量、一半看选股分，避免财务数据缺失时排序失真
         watch.append({"code": r["code"], "name": r["name"], "industry": r["industry"],
-                      "qs": round((r["score"] if os.environ.get("PURE_PRICE") else 0.5 * qs + 0.5 * r["score"]), 1)})
+                      "qs": round(r["score"], 1)})
     watch.sort(key=lambda x: -x["qs"])
     return watch
 

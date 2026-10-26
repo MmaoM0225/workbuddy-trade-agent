@@ -29,7 +29,17 @@ W = {k: v["weight"] for k, v in _strategy["factors"].items()}
 GROUPS = _strategy["scoring_pipeline"]["factor_groups"]
 UNIV = _strategy["universe"]
 POOL_SIZE = int(_strategy.get("pool_size", 50))
-FACTORS = list(W.keys())
+SEL_MODE = (PARAMS.get("selection_method") or {}).get("method", "factor_weighted_sum")
+if SEL_MODE == "exclusion_plus_target_zone":
+    _SEL = PARAMS["selection_method"]
+    _EXQ5 = _SEL["exclusion"].get("exclude_q5", [])
+    _EXQ1 = _SEL["exclusion"].get("exclude_q1", [])
+    _FLOOR = _SEL["exclusion"].get("hard_floor", {})
+    _TARGET = {k: tuple(v) for k, v in (_SEL.get("target_zone") or {}).items()}
+    FACTORS = sorted(set(list(_EXQ5) + list(_EXQ1) + list(_TARGET.keys())))
+else:
+    _EXQ5, _EXQ1, _FLOOR, _TARGET = [], [], {}, {}
+    FACTORS = list(W.keys())
 _mode = "production" if os.path.abspath(OUT_POOL).startswith(os.path.abspath(os.path.join(ROOT, "state"))) else "rehearsal"
 print(f"params={VERSION} mode={_mode} base_date={BASE_DATE} weight_sum={sum(W.values()):.4f}", flush=True)
 
@@ -271,18 +281,59 @@ for fac in active:
     R[fac] = rank_pct(vals)
 
 scores = {}
-for c in universe:
-    num = den = 0.0
-    for fac in active:
-        if fac in R and c in R[fac]:
-            num += R[fac][c] * W[fac]
-            den += W[fac]
-    scores[c] = num / den if den > 0 else None
+if SEL_MODE == "exclusion_plus_target_zone":
+    for c in universe:
+        skip = False
+        for fac in _EXQ5:
+            p = R.get(fac, {}).get(c)
+            if p is not None and p * 100 > 80:
+                skip = True
+                break
+        if not skip:
+            for fac in _EXQ1:
+                p = R.get(fac, {}).get(c)
+                if p is not None and p * 100 < 20:
+                    skip = True
+                    break
+        if skip:
+            continue
+        bad = False
+        for fac, lim in _FLOOR.items():
+            v = F[c].get(fac)
+            if v is not None and v < lim:
+                bad = True
+                break
+        if bad:
+            continue
+        tot = 0.0
+        for fac, (lo, hi) in _TARGET.items():
+            p = R.get(fac, {}).get(c)
+            if p is None:
+                tot += 50.0
+            else:
+                pv = p * 100
+                tot += 100.0 if lo <= pv <= hi else max(0.0, 100.0 - min(abs(pv - lo), abs(pv - hi)) * 2.0)
+        scores[c] = tot / len(_TARGET) / 100.0
+else:
+    for c in universe:
+        num = den = 0.0
+        for fac in active:
+            if fac in R and c in R[fac]:
+                num += R[fac][c] * W[fac]
+                den += W[fac]
+        scores[c] = num / den if den > 0 else None
 
-ranked = sorted([c for c in universe if scores[c] is not None], key=lambda c: -scores[c])
+ranked = sorted([c for c in universe if scores.get(c) is not None], key=lambda c: -scores[c])
 
 
 def reasons(c, k=3):
+    if SEL_MODE == "exclusion_plus_target_zone":
+        out = []
+        for fac, (lo, hi) in _TARGET.items():
+            p = R.get(fac, {}).get(c)
+            if p is not None:
+                out.append(f"{fac} 分位{p * 100:.0f}%（目标 {lo}-{hi}）")
+        return out[:k]
     contrib = [(R[fac][c] * W[fac], fac, R[fac][c]) for fac in active if fac in R and c in R[fac]]
     contrib.sort(reverse=True)
     return [f"{fac} 百分位{p:.0%}" for _, fac, p in contrib[:k]]

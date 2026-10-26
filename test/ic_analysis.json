@@ -1,0 +1,150 @@
+{
+  "horizon": 20,
+  "dates": 417,
+  "results": [
+    {
+      "factor": "turnover_rate",
+      "ic_mean": -0.0913,
+      "ic_std": 0.175,
+      "icir": -0.522,
+      "ic_pos_pct": 27.6,
+      "t_stat": -10.61,
+      "n": 413
+    },
+    {
+      "factor": "vol_20d_inv",
+      "ic_mean": 0.0895,
+      "ic_std": 0.1871,
+      "icir": 0.478,
+      "ic_pos_pct": 68.0,
+      "t_stat": 9.71,
+      "n": 412
+    },
+    {
+      "factor": "mom_20d",
+      "ic_mean": -0.07,
+      "ic_std": 0.141,
+      "icir": -0.496,
+      "ic_pos_pct": 31.6,
+      "t_stat": -10.08,
+      "n": 412
+    },
+    {
+      "factor": "pv_corr_20d",
+      "ic_mean": -0.0658,
+      "ic_std": 0.0987,
+      "icir": -0.666,
+      "ic_pos_pct": 24.0,
+      "t_stat": -13.53,
+      "n": 412
+    },
+    {
+      "factor": "bp_ttm",
+      "ic_mean": 0.0586,
+      "ic_std": 0.1581,
+      "icir": 0.371,
+      "ic_pos_pct": 62.2,
+      "t_stat": 7.54,
+      "n": 413
+    },
+    {
+      "factor": "mom_10d",
+      "ic_mean": -0.0512,
+      "ic_std": 0.1318,
+      "icir": -0.388,
+      "ic_pos_pct": 35.6,
+      "t_stat": -7.89,
+      "n": 413
+    },
+    {
+      "factor": "turnover_trend_20d",
+      "ic_mean": -0.0448,
+      "ic_std": 0.0977,
+      "icir": -0.458,
+      "ic_pos_pct": 33.7,
+      "t_stat": -9.3,
+      "n": 412
+    },
+    {
+      "factor": "sp_ttm",
+      "ic_mean": 0.0408,
+      "ic_std": 0.1068,
+      "icir": 0.382,
+      "ic_pos_pct": 60.3,
+      "t_stat": 7.77,
+      "n": 413
+    },
+    {
+      "factor": "mom_5d",
+      "ic_mean": -0.0364,
+      "ic_std": 0.1317,
+      "icir": -0.277,
+      "ic_pos_pct": 40.0,
+      "t_stat": -5.62,
+      "n": 413
+    },
+    {
+      "factor": "price_pos_20d",
+      "ic_mean": -0.0355,
+      "ic_std": 0.132,
+      "icir": -0.269,
+      "ic_pos_pct": 41.3,
+      "t_stat": -5.46,
+      "n": 412
+    },
+    {
+      "factor": "roe_ttm",
+      "ic_mean": -0.0255,
+      "ic_std": 0.1453,
+      "icir": -0.176,
+      "ic_pos_pct": 38.7,
+      "t_stat": -3.57,
+      "n": 413
+    },
+    {
+      "factor": "ep_ttm",
+      "ic_mean": 0.0249,
+      "ic_std": 0.1693,
+      "icir": 0.147,
+      "ic_pos_pct": 55.7,
+      "t_stat": 2.99,
+      "n": 413
+    },
+    {
+      "factor": "net_margin_ttm",
+      "ic_mean": -0.0179,
+      "ic_std": 0.1278,
+      "icir": -0.14,
+      "ic_pos_pct": 37.3,
+      "t_stat": -2.85,
+      "n": 413
+    },
+    {
+      "factor": "gross_margin_ttm",
+      "ic_mean": -0.0165,
+      "ic_std": 0.0842,
+      "icir": -0.196,
+      "ic_pos_pct": 38.7,
+      "t_stat": -3.98,
+      "n": 413
+    },
+    {
+      "factor": "mdd_20d_inv",
+      "ic_mean": 0.0056,
+      "ic_std": 0.1432,
+      "icir": 0.039,
+      "ic_pos_pct": 44.4,
+      "t_stat": 0.79,
+      "n": 412
+    },
+    {
+      "factor": "tr_yoy",
+      "ic_mean": 0.0054,
+      "ic_std": 0.0838,
+      "icir": 0.064,
+      "ic_pos_pct": 54.0,
+      "t_stat": 1.3,
+      "n": 413
+    }
+  ]
+}
