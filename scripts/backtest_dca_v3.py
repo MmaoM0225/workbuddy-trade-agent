@@ -70,19 +70,23 @@ def align(cal, dates, vals):
     return out
 
 
+USE_ADJ = False   # True = 用 adj_nav（含分红再投资）；默认 unit_nav（保守）
+
+
 def load_nav(fp):
     if not os.path.exists(fp):
         return None
     ds, vs = [], []
     with open(fp, encoding="utf-8") as f:
         for r in csv.DictReader(f):
-            v = fnum(r.get("unit_nav"))
+            v = fnum(r.get("adj_nav") if USE_ADJ else r.get("unit_nav"))
             if v:
                 ds.append(r["nav_date"])
                 vs.append(v)
     return (ds, vs) if ds else None
 
 
+UNIVERSE = set()   # 诊断用白名单；空=全部
 LEGACY = False   # True = 复现 2026-10-29 前的老口径（宽基 PE/PB 0.5:0.5、行业 (PB+PS)/2、无 caps）
 
 
@@ -123,6 +127,8 @@ def build(cal, params, top_industry):
     for m in uni:
         if m.get("enabled") is False:
             continue   # 人工停用的标的（越南/SENSEX/中韩半导体）不参与回测，与实盘一致
+        if UNIVERSE and m["code"] not in UNIVERSE:
+            continue   # 诊断用：只跑指定宽基（复现历史配置）
         fp = os.path.join(VAL, m["code"] + ".csv")
         nav = load_nav(os.path.join(NAVD, (m.get("of_fund") or "") + ".csv"))
         if not os.path.exists(fp) or not nav:
@@ -308,13 +314,17 @@ def main():
     ap.add_argument("--end", default="20261027")
     ap.add_argument("--unit", type=float, default=10)
     ap.add_argument("--legacy", action="store_true", help="用旧口径做对照（无模型、无 caps）")
+    ap.add_argument("--broad", default="", help="诊断用：只跑逗号分隔的宽基代码")
+    ap.add_argument("--adj", action="store_true", help="用 adj_nav（含分红再投资）对照")
     ap.add_argument("--top", type=int, default=5)
     ap.add_argument("--freq", default="daily", choices=["daily", "monthly"])
     ap.add_argument("--roe-filter", action="store_true", help="行业需隐含ROE同比改善才买")
     ap.add_argument("--roe-th", type=float, default=None, help="ROE同比阈值，默认取参数文件")
     args = ap.parse_args()
-    global LEGACY
+    global LEGACY, UNIVERSE, USE_ADJ
     LEGACY = args.legacy
+    USE_ADJ = args.adj
+    UNIVERSE = {c.strip() for c in args.broad.split(",") if c.strip()}
 
     with open(PARAMS, encoding="utf-8") as f:
         params = json.load(f)

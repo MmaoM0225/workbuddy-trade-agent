@@ -37,15 +37,12 @@ def load_index_params():
     """v3.0：指数线参数已并入 knowledge/params_{current}.json 的 index_dca 段（唯一真源）。
     读不到该段时回退旧 data/index_params.json，保证历史脚本仍可跑。"""
     try:
-        _cur = open(os.path.join(ROOT, "knowledge", "params_current.txt"), encoding="utf-8").read().strip()
-        _doc = json.load(open(os.path.join(ROOT, "knowledge", "params_%s.json" % _cur), encoding="utf-8"))
-        _seg = _doc.get("index_dca")
-        if isinstance(_seg, dict):
-            return _seg
+        # 指数线唯一真源：knowledge/index_params.json（个股线 params_v*.json 不含本线段）
+        with open(os.path.join(ROOT, "knowledge", "index_params.json"), encoding="utf-8") as _f:
+            return json.load(_f)
     except Exception:
         pass
-    with open(PARAMS_LEGACY, encoding="utf-8") as _f:
-        return json.load(_f)
+    raise SystemExit("缺少 knowledge/index_params.json（指数线唯一真源）")
 
 CYCLICAL = {"000928.SH", "000929.SH", "000986.SH", "000987.SH", "000934.SH", "399975.SZ", "000932.SH"}
 GROWTH = {"399006.SZ", "000688.SH", "000935.SH", "000993.SH", "399967.SZ", "HSTECH.HK", "IXIC.US", "000933.SH"}
@@ -204,7 +201,11 @@ def redeem_fee(held_td, base_fee):
 
 
 def run_strategy(panel, params, calendar, capital, fee, sell_on=True, dedup_on=True, buy_th=40):
-    ex, guards = params["execute"], params["guards"]
+    ex = params["execute"]
+    # 2026-10-28 参数迁移后 guards 段被删（指数线改为不看本金），这里给等价默认值：
+    # 不限单标的上限 = 与原口径"不看本金"一致
+    guards = params.get("guards") or {"single_index_max_pct": 100,
+                                      "group_max_pct": {"broad": 100, "industry": 100}}
     cash, hold, nav, trades = float(capital), {}, [], []
     seen_month = set()
 
