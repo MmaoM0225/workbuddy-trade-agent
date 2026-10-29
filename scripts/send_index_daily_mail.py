@@ -39,6 +39,20 @@ C_DEEP, C_UNDER, C_LOW = "#047857", "#15803d", "#4d7c0f"
 C_NORM, C_HIGH, C_SELL = "#6b7280", "#b45309", "#dc2626"
 
 
+CAT_STYLE = {
+    "国内宽基": ("#1d4ed8", "#e0e7ff"),
+    "国外宽基": ("#7c3aed", "#ede9fe"),
+    "行业": ("#5b21b6", "#f3f0ff"),
+}
+
+
+def cat_of(kind, market):
+    """展示分类：国内宽基 / 国外宽基 / 行业。策略仍按 kind 两分法，不受影响。"""
+    if kind == "industry":
+        return "行业"
+    return "国内宽基" if (market or "CN").startswith("CN") else "国外宽基"
+
+
 def fnum(v, d=2):
     if v is None or v == "":
         return "—"
@@ -120,7 +134,7 @@ def build_body(orders, sig, params, as_of, data_date):
             rows.append(
                 "<tr>"
                 + td(b["name"], "left", bold=True)
-                + td("宽基" if b["kind"] == "broad" else "行业", "center", "#6b7280", size="12px")
+                + td(cat_of(b["kind"], b.get("market")), "center", "#6b7280", size="12px")
                 + td('<span style="color:%s;font-weight:600;">%.1f</span>' % (pct_color(b["score"]), b["score"]))
                 + td("%.1fx" % b["mult"], "center")
                 + td("¥%.0f" % b["amount_cny"], "right", bold=True)
@@ -159,7 +173,7 @@ def build_body(orders, sig, params, as_of, data_date):
             fund = i.get("fund") or ""
             rows.append("<tr>"
                         + td(i["name"], "left", bold=True)
-                        + td("宽基" if i["kind"] == "broad" else "行业", "center", "#6b7280", size="11px")
+                        + td(cat_of(i["kind"], i.get("market")), "center", "#6b7280", size="11px")
                         + td('<span style="color:%s;font-weight:600;">%.1f</span>' % (pct_color(i["score"]), i["score"]))
                         + td(i.get("zone", "—"), "center", pct_color(i["score"]), size="12px")
                         + td("%.1fx" % (i.get("mult") or 0), "center")
@@ -235,7 +249,7 @@ def build_body(orders, sig, params, as_of, data_date):
 
 <tr><td style="padding:20px 26px 4px;">
   <div style="padding:12px 14px;background:#fafbfc;border:1px solid #eef0f3;border-radius:8px;font-size:12px;color:#4b5563;line-height:1.8;font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;">
-    全市场 <b>%d</b> 个标的参与分位计算（宽基 %d / 行业 %d）；停投 <b>%d</b> 个；
+    全市场 <b>%d</b> 个标的参与分位计算（国内宽基 %d / 国外宽基 %d / 行业 %d）；停投 <b>%d</b> 个；
     行业端另有 <b style="color:#b91c1c;">%d</b> 个因隐含 ROE 同比未达 %.0f%% 被挡掉。
   </div>
 </td></tr>
@@ -273,7 +287,11 @@ def build_body(orders, sig, params, as_of, data_date):
         stat_cell("总资产", "%.0f" % assets, "#111827", " 元"),
         stat_cell("总收益", "%+.0f" % total_pnl, C_UNDER if total_pnl >= 0 else C_SELL, " 元"),
         stat_cell("收益率", "%+.2f%%" % ret, C_UNDER if ret >= 0 else C_SELL, ""),
-        len(items), sum(1 for i in items if i["kind"] == "broad"), len(ind), n_stop, n_roe, roe_th * 100,
+        len(items),
+        sum(1 for i in items if cat_of(i["kind"], i.get("market")) == "国内宽基"),
+        sum(1 for i in items if cat_of(i["kind"], i.get("market")) == "国外宽基"),
+        len(ind),
+        n_stop, n_roe, roe_th * 100,
         low_tbl, high_tbl,
         len(items), as_of,
     )
@@ -306,8 +324,9 @@ def build_notice(orders, sig, params, as_of, data_date, attach_name, attach_kb=0
             v = i.get("roe_chg")
             if not (v is not None and v > roe_th):
                 n_roe += 1
-    n_broad = sum(1 for i in items if i["kind"] == "broad")
-    n_ind = len(items) - n_broad
+    n_cn = sum(1 for i in items if cat_of(i["kind"], i.get("market")) == "国内宽基")
+    n_os = sum(1 for i in items if cat_of(i["kind"], i.get("market")) == "国外宽基")
+    n_ind = len(items) - n_cn - n_os
 
     inc = orders.get("cumulative_invested_cny", 0)
     realized = orders.get("realized_pnl_cny", 0)
@@ -336,7 +355,7 @@ def build_notice(orders, sig, params, as_of, data_date, attach_name, attach_kb=0
     size_txt = ("（%.0f KB）" % attach_kb) if attach_kb else ""
     if attach_name and attach_kb:
         attach_head = "完整看板在附件里 → %s %s" % (attach_name, size_txt)
-        attach_tip = ("<b>下载后用浏览器打开</b>：筛选（全部 / 宽基 / 行业 / 本期买入 / ROE挡掉 / 停投）、"
+        attach_tip = ("<b>下载后用浏览器打开</b>：档位折叠 + 锚点跳转、"
                       "搜索框、点表头排序，全部可用。<br>"
                       "直接在邮件里预览或内嵌阅读不会执行脚本，按钮是灰的——所以正文不再放看板。")
     else:
@@ -403,7 +422,7 @@ def build_notice(orders, sig, params, as_of, data_date, attach_name, attach_kb=0
 
 <tr><td style="padding:18px 26px 4px;">
   <div style="padding:12px 14px;background:#fafbfc;border:1px solid #eef0f3;border-radius:8px;font-size:12px;color:#4b5563;line-height:1.8;%(F)s">
-    全市场 <b>%(n_all)d</b> 个标的参与分位（宽基 %(n_broad)d / 行业 %(n_ind)d）；停投 <b>%(n_stop)d</b> 个；%(roe_line)s。<br>
+    全市场 <b>%(n_all)d</b> 个标的参与分位（国内宽基 %(n_cn)d / 国外宽基 %(n_os)d / 行业 %(n_ind)d）；停投 <b>%(n_stop)d</b> 个；%(roe_line)s。<br>
     %(sell_line)s
   </div>
 </td></tr>
@@ -435,7 +454,7 @@ def build_notice(orders, sig, params, as_of, data_date, attach_name, attach_kb=0
         "pc": C_UNDER if (realized + unreal) >= 0 else C_SELL,
         "attach_name": attach_name, "size_txt": size_txt,
         "attach_head": attach_head, "attach_tip": attach_tip,
-        "n_all": len(items), "n_broad": n_broad, "n_ind": n_ind,
+        "n_all": len(items), "n_cn": n_cn, "n_os": n_os, "n_ind": n_ind,
         "n_stop": n_stop, "roe_line": roe_line, "sell_line": sell_line,
     }
 

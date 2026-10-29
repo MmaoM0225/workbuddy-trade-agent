@@ -95,6 +95,26 @@ def is_of(it):
     return f.endswith(".OF") or f.endswith(".SZ") or f.endswith(".SH")
 
 
+# 展示分类：国内宽基 / 国外宽基 / 行业
+# 注意：这只是**展示口径**，不参与策略。策略里仍然只有 kind（broad / industry）两分法，
+# index_plan.py 的买入判定（宽基分位<40 就买、行业需过 ROE 且<40）完全不受影响。
+CAT_CN_BROAD = "国内宽基"
+CAT_OS_BROAD = "国外宽基"
+CAT_INDUSTRY = "行业"
+CAT_ORDER = [CAT_CN_BROAD, CAT_OS_BROAD, CAT_INDUSTRY]
+CAT_STYLE = {
+    CAT_CN_BROAD: ("#1d4ed8", "#e0e7ff"),
+    CAT_OS_BROAD: ("#7c3aed", "#ede9fe"),
+    CAT_INDUSTRY: ("#5b21b6", "#f3f0ff"),
+}
+
+
+def cat_of(kind, market):
+    if kind == "industry":
+        return CAT_INDUSTRY
+    return CAT_CN_BROAD if (market or "CN").startswith("CN") else CAT_OS_BROAD
+
+
 def fmt(v, d=2):
     if v is None or v == "":
         return '<span style="color:#9ca3af;">\u2014</span>'
@@ -260,6 +280,7 @@ def main():
             tags.append("本期买入")
         rows.append({
             "code": it["code"], "name": it["name"], "kind": kind,
+            "cat": cat_of(kind, it.get("market")),
             "score": score, "zone": it.get("zone") or "—",
             "mult": it.get("mult") or 0, "amount": round(20 * (it.get("mult") or 0), 2),
             "pe": it.get("pe"), "pb": it.get("pb"),
@@ -269,12 +290,15 @@ def main():
             "roeBlocked": roe_blocked, "buy": bought, "tags": tags,
         })
 
-    rows.sort(key=lambda r: (r["kind"] != "broad", r["score"] if r["score"] is not None else 999))
+    rows.sort(key=lambda r: (CAT_ORDER.index(r["cat"]),
+                             r["score"] if r["score"] is not None else 999))
 
-    broad_rows = [r for r in rows if r["kind"] == "broad"]
-    ind_rows = [r for r in rows if r["kind"] == "industry"]
+    cn_broad_rows = [r for r in rows if r["cat"] == CAT_CN_BROAD]
+    os_broad_rows = [r for r in rows if r["cat"] == CAT_OS_BROAD]
+    ind_rows = [r for r in rows if r["cat"] == CAT_INDUSTRY]
 
-    n_broad, n_ind = len(broad_rows), len(ind_rows)
+    n_cn, n_os, n_ind = len(cn_broad_rows), len(os_broad_rows), len(ind_rows)
+    n_broad = n_cn + n_os
     n_buy = len(orders.get("buys", []))
     n_stop = sum(1 for r in rows if r["mult"] == 0)
     n_roe = sum(1 for r in rows if r["roeBlocked"])
@@ -284,14 +308,15 @@ def main():
     # ---- 本期买入卡片（内联样式，邮件可读）----
     cards = []
     for b in orders.get("buys", []):
-        kind_txt = "宽基" if b["kind"] == "broad" else "行业"
+        fg, bg = CAT_STYLE.get(cat_of(b["kind"], b.get("market")), ("#6b7280", "#f3f4f6"))
+        kind_txt = cat_of(b["kind"], b.get("market"))
         cards.append(
             '<td width="50%" style="padding:0 0 10px 0;vertical-align:top;">'
             '<table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e5e7eb;'
             'border-left:3px solid #0f766e;border-radius:8px;"><tr><td style="padding:11px 13px;">'
             '<div style="font-size:13.5px;font-weight:600;color:#111827;">' + htmlmod.escape(b["name"]) +
-            '<span style="font-size:10.5px;color:#6b7280;font-weight:400;background:#f3f4f6;'
-            'border-radius:4px;padding:1px 6px;margin-left:6px;">' + kind_txt + '</span></div>'
+            '<span style="font-size:10.5px;font-weight:400;background:%s;color:%s;'
+            'border-radius:4px;padding:1px 6px;margin-left:6px;">%s</span></div>' % (bg, fg, kind_txt) +
             '<div style="margin-top:7px;font-size:12px;color:#6b7280;">'
             '<span style="color:#0f766e;font-weight:600;">分位 ' + ("%.1f" % b["score"]) + '</span>'
             '<span style="margin:0 8px;color:#d1d5db;">|</span><b>' + ("%.1fx" % b["mult"]) + '</b>'
@@ -331,10 +356,17 @@ def main():
 
     nav_items = ['<a href="#buy" style="display:inline-block;margin:0 6px 6px 0;padding:6px 12px;'
                  'border:1px solid #d1fae5;background:#f0fdfa;border-radius:7px;font-size:12.5px;'
-                 'color:#0f766e;text-decoration:none;font-weight:600;">本期买入 %d</a>' % n_buy,
-                 '<a href="#broad" style="display:inline-block;margin:0 6px 6px 0;padding:6px 12px;'
-                 'border:1px solid #e5e7eb;border-radius:7px;font-size:12.5px;color:#374151;'
-                 'text-decoration:none;">宽基 %d</a>' % n_broad]
+                 'color:#0f766e;text-decoration:none;font-weight:600;">本期买入 %d</a>' % n_buy]
+    for cid, cname, crows in (("cn-broad", CAT_CN_BROAD, cn_broad_rows),
+                              ("os-broad", CAT_OS_BROAD, os_broad_rows)):
+        if not crows:
+            continue
+        cfg, cbg = CAT_STYLE[cname]
+        nav_items.append(
+            '<a href="#%s" style="display:inline-block;margin:0 6px 6px 0;padding:6px 12px;'
+            'border:1px solid %s;background:%s;border-radius:7px;font-size:12.5px;color:%s;'
+            'text-decoration:none;font-weight:600;">%s %d</a>'
+            % (cid, cbg, cbg, cfg, cname, len(crows)))
     for z in present_ind:
         fg, bg = ZONE_STYLE[z]
         nav_items.append(
@@ -343,17 +375,27 @@ def main():
             'text-decoration:none;">%s %d</a>' % (zid(z), fg, z, izones[z]))
     nav_html = "".join(nav_items)
 
-    # ---- 宽基小表（固定展开）----
-    broad_html = ""
-    if broad_rows:
-        broad_html = (
-            '<div id="broad" style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;'
-            'padding:16px 18px;margin-bottom:16px;">'
-            '<div style="font-size:14px;font-weight:650;color:#111827;margin-bottom:10px;">'
-            '宽基 %d 个 <span style="font-size:11.5px;font-weight:400;color:#9ca3af;">'
-            '9 个宽基全列，按分位升序</span></div>%s</div>'
-            % (n_broad, build_table(broad_rows, ["idx", "name", "score", "zone", "mult",
-                                                 "pe", "pb", "detail", "fund", "tags"])))
+    # ---- 国内宽基 / 国外宽基：各一张小表，固定展开 ----
+    BROAD_COLS = ["idx", "name", "score", "zone", "mult", "pe", "pb", "detail", "fund", "tags"]
+
+    def cat_section(anchor, cname, crows, hint):
+        if not crows:
+            return ""
+        cfg, cbg = CAT_STYLE[cname]
+        return ('<div id="%s" style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;'
+                'padding:16px 18px;margin-bottom:16px;">'
+                '<div style="font-size:14px;font-weight:650;color:#111827;margin-bottom:4px;">'
+                '<span style="display:inline-block;width:9px;height:9px;border-radius:2px;'
+                'background:%s;margin-right:8px;"></span>%s %d 个'
+                '<span style="font-size:11.5px;font-weight:400;color:#9ca3af;margin-left:8px;">'
+                '%s \u00b7 全部列出 \u00b7 按分位升序</span></div>'
+                '<div style="padding-top:10px;">%s</div></div>'
+                % (anchor, cfg, cname, len(crows), hint, build_table(crows, BROAD_COLS)))
+
+    cn_broad_html = cat_section("cn-broad", CAT_CN_BROAD, cn_broad_rows,
+                               "沪深300 / A500 / 中证1000 / 创业板指 / 红利 / 红利低波")
+    os_broad_html = cat_section("os-broad", CAT_OS_BROAD, os_broad_rows,
+                               "QDII，含汇率与跟踪误差，倍数与国内同口径")
 
     # ---- 行业按档位折叠 ----
     zone_blocks = []
@@ -403,7 +445,9 @@ def main():
                 '</span></div></td>')
 
     stats = (stat("研究标的", str(len(rows)), "#111827", " 个")
-             + stat("宽基 / 行业", "%d<small>/</small>%d" % (n_broad, n_ind), "#111827", "")
+             + stat("国内 / 国外 / 行业",
+                    "%d<small>/</small>%d<small>/</small>%d" % (n_cn, n_os, n_ind),
+                    "#111827", "")
              + stat("本期买入", str(n_buy), "#0f766e", " 笔")
              + stat("本期金额", "%.0f" % total_amt, "#111827", " 元"))
 
@@ -436,7 +480,8 @@ def main():
         n_all=len(rows), n_broad=n_broad, n_ind=n_ind, n_buy=n_buy,
         n_stop=n_stop, n_roe=n_roe, n_price=n_price, total_amt=total_amt,
         roe_th=roe_th * 100, unit=params.get("execute", {}).get("unit_amount_cny", 20),
-        buy_html=buy_html, broad_html=broad_html, ind_html=ind_html,
+        buy_html=buy_html, cn_broad_html=cn_broad_html,
+        os_broad_html=os_broad_html, ind_html=ind_html,
         legend=legend, nav=nav_html, stats=stats, book=book,
     )
 
@@ -467,7 +512,8 @@ def build_page(**k):
                .replace("__STATS__", k["stats"]) \
                .replace("__BOOK__", k["book"]) \
                .replace("__BUY_HTML__", k["buy_html"]) \
-               .replace("__BROAD_HTML__", k["broad_html"]) \
+               .replace("__CN_BROAD_HTML__", k["cn_broad_html"]) \
+               .replace("__OS_BROAD_HTML__", k["os_broad_html"]) \
                .replace("__IND_HTML__", k["ind_html"]) \
                .replace("__NAV__", k["nav"]) \
                .replace("__LEGEND__", k["legend"])
@@ -520,7 +566,8 @@ PAGE = """<!DOCTYPE html>
   </div>
 </td></tr>
 
-<tr><td>__BROAD_HTML__</td></tr>
+<tr><td>__CN_BROAD_HTML__</td></tr>
+<tr><td>__OS_BROAD_HTML__</td></tr>
 <tr><td>__IND_HTML__</td></tr>
 
 <tr><td style="padding:0;">
