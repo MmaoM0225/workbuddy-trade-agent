@@ -250,6 +250,8 @@ def main():
     sig = json.load(open(SIGNAL, encoding="utf-8"))
     orders = json.load(open(ORDERS, encoding="utf-8"))
     params = json.load(open(PARAMS, encoding="utf-8"))
+    # 1X 金额唯一真源在 knowledge/index_params.json，任何地方不许再写死数字
+    unit = params.get("execute", {}).get("unit_amount_cny", 10)
     rf = params.get("execute", {}).get("industry_roe_filter", {})
     roe_on = rf.get("enabled", False)
     roe_th = rf.get("roe_th", 0.15)
@@ -287,7 +289,7 @@ def main():
             "code": it["code"], "name": it["name"], "kind": kind,
             "cat": cat_of(kind, it.get("market")),
             "score": score, "zone": it.get("zone") or "—",
-            "mult": it.get("mult") or 0, "amount": round(20 * (it.get("mult") or 0), 2),
+            "mult": it.get("mult") or 0, "amount": round(unit * (it.get("mult") or 0), 2),
             "pe": it.get("pe"), "pb": it.get("pb"),
             "pePct": it.get("pe_pct"), "pbPct": it.get("pb_pct"), "psPct": it.get("ps_pct"),
             "roe": roe, "fund": it.get("fund") or "", "fundName": it.get("fund_name") or "",
@@ -484,7 +486,7 @@ def main():
         generated=datetime.now().strftime("%Y-%m-%d %H:%M"),
         n_all=len(rows), n_broad=n_broad, n_ind=n_ind, n_buy=n_buy,
         n_stop=n_stop, n_roe=n_roe, n_price=n_price, total_amt=total_amt,
-        roe_th=roe_th * 100, unit=params.get("execute", {}).get("unit_amount_cny", 20),
+        roe_th=roe_th * 100, unit=unit,
         buy_html=buy_html, cn_broad_html=cn_broad_html,
         os_broad_html=os_broad_html, ind_html=ind_html,
         legend=legend, nav=nav_html, stats=stats, book=book,

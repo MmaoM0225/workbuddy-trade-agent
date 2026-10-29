@@ -1,0 +1,121 @@
+{
+  "version": "v1.0",
+  "mode": "index_dca",
+  "updated": "2026-10-29",
+  "_source": "knowledge/index_params.json —— 指数估值定投线唯一真源，与个股线 knowledge/params_v*.json 完全独立，互不引用",
+  "status": "已回测定稿-执行中",
+  "decisions": {
+    "capital": "独立资金池 state/index_portfolio.json，不与个股线共用",
+    "normal_zone": "完全停投（40-60 分位 mult=0）",
+    "sell_logic": "分档减速卖出 75/85/95，间隔 >= sell_interval_td",
+    "venue": "场外 .OF 或 LOF（如161725.SZ招商白酒A），不买场内ETF",
+    "capital_mode": "不看本金：每期按 unit_amount_cny × mult 投入，累计投入记账；不设单标的/组合上限",
+    "pnl_formula": "总收益 = 累计投入 + 已实现盈亏 + 未实现盈亏",
+    "freq": "低估时每日定投（不是每月）",
+    "industry_filter": "行业需隐含ROE(PB/PE)同比>15% 且分位<40，每期取最低5个",
+    "price_source": "基金单位净值 unit_nav（tushare adj_nav 对高分红基金失真，禁用）"
+  },
+  "window_days": 1250,
+  "min_periods": 500,
+  "pb_floor_no_high": 1.0,
+  "div_yield_no_high": 4.0,
+  "pe_cap_no_low": 60.0,
+  "zones": [
+    {
+      "name": "深度低估",
+      "lo": 0.0,
+      "hi": 10.0,
+      "action": "买入",
+      "mult": 2.0
+    },
+    {
+      "name": "低估",
+      "lo": 10.0,
+      "hi": 25.0,
+      "action": "买入",
+      "mult": 1.5
+    },
+    {
+      "name": "偏低",
+      "lo": 25.0,
+      "hi": 40.0,
+      "action": "买入",
+      "mult": 1.0
+    },
+    {
+      "name": "正常",
+      "lo": 40.0,
+      "hi": 60.0,
+      "action": "停投",
+      "mult": 0.0
+    },
+    {
+      "name": "偏高",
+      "lo": 60.0,
+      "hi": 75.0,
+      "action": "停投",
+      "mult": 0.0
+    },
+    {
+      "name": "高估",
+      "lo": 75.0,
+      "hi": 90.0,
+      "action": "减仓",
+      "mult": 0.0
+    },
+    {
+      "name": "极高估",
+      "lo": 90.0,
+      "hi": 100.01,
+      "action": "清仓",
+      "mult": 0.0
+    }
+  ],
+  "execute": {
+    "unit_amount_cny": 10,
+    "ignore_capital": true,
+    "frequency": "daily",
+    "trade_day": 1,
+    "buy_fee": 0.0012,
+    "redeem_fee_ladder": {
+      "lt7d": 0.015,
+      "lt30d": 0.0075,
+      "lt365d": 0.005,
+      "lt730d": 0.0025,
+      "gte730d": 0.0
+    },
+    "min_hold_days": 30,
+    "sell_stages": [
+      {
+        "min_score": 75,
+        "sell_current_ratio": 0.3333,
+        "label": "减仓1/3"
+      },
+      {
+        "min_score": 85,
+        "sell_current_ratio": 0.5,
+        "label": "再减1/3"
+      },
+      {
+        "min_score": 95,
+        "sell_current_ratio": 1.0,
+        "label": "清仓"
+      }
+    ],
+    "sell_interval_td": 20,
+    "note": "1X=unit_amount_cny=10 元；2.0x=20 / 1.5x=15 / 1.0x=10；每日定投(低估才买)；不设本金上限、不设单标的上限；场外 .OF 或 LOF，不买场内ETF；价格用 unit_nav（tushare adj_nav 对高分红基金失真）",
+    "freq": "daily",
+    "industry_roe_filter": {
+      "enabled": true,
+      "roe_th": 0.15,
+      "top_industry": 5,
+      "note": "隐含ROE=PB/PE，同比(244交易日)需>15%；PE<=0 视为不合格。回测：行业收益 -2.8% → +12.9%，白酒/地产链等价值陷阱被挡住"
+    }
+  },
+  "pending": [
+    "QDII 限购/暂停申购需人工确认",
+    "估值历史是否回溯到2015（拉长分位窗口）",
+    "行业层资金效率仍低于宽基（12.9% vs 35.4%），是否进一步降权",
+    "价格分位标的（日经/越南/印度/中韩半导体）缺真实估值，长期有系统性偏差"
+  ]
+}

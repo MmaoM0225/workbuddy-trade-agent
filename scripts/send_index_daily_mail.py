@@ -274,7 +274,7 @@ def build_body(orders, sig, params, as_of, data_date):
 </td></tr></table>
 </body></html>
 """ % (
-        data_date, as_of, now, params.get("execute", {}).get("unit_amount_cny", 20),
+        data_date, as_of, now, params.get("execute", {}).get("unit_amount_cny", 10),
         stat_cell("本期买入", "%d" % len(buys), C_UNDER, " 笔"),
         stat_cell("本期金额", "%.0f" % total_buy, "#111827", " 元"),
         stat_cell("卖出", "%.0f" % total_sell, "#6b7280", " 元"),
@@ -337,7 +337,7 @@ def build_notice(orders, sig, params, as_of, data_date, attach_name, attach_kb=0
 
     F = "font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;"
     now = datetime.now().strftime("%Y-%m-%d %H:%M")
-    unit = params.get("execute", {}).get("unit_amount_cny", 20)
+    unit = params.get("execute", {}).get("unit_amount_cny", 10)
 
     def cell(label, value, color="#111827", sub=""):
         return ('<td width="25%%" align="center" style="padding:13px 4px;border:1px solid #e5e7eb;'

@@ -11,7 +11,7 @@
   行业层面 PE 失真严重（盈利周期扰动），所以只取 PB + PS。
 
 规则（v2.0，不看本金）：分位 <10→2.0x，10-25→1.5x，25-40→1.0x，40-75→停投，
-  75-90→减仓，>=95→清仓。金额 = unit_amount(20元) x 倍数，不设本金上限。
+  75-90→减仓，>=95→清仓。金额 = execute.unit_amount_cny x 倍数，不设本金上限。
 
 用法：
   python scripts/index_valuation_signal.py

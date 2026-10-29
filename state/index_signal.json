@@ -1,8 +1,8 @@
 {
   "as_of": "20261028",
-  "generated": "2026-10-29 21:38:46",
+  "generated": "2026-10-29 21:40:21",
   "params_version": "v1.0",
-  "unit_amount_cny": 20,
+  "unit_amount_cny": 10,
   "count": {
     "broad": 17,
     "industry": 124
