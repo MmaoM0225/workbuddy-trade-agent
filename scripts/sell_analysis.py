@@ -22,13 +22,14 @@ ex = params["execute"]
 print("=" * 92)
 print("卖出规则（参数 %s）" % params["version"])
 print("=" * 92)
+_u = ex.get("sell_unit_cny") or ex.get("unit_amount_cny", 10)
 for s in sorted(ex["sell_ladder"], key=lambda x: x["min_score"]):
-    print("  分位 >= %-3d  →  %s（卖出当前持仓的 %.0f%%）" % (
-        s["min_score"], s["label"], s["ratio"] * 100))
+    print("  分位 >= %-3d  →  %s（每次卖出 %.0f 元 = 1X %.0f 元 × %.0f 倍）" % (
+        s["min_score"], s["label"], _u * s["mult"], _u, s["mult"]))
 print("  相邻两次减仓至少间隔 %d 个交易日；买入后 %d 天内不卖" % (
     ex["sell_interval_td"], ex["min_hold_days"]))
-print("  比例是【当前持仓】的比例，不是初始仓位：")
-print("    持续减仓：只要还在 >=75 区间，每个冷却期就按当时档位再卖一次，直到清空")
+print("  卖出标的是【金额】，不是仓位百分比：")
+print("    按金额倍数卖：不看仓位大小，每次固定卖 1X×倍数；仓位不足时一次卖光")
 
 sells = [t for t in trades if t[3] == "S"]
 print("\n" + "=" * 92)

@@ -90,10 +90,16 @@ def main():
                 h = hold.get(code)
                 if not h:
                     continue
-                ratio = s["ratio"]
-                sell_shares = h["shares"] * ratio
-                cost_out = h["cost"] * ratio
                 nav = latest_nav(h.get("fund", ""))[1] or h.get("nav") or 1
+                if s.get("amount_cny") is not None and nav > 0:
+                    # 按金额卖：取 amount_cny 对应的份额，最多清空
+                    amt = min(float(s["amount_cny"]), h["shares"] * nav)
+                    sell_shares = amt / nav
+                    ratio = (sell_shares / h["shares"]) if h["shares"] else 0.0
+                else:
+                    ratio = s["ratio"]
+                    sell_shares = h["shares"] * ratio
+                cost_out = h["cost"] * ratio
                 proceeds = sell_shares * nav
                 port["realized_pnl_cny"] += proceeds - cost_out
                 h["shares"] -= sell_shares

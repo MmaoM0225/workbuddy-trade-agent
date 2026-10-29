@@ -247,10 +247,11 @@ def run(items, cal, params, unit, top_ind, start_i=0, freq="daily", roe_filter=F
     from index_valuation_signal import sell_step
     ex = params["execute"]
     ladder = ex.get("sell_ladder") or []
-    _ov = os.environ.get("BT_LADDER")   # 例如 "75:5,80:10,85:20,90:40,95:100"
+    _ov = os.environ.get("BT_LADDER")   # 例如 "75:2,80:4,85:8,90:15,95:30"（填倍数 X）
     if _ov:
-        ladder = [{"min_score": float(a.split(":")[0]), "ratio": float(a.split(":")[1]) / 100.0,
-                   "label": "减仓%s%%" % a.split(":")[1]} for a in _ov.split(",")]
+        ladder = [{"min_score": float(a.split(":")[0]), "mult": float(a.split(":")[1]),
+                   "label": "卖%sX" % a.split(":")[1]} for a in _ov.split(",")]
+    sell_unit = ex.get("sell_unit_cny") or ex.get("unit_amount_cny", 10)
     legacy_stages = sorted(ex.get("sell_stages") or [], key=lambda x: x["min_score"])
     hold, nav_curve, trades, flows = {}, [], [], []
     invested = realized = 0.0
@@ -283,17 +284,23 @@ def run(items, cal, params, unit, top_ind, start_i=0, freq="daily", roe_filter=F
                     if not st or st["min_score"] <= hold[c]["stage"]:
                         continue
                     ratio, st_key = st["sell_current_ratio"], st["min_score"]
+                    _legacy_ratio = True
                 else:
                     # 新规则：持续减仓。>=75 就在每个冷却期按当前档位卖，直到清空
                     st = sell_step(s0, ladder)
                     if not st:
                         continue
-                    ratio, st_key = st["ratio"], st["min_score"]
+                    st_key = st["min_score"]
                 if hold[c]["first"] is not None and i - hold[c]["first"] < ex["min_hold_days"]:
                     continue
                 if hold[c]["last"] is not None and i - hold[c]["last"] < ex["sell_interval_td"]:
                     continue
-                amt = hold[c]["value"] * ratio
+                # 按金额倍数卖：sell_unit × mult，最多清空
+                if SELL_RULE == "stage":
+                    amt = hold[c]["value"] * ratio
+                else:
+                    amt = min(sell_unit * st.get("mult", 1), hold[c]["value"])
+                ratio = amt / hold[c]["value"] if hold[c]["value"] > 0 else 1.0
                 if amt <= 0:
                     continue
                 cost_out = hold[c]["cost"] * ratio

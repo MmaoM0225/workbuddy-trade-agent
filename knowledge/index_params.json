@@ -96,12 +96,33 @@
     },
     "sell_ladder": [
       {
+        "min_score": 95,
+        "mult": 50,
+        "label": "卖50X"
+      },
+      {
+        "min_score": 90,
+        "mult": 25,
+        "label": "卖25X"
+      },
+      {
+        "min_score": 85,
+        "mult": 10,
+        "label": "卖10X"
+      },
+      {
+        "min_score": 80,
+        "mult": 5,
+        "label": "卖5X"
+      },
+      {
         "min_score": 75,
-        "ratio": 0.05,
-        "label": "减仓5%"
+        "mult": 2,
+        "label": "卖2X"
       }
     ],
-    "sell_logic": "分位持续卖（2026-10-29 用户定案）：分数 >=75 即进入卖出状态，此后每 sell_interval_td=5 个交易日卖出「当前仓位」的 5%，一直卖到跌破 75 或清空。比例固定，不随分数变化——高位分批出货，节奏平滑。分数跌回 75 以下暂停；再回到 >=75 继续按 5% 卖，不重置。"
+    "sell_logic": "按金额倍数卖出（与买入对称）：>=75 每 sell_interval_td=5 个交易日，卖出 sell_unit_cny(10元) × mult 元，mult 随分位递增（75→2X / 80→5X / 85→10X / 90→25X / 95→50X）；单次卖出不超过当前仓位市值。分数跌破 75 暂停，回到 >=75 继续。倍数在 knowledge/index_params.json 里改，不需要动代码。",
+    "sell_unit_cny": 10
   },
   "pending": [
     "QDII 限购/暂停申购需人工确认",

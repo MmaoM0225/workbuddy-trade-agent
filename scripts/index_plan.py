@@ -116,12 +116,18 @@ def main():
                 gap = 9999
             if gap < ex["min_hold_days"]:
                 continue
-        ratio = stage["ratio"]
-        amt = pos["value"] * ratio
+        # 按金额倍数卖：卖 sell_unit_cny × mult 元，最多清空当前仓位
+        unit_sell = ex.get("sell_unit_cny") or ex.get("unit_amount_cny", 10)
+        want = unit_sell * stage.get("mult", 1)
+        amt = min(want, pos["value"])
+        if amt <= 0:
+            continue
+        ratio = amt / pos["value"] if pos["value"] > 0 else 1.0
         cost_out = pos.get("cost", 0) * ratio
         sells.append({"code": code, "name": it["name"], "score": it["score"],
                       "stage": stage["min_score"], "label": stage["label"],
-                      "ratio": ratio, "amount_cny": round(amt, 2),
+                      "mult": stage.get("mult", 1), "ratio": round(ratio, 6),
+                      "amount_cny": round(amt, 2),
                       "cost_cny": round(cost_out, 2),
                       "pnl_cny": round(amt - cost_out, 2)})
 
