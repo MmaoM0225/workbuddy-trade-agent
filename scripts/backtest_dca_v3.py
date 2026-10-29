@@ -247,6 +247,7 @@ def twr(curve):
 def run(items, cal, params, unit, top_ind, start_i=0, freq="daily", roe_filter=False, roe_th=0.0):
     from index_valuation_signal import sell_step
     ex = params["execute"]
+    rd_cfg = ex.get("cash_redeploy") or {}
     ladder = ex.get("sell_ladder") or []
     _ov = os.environ.get("BT_LADDER")   # 例如 "75:2,80:4,85:8,90:15,95:30"（填倍数 X）
     if _ov:
@@ -346,15 +347,15 @@ def run(items, cal, params, unit, top_ind, start_i=0, freq="daily", roe_filter=F
                     if not np.isnan(v) and v > roe_th:
                         keep.append(c)
                 ind_pool = keep
+            ind_pool_all = list(ind_pool)
             ind = sorted(ind_pool, key=lambda c: sc[c])[:top_ind]
-            for c in broad + ind:
-                s0 = sc[c]
-                # 倍数直接取 pick_zone 的结果，不再自己按 10/25 阈值硬算
+            def do_buy(c):
+                """买一笔：先花现金池，不足部分记为外部新增投入。返回实际买入金额。"""
+                nonlocal cash, recycled, invested
                 mlt = items[c]["mult"][i]
                 if np.isnan(mlt) or mlt <= 0:
-                    continue
+                    return 0.0
                 amt = unit * mlt
-                # 先用卖出回款，不够的部分才算外部新增投入
                 pay_cash = min(cash, amt) if RECYCLE else 0.0
                 cash -= pay_cash
                 recycled += pay_cash
@@ -365,11 +366,32 @@ def run(items, cal, params, unit, top_ind, start_i=0, freq="daily", roe_filter=F
                 if c in hold:
                     hold[c]["value"] += amt
                     hold[c]["cost"] += amt
-                    # 不再把 last 设为 i：last 是「上次**卖出**日」，用于卖出冷却，
-                    # 买入刷新它等于"越买越不能卖"（实测旧代码因此挡掉 51 次卖出）
+                    # 不把 last 设为 i：last 是「上次卖出日」，用于卖出冷却
                 else:
                     hold[c] = {"value": amt, "cost": amt, "stage": 0, "first": i, "last": None}
                 trades.append((d, c, items[c]["name"], "B", amt, 0.0))
+                return amt
+
+            bought_today = set()
+            for c in broad + ind:
+                if do_buy(c) > 0:
+                    bought_today.add(c)
+
+            # ---- 现金积压补买：超出 reserve 的回款，按分位升序补买当日没买过的合格标的 ----
+            if RECYCLE and rd_cfg.get("enabled"):
+                reserve = float(rd_cfg.get("reserve_cny", 0))
+                top_n = int(rd_cfg.get("top_n", 0))
+                pool = [c for c in (broad + ind_pool_all)
+                        if c not in bought_today and sc[c] < 40]
+                # 去重 + 按分位升序
+                pool = sorted(set(pool), key=lambda c: sc[c])
+                added = 0
+                for c in pool:
+                    if cash <= reserve or added >= top_n:
+                        break
+                    if do_buy(c) > 0:
+                        bought_today.add(c)
+                        added += 1
 
         mv = sum(h["value"] for h in hold.values())
         cost = sum(h["cost"] for h in hold.values())

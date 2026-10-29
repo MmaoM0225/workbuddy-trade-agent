@@ -175,6 +175,38 @@ def main():
                      "fund": it.get("fund", ""), "fund_name": it.get("fund_name", ""),
                      "match_level": it.get("match_level", "")})
 
+    # ---------- 2b. 现金积压补买 ----------
+    # 卖出回款若长期闲置就白攒了。常规买入后，若现金池仍高于 reserve，按分位升序
+    # 补买当日没买过的合格标的（分位<40、有场外基金、行业已过 ROE），每个 1X×mult。
+    rd = ex.get("cash_redeploy") or {}
+    redeploy = []
+    if rd.get("enabled"):
+        reserve = float(rd.get("reserve_cny", 0))
+        top_n = int(rd.get("top_n", 0))
+        cash_now = float(port.get("cash_from_sells_cny") or 0.0) + sum(x["amount_cny"] for x in sells)
+        bought_codes = {b["code"] for b in buys}
+        # 用未截断的行业候选池（ind_pool 已过 ROE），否则永远只剩 top5 已买过、补买无从触发
+        pool = [i for i in (broad_buys + ind_pool)
+                if i["code"] not in bought_codes and i.get("score") is not None
+                and i["score"] < 40 and is_of(i)]
+        pool.sort(key=lambda x: x["score"])
+        for it in pool:
+            if len(redeploy) >= top_n or cash_now <= reserve:
+                break
+            amt = round(unit * it["mult"], 2)
+            if amt > cash_now:
+                continue
+            cash_now -= amt
+            redeploy.append({"code": it["code"], "name": it["name"], "kind": it["kind"],
+                             "market": it.get("market"), "score": it["score"], "zone": it["zone"],
+                             "mult": it["mult"], "amount_cny": amt, "reason": "cash_redeploy",
+                             "fund": it.get("fund", ""), "fund_name": it.get("fund_name", ""),
+                             "match_level": it.get("match_level", "")})
+        if redeploy:
+            seen = {b["fund"] for b in buys if b.get("fund")}
+            redeploy = [b for b in redeploy if not (b.get("fund") and b["fund"] in seen)]
+            buys += redeploy
+
     total_buy = sum(b["amount_cny"] for b in buys)
     total_sell = sum(s["amount_cny"] for s in sells)
 
