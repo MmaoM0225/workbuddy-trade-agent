@@ -3,20 +3,22 @@
 """把指数定投日更发到邮箱（agent-mail MCP 直连）。
 
 默认行为（2026-10-29 起）：
-  正文 = 极简纯静态提示（无按钮、无 script、无大表，约 5KB）
-  附件 = reports/index_valuation_<as_of>.html 完整交互看板（下载/预览后按钮才可用）
+  正文 = reports/index_valuation_<as_of>.html 完整看板，**邮件内可直接点**
+  附件 = 无（除非显式 --attach）
 
-为什么不再把看板塞正文：看板的筛选/搜索/排序全由 <script> 驱动，邮件网关 WAF 把
-script 当 XSS 拦截（实测 501），客户端也会剥掉。留在正文里就是一堆点了没反应的
-死按钮。看板既然是交互件，就按附件发——用浏览器打开一切正常。
+为什么能在邮件里点：看板改为零 JS + 零 <style> 依赖，交互全部用 HTML 原生能力——
+  · <details>/<summary> 折叠（按档位分组，点标题展开/收起）
+  · <a href="#id"> 锚点跳转（顶部导航条直达各档位）
+这两个都是浏览器内建行为，不靠脚本也不靠样式表，邮件客户端剥什么都还在跑。
+筛选/搜索/排序这类必须 JS 的东西一律不做（旧版做了，发到邮箱全是死按钮）。
 
 用法：
-  python scripts/send_index_daily_mail.py                    # 默认：极简正文 + 看板附件
-  python scripts/send_index_daily_mail.py --inline           # 旧行为：看板全文当正文（按钮无效）
-  python scripts/send_index_daily_mail.py --summary          # 680px 摘要邮件（买入/卖出/账本正文）
+  python scripts/send_index_daily_mail.py                    # 默认：看板全文当正文 + 无附件
+  python scripts/send_index_daily_mail.py --attach           # 额外附带 .html（方便再分享）
+  python scripts/send_index_daily_mail.py --notice --attach  # 极简正文 + 看板附件
+  python scripts/send_index_daily_mail.py --summary          # 680px 摘要邮件（无分位明细）
   python scripts/send_index_daily_mail.py --to a@b.com,c@d.com
   python scripts/send_index_daily_mail.py --dry-run          # 只渲染落盘，不发信
-  python scripts/send_index_daily_mail.py --no-attach        # 不附看板
 """
 import argparse
 import base64
@@ -31,7 +33,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from update_warehouse import McpClient  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DEFAULT_TO = "1920442561@qq.com,3436517506@qq.com,1838413961@qq.com"
+DEFAULT_TO = "1920442561@qq.com"
 
 C_DEEP, C_UNDER, C_LOW = "#047857", "#15803d", "#4d7c0f"
 C_NORM, C_HIGH, C_SELL = "#6b7280", "#b45309", "#dc2626"
@@ -332,6 +334,15 @@ def build_notice(orders, sig, params, as_of, data_date, attach_name, attach_kb=0
                 if roe_on else "ROE 过滤已关闭")
 
     size_txt = ("（%.0f KB）" % attach_kb) if attach_kb else ""
+    if attach_name and attach_kb:
+        attach_head = "完整看板在附件里 → %s %s" % (attach_name, size_txt)
+        attach_tip = ("<b>下载后用浏览器打开</b>：筛选（全部 / 宽基 / 行业 / 本期买入 / ROE挡掉 / 停投）、"
+                      "搜索框、点表头排序，全部可用。<br>"
+                      "直接在邮件里预览或内嵌阅读不会执行脚本，按钮是灰的——所以正文不再放看板。")
+    else:
+        attach_head = "本次只发了摘要，没带看板文件"
+        attach_tip = ("完整看板请本地打开 reports/index_valuation_<as_of>.html，"
+                      "或下次带 --attach 重发。")
     return """<!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:0;background:#f5f6f8;">
@@ -381,12 +392,10 @@ def build_notice(orders, sig, params, as_of, data_date, attach_name, attach_kb=0
   <table width="100%%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #d1fae5;background:#f0fdfa;border-radius:10px;">
     <tr><td style="padding:16px 18px;">
       <div style="font-size:13.5px;font-weight:650;color:#065f46;margin-bottom:8px;%(F)s">
-        完整看板在附件里 → %(attach_name)s %(size_txt)s
+        %(attach_head)s
       </div>
       <div style="font-size:12.5px;color:#0f766e;line-height:1.85;%(F)s">
-        <b>下载后用浏览器打开</b>：筛选（全部 / 宽基 / 行业 / 本期买入 / ROE挡掉 / 停投）、
-        搜索框、点表头排序，全部可用。<br>
-        直接在邮件里预览或内嵌阅读不会执行脚本，按钮是灰的——所以正文不再放看板。
+        %(attach_tip)s
       </div>
     </td></tr>
   </table>
@@ -425,6 +434,7 @@ def build_notice(orders, sig, params, as_of, data_date, attach_name, attach_kb=0
         "ret": format(ret, "+.2f") + "%",
         "pc": C_UNDER if (realized + unreal) >= 0 else C_SELL,
         "attach_name": attach_name, "size_txt": size_txt,
+        "attach_head": attach_head, "attach_tip": attach_tip,
         "n_all": len(items), "n_broad": n_broad, "n_ind": n_ind,
         "n_stop": n_stop, "roe_line": roe_line, "sell_line": sell_line,
     }
@@ -478,11 +488,12 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--to", default=DEFAULT_TO)
     ap.add_argument("--dry-run", action="store_true")
-    ap.add_argument("--inline", action="store_true",
-                    help="旧行为：看板全文当正文（script 会被剥掉，按钮无效，仅排障用）")
+    ap.add_argument("--notice", action="store_true",
+                    help="极简纯文字正文（~6KB），看板需配合 --attach")
     ap.add_argument("--summary", action="store_true",
-                    help="680px 摘要邮件（买入/卖出/账本全在正文，无交互）")
-    ap.add_argument("--no-attach", action="store_true", help="不附看板 HTML")
+                    help="680px 摘要邮件（买入/卖出/账本全在正文，无分位明细）")
+    ap.add_argument("--attach", action="store_true",
+                    help="额外附带看板 HTML（默认正文已含完整看板，一般不需要）")
     ap.add_argument("--html", default=None, help="看板 HTML 路径，缺省按 as_of 推断")
     a = ap.parse_args()
 
@@ -499,28 +510,29 @@ def main():
     attach_name = os.path.basename(board)
     attach_kb = 0.0
 
-    if a.inline:
-        if not os.path.exists(board):
-            print("看板不存在，先跑 make_index_valuation_report.py：", board)
-            return 1
-        body = open(board, encoding="utf-8").read()
-        # 邮件正文必须去掉 <script>：客户端本来就会剥掉，且网关 WAF 会把 script 当 XSS 拦截（实测 501）。
-        body = re.sub(r"<script\b.*?</script>", "", body, flags=re.S | re.I)
-        print("body: 看板全文（按钮无效）%.1fKB <- %s" % (len(body.encode()) / 1024.0, attach_name))
-    elif a.summary:
+    if a.summary:
         body = build_body(orders, sig, params, as_of, data_date)
-        print("body: 摘要版 %.1fKB" % (len(body.encode()) / 1024.0))
+        print("body: 680px 摘要版 %.1fKB" % (len(body.encode()) / 1024.0))
+    elif a.notice:
+        if os.path.exists(board):
+            attach_kb = os.path.getsize(board) / 1024.0
+        body = build_notice(orders, sig, params, as_of, data_date, attach_name, attach_kb)
+        print("body: 极简提示 %.1fKB（看板请配合 --attach）" % (len(body.encode()) / 1024.0))
     else:
         if not os.path.exists(board):
-            # 正文写的是「看板在附件里」，附件却不存在 = 发一封骗人的邮件，直接失败退出
             print("FAILED 看板不存在，先跑 make_index_valuation_report.py：", board)
             return 1
-        attach_kb = os.path.getsize(board) / 1024.0
-        body = build_notice(orders, sig, params, as_of, data_date, attach_name, attach_kb)
-        print("body: 极简提示 %.1fKB" % (len(body.encode()) / 1024.0))
+        body = open(board, encoding="utf-8").read()
+        # 看板已改为纯 HTML 原生交互（<details> 折叠 + 锚点跳转），本身不含 script。
+        # 这里保留一次防御性剥离：万一以后有人往模板里塞回 JS，别把死按钮发出去。
+        if re.search(r"<script\b", body, flags=re.I):
+            print("WARN 看板里检测到 <script>，已剥离（邮件环境不执行，网关也会拦）")
+            body = re.sub(r"<script\b.*?</script>", "", body, flags=re.S | re.I)
+        print("body: 看板全文（邮件原生交互）%.1fKB <- %s"
+              % (len(body.encode()) / 1024.0, attach_name))
 
     attachments = []
-    if not a.no_attach:
+    if a.attach:
         if not os.path.exists(board):
             print("FAILED 看板不存在，附件无法生成：", board)
             return 1
