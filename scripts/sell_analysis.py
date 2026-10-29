@@ -9,26 +9,26 @@ spec = importlib.util.spec_from_file_location("bt", os.path.join(ROOT, "scripts"
 bt = importlib.util.module_from_spec(spec); spec.loader.exec_module(bt)
 
 TOP, ROE_TH, START = 5, 0.15, "20201102"
-params = json.load(open(os.path.join(ROOT, "data", "index_params.json"), encoding="utf-8"))
+params = json.load(open(os.path.join(ROOT, "knowledge", "index_params.json"), encoding="utf-8"))
 d0 = os.path.join(ROOT, "data", "warehouse", "daily")
 cal = sorted(x[:-4] for x in os.listdir(d0) if x.endswith(".csv"))
 cal = [d for d in cal if START <= d <= "20261027"]
 idx_of = {d: i for i, d in enumerate(cal)}
 items = bt.build(cal, params, TOP)
-curve, trades, hold, inv, real = bt.run(items, cal, params, 20, TOP,
+curve, trades, hold, inv, real, _flows = bt.run(items, cal, params, 20, TOP,
                                         freq="daily", roe_filter=True, roe_th=ROE_TH)
 
 ex = params["execute"]
 print("=" * 92)
 print("卖出规则（参数 %s）" % params["version"])
 print("=" * 92)
-for s in sorted(ex["sell_stages"], key=lambda x: x["min_score"]):
-    print("  分位 >= %-3d  →  %s（卖出当前持仓的 %.1f%%）" % (
-        s["min_score"], s["label"], s["sell_current_ratio"] * 100))
+for s in sorted(ex["sell_ladder"], key=lambda x: x["min_score"]):
+    print("  分位 >= %-3d  →  %s（卖出当前持仓的 %.0f%%）" % (
+        s["min_score"], s["label"], s["ratio"] * 100))
 print("  相邻两次减仓至少间隔 %d 个交易日；买入后 %d 天内不卖" % (
     ex["sell_interval_td"], ex["min_hold_days"]))
 print("  比例是【当前持仓】的比例，不是初始仓位：")
-print("    100%% →(75档卖1/3)→ 66.7%% →(85档卖1/2)→ 33.3%% →(95档清仓)→ 0")
+print("    持续减仓：只要还在 >=75 区间，每个冷却期就按当时档位再卖一次，直到清空")
 
 sells = [t for t in trades if t[3] == "S"]
 print("\n" + "=" * 92)

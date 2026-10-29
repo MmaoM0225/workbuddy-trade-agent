@@ -70,6 +70,7 @@ def align(cal, dates, vals):
     return out
 
 
+SELL_RULE = "ladder"   # ladder=持续减仓（默认）| stage=旧的 75/85/95 各触发一次
 USE_ADJ = False   # True = 用 adj_nav（含分红再投资）；默认 unit_nav（保守）
 
 
@@ -102,7 +103,7 @@ def build(cal, params, top_industry):
 
     与实盘 index_valuation_signal 共用 pick_zone，避免"回测一个策略、实盘另一个策略"。
     """
-    from index_valuation_signal import pick_zone
+    from index_valuation_signal import pick_zone, sell_step
 
     items = {}
     with open(POOL, encoding="utf-8") as f:
@@ -243,8 +244,14 @@ def twr(curve):
 
 
 def run(items, cal, params, unit, top_ind, start_i=0, freq="daily", roe_filter=False, roe_th=0.0):
+    from index_valuation_signal import sell_step
     ex = params["execute"]
-    stages = sorted(ex["sell_stages"], key=lambda x: x["min_score"])
+    ladder = ex.get("sell_ladder") or []
+    _ov = os.environ.get("BT_LADDER")   # 例如 "75:5,80:10,85:20,90:40,95:100"
+    if _ov:
+        ladder = [{"min_score": float(a.split(":")[0]), "ratio": float(a.split(":")[1]) / 100.0,
+                   "label": "减仓%s%%" % a.split(":")[1]} for a in _ov.split(",")]
+    legacy_stages = sorted(ex.get("sell_stages") or [], key=lambda x: x["min_score"])
     hold, nav_curve, trades, flows = {}, [], [], []
     invested = realized = 0.0
     seen_month = set()
@@ -267,25 +274,33 @@ def run(items, cal, params, unit, top_ind, start_i=0, freq="daily", roe_filter=F
                 if c not in sc:
                     continue
                 s0 = sc[c]
-                st = None
-                for s in stages:
-                    if s0 >= s["min_score"]:
-                        st = s
-                if not st or st["min_score"] <= hold[c]["stage"]:
-                    continue
-                if hold[c]["first"] is not None and i - hold[c]["first"] < 20:
+                if SELL_RULE == "stage":
+                    # 旧规则：75/85/95 每档只触发一次
+                    st = None
+                    for s in legacy_stages:
+                        if s0 >= s["min_score"]:
+                            st = s
+                    if not st or st["min_score"] <= hold[c]["stage"]:
+                        continue
+                    ratio, st_key = st["sell_current_ratio"], st["min_score"]
+                else:
+                    # 新规则：持续减仓。>=75 就在每个冷却期按当前档位卖，直到清空
+                    st = sell_step(s0, ladder)
+                    if not st:
+                        continue
+                    ratio, st_key = st["ratio"], st["min_score"]
+                if hold[c]["first"] is not None and i - hold[c]["first"] < ex["min_hold_days"]:
                     continue
                 if hold[c]["last"] is not None and i - hold[c]["last"] < ex["sell_interval_td"]:
                     continue
-                amt = hold[c]["value"] * st["sell_current_ratio"]
+                amt = hold[c]["value"] * ratio
                 if amt <= 0:
                     continue
-                cost_out = hold[c]["cost"] * st["sell_current_ratio"]
+                cost_out = hold[c]["cost"] * ratio
                 realized += amt - cost_out
-                invested -= 0
                 hold[c]["value"] -= amt
                 hold[c]["cost"] -= cost_out
-                hold[c]["stage"] = st["min_score"]
+                hold[c]["stage"] = st_key
                 hold[c]["last"] = i
                 trades.append((d, c, items[c]["name"], "S", amt, amt - cost_out))
                 if hold[c]["value"] < 0.01:
@@ -332,9 +347,10 @@ def run(items, cal, params, unit, top_ind, start_i=0, freq="daily", roe_filter=F
                 if c in hold:
                     hold[c]["value"] += amt
                     hold[c]["cost"] += amt
-                    hold[c]["last"] = i
+                    # 不再把 last 设为 i：last 是「上次**卖出**日」，用于卖出冷却，
+                    # 买入刷新它等于"越买越不能卖"（实测旧代码因此挡掉 51 次卖出）
                 else:
-                    hold[c] = {"value": amt, "cost": amt, "stage": 0, "first": i, "last": i}
+                    hold[c] = {"value": amt, "cost": amt, "stage": 0, "first": i, "last": None}
                 trades.append((d, c, items[c]["name"], "B", amt, 0.0))
 
         mv = sum(h["value"] for h in hold.values())
@@ -352,14 +368,17 @@ def main():
     ap.add_argument("--legacy", action="store_true", help="用旧口径做对照（无模型、无 caps）")
     ap.add_argument("--broad", default="", help="诊断用：只跑逗号分隔的宽基代码")
     ap.add_argument("--adj", action="store_true", help="用 adj_nav（含分红再投资）对照")
+    ap.add_argument("--sell-rule", default="ladder", choices=["ladder", "stage"],
+                    help="卖出规则：ladder=持续减仓（默认）/ stage=旧的分档各触发一次")
     ap.add_argument("--top", type=int, default=5)
     ap.add_argument("--freq", default="daily", choices=["daily", "monthly"])
     ap.add_argument("--roe-filter", action="store_true", help="行业需隐含ROE同比改善才买")
     ap.add_argument("--roe-th", type=float, default=None, help="ROE同比阈值，默认取参数文件")
     args = ap.parse_args()
-    global LEGACY, UNIVERSE, USE_ADJ
+    global LEGACY, UNIVERSE, USE_ADJ, SELL_RULE
     LEGACY = args.legacy
     USE_ADJ = args.adj
+    SELL_RULE = args.sell_rule
     UNIVERSE = {c.strip() for c in args.broad.split(",") if c.strip()}
 
     with open(PARAMS, encoding="utf-8") as f:
@@ -421,7 +440,8 @@ def main():
     print("\n  账面收益率最大回撤 %.2f%%" % (mdd * 100))
     if os.environ.get("BT_DUMP"):
         with open(os.environ["BT_DUMP"], "w", encoding="utf-8") as _f:
-            json.dump({"flows": flows, "curve": curve, "total": total, "inv": inv},
+            json.dump({"flows": flows, "curve": curve, "total": total, "inv": inv,
+                       "trades": trades},
                       _f, ensure_ascii=False)
         print("  [dump] %s" % os.environ["BT_DUMP"])
 

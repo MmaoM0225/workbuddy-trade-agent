@@ -230,20 +230,19 @@ def run_strategy(panel, params, calendar, capital, fee, sell_on=True, dedup_on=T
                 if code not in scores:
                     continue
                 sc = scores[code]
+                # 持续减仓：>=75 就按当前档位卖，没有「该档已用过」门槛
                 stage = None
-                for s in sorted(ex["sell_stages"], key=lambda x: x["min_score"]):
+                for s in sorted(ex.get("sell_ladder") or [], key=lambda x: x["min_score"]):
                     if sc >= s["min_score"]:
                         stage = s
                 if not stage:
                     continue
                 h = hold[code]
-                if stage["min_score"] <= h["stage_done"]:
-                    continue
-                if h["first_buy_i"] is not None and i - h["first_buy_i"] < 20:
+                if h["first_buy_i"] is not None and i - h["first_buy_i"] < ex["min_hold_days"]:
                     continue
                 if h["last_action_i"] is not None and i - h["last_action_i"] < ex["sell_interval_td"]:
                     continue
-                amt = h["value"] * stage["sell_current_ratio"]
+                amt = h["value"] * stage["ratio"]
                 if amt <= 0:
                     continue
                 held = i - (h["first_buy_i"] if h["first_buy_i"] is not None else 0)

@@ -21,6 +21,9 @@ import os
 import sys
 from datetime import datetime
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from index_valuation_signal import sell_step  # noqa: E402  与回测共用同一份卖出阶梯判定
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SIGNAL = os.path.join(ROOT, "state", "index_signal.json")
 PORT = os.path.join(ROOT, "state", "index_portfolio.json")
@@ -63,13 +66,6 @@ def td_between(d0, d1, cal):
     return sum(1 for x in cal if d0 < x <= d1)
 
 
-def pick_stage(score, stages):
-    cur = None
-    for s in sorted(stages, key=lambda x: x["min_score"]):
-        if score >= s["min_score"]:
-            cur = s
-    return cur
-
 
 def main():
     ap = argparse.ArgumentParser()
@@ -104,8 +100,10 @@ def main():
         it = by_code.get(code)
         if not it:
             continue
-        stage = pick_stage(it["score"], ex["sell_stages"])
-        if not stage or stage["min_score"] <= pos.get("stage_done", 0):
+        # 持续减仓：只要在 >=75 区间，每个冷却期就按当前档位卖一次，直到仓位清空。
+        # 不再有「该档已卖过就跳过」的门槛 —— 旧规则正是因此导致高位横盘时只卖一次。
+        stage = sell_step(it["score"], ex.get("sell_ladder") or [])
+        if not stage:
             continue
         last = pos.get("last_action_date", "")
         if last and td_between(last, today, cal) < ex["sell_interval_td"]:
@@ -118,7 +116,7 @@ def main():
                 gap = 9999
             if gap < ex["min_hold_days"]:
                 continue
-        ratio = stage["sell_current_ratio"]
+        ratio = stage["ratio"]
         amt = pos["value"] * ratio
         cost_out = pos.get("cost", 0) * ratio
         sells.append({"code": code, "name": it["name"], "score": it["score"],

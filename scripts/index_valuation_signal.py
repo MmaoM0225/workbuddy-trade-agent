@@ -92,6 +92,17 @@ def pct_rank(series, window, min_periods):
     return out
 
 
+def sell_step(score, ladder):
+    """按分数取当前该执行的卖出档（ladder 需按 min_score 降序或升序均可，这里自行挑最高命中档）。
+    返回 dict 或 None（None = 未进入高估区，不卖）。"""
+    hit = None
+    for s in ladder or []:
+        if score is not None and score >= s["min_score"]:
+            if hit is None or s["min_score"] > hit["min_score"]:
+                hit = s
+    return hit
+
+
 def pick_zone(score, params, pb=None, div=None, pe=None):
     capped = None
     # PE 绝对水平过高的"便宜"是假便宜：分位低只是因为历史 PE 更高。
