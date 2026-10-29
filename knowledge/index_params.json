@@ -300,5 +300,51 @@
     "风电设备": "M_MANU",
     "环保设备Ⅱ": "M_MANU"
   },
-  "industry_models_note": "行业层面一律不使用 PE：申万行业是聚合口径，盈利下滑会把 PE 分位顶到极高位（实证：家居用品 PB 分位 3.2 / PS 7.6 / PE 97.0；食品加工 2.1 / 6.7 / 93.0），反映的是盈利质量而非估值。模型只用 PB / PS / 股息率三种不受盈利分母扰动的存量指标。若将来要做盈利质量加权，应作为独立因子而不是塞进估值分位。"
+  "industry_models_note": "行业层面一律不使用 PE：申万行业是聚合口径，盈利下滑会把 PE 分位顶到极高位（实证：家居用品 PB 分位 3.2 / PS 7.6 / PE 97.0；食品加工 2.1 / 6.7 / 93.0），反映的是盈利质量而非估值。模型只用 PB / PS / 股息率三种不受盈利分母扰动的存量指标。若将来要做盈利质量加权，应作为独立因子而不是塞进估值分位。",
+  "broad_models": {
+    "M_BROAD_VALUE": {
+      "label": "宽基·价值红利 PB+股息",
+      "weights": {
+        "pb": 0.5,
+        "div": 0.5
+      },
+      "why": "红利/大盘价值，股息回报是核心定价因素；股息率分位取反（越高=越便宜）"
+    },
+    "M_BROAD_CORE": {
+      "label": "宽基·核心 PB+PE",
+      "weights": {
+        "pb": 0.55,
+        "pe": 0.45
+      },
+      "why": "成分含大量金融/周期，净资产比盈利稳；PE 保留一定权重反映盈利质量"
+    },
+    "M_BROAD_GROWTH": {
+      "label": "宽基·成长 PB+PE",
+      "weights": {
+        "pb": 0.65,
+        "pe": 0.35
+      },
+      "why": "成长/小微盘盈利波动大，PE 分位易被盈利周期带偏，故降 PE 权重、以 PB 为主"
+    }
+  },
+  "broad_model_map": {
+    "000922.SH": "M_BROAD_VALUE",
+    "H30269.CS": "M_BROAD_VALUE",
+    "000016.SH": "M_BROAD_VALUE",
+    "000300.SH": "M_BROAD_CORE",
+    "000510.SH": "M_BROAD_CORE",
+    "000905.SH": "M_BROAD_CORE",
+    "HSI.HK": "M_BROAD_CORE",
+    "HSCEI.HK": "M_BROAD_CORE",
+    "SPTR500N.GI": "M_BROAD_CORE",
+    "NIFTY50.NS": "M_BROAD_CORE",
+    "N225.GZ": "M_BROAD_CORE",
+    "399006.SZ": "M_BROAD_GROWTH",
+    "000688.SH": "M_BROAD_GROWTH",
+    "HSTECH.HK": "M_BROAD_GROWTH",
+    "NDX.US": "M_BROAD_GROWTH",
+    "000852.SH": "M_BROAD_GROWTH",
+    "399303.SZ": "M_BROAD_GROWTH"
+  },
+  "broad_models_note": "2026-10-29 宽基也改模型制，废弃旧的 CYCLICAL/GROWTH 代码集合——那套里 6 个代码不在池内，周期组完全空转，新增的 7 只也全走默认权重。现在 17 只宽基逐个显式归类。PE 权重从 0.5 降到 0.35~0.45：宽基聚合口径下 PE 比行业稳，但成长/小微盘仍会被盈利周期带偏。另把 pe_cap_no_low 从「只在回测里存在」提升为实盘规则，消除实盘与回测的口径分歧。"
 }

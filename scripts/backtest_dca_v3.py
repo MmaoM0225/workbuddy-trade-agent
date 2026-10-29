@@ -83,45 +83,80 @@ def load_nav(fp):
     return (ds, vs) if ds else None
 
 
+LEGACY = False   # True = 复现 2026-10-29 前的老口径（宽基 PE/PB 0.5:0.5、行业 (PB+PS)/2、无 caps）
+
+
+def _zone_of(score, params):
+    for z in params["zones"]:
+        if z["lo"] <= score < z["hi"]:
+            return z
+    return params["zones"][-1]
+
+
 def build(cal, params, top_industry):
+    """构造每个标的的**逐日最终分数**（已套用模型权重 + pick_zone 全部否决规则）。
+
+    与实盘 index_valuation_signal 共用 pick_zone，避免"回测一个策略、实盘另一个策略"。
+    """
+    from index_valuation_signal import pick_zone
+
     items = {}
     with open(POOL, encoding="utf-8") as f:
         uni = json.load(f)["indices"]
     win, mp = params["window_days"], params["min_periods"]
+    bmodels = params.get("broad_models", {}) or {}
+    bmap = params.get("broad_model_map", {}) or {}
+    imodels = params.get("industry_models", {}) or {}
+    imap = params.get("industry_model_map", {}) or {}
 
-    # ---- 宽基：自算滚动分位 ----
+    def model_score(weights, avails):
+        num = den = 0.0
+        for k, w in weights.items():
+            x = avails.get(k)
+            if x is None:
+                continue
+            num += w * x
+            den += w
+        return (num / den) if den > 0 else None
+
+    # ---- 宽基：自算滚动分位（PE 剔负 / PB / 股息率）----
     for m in uni:
+        if m.get("enabled") is False:
+            continue   # 人工停用的标的（越南/SENSEX/中韩半导体）不参与回测，与实盘一致
         fp = os.path.join(VAL, m["code"] + ".csv")
         nav = load_nav(os.path.join(NAVD, (m.get("of_fund") or "") + ".csv"))
-        if not os.path.exists(fp):
+        if not os.path.exists(fp) or not nav:
             continue
-        if m.get("datasource") == "price":
-            if not nav:
+        rows = []
+        with open(fp, encoding="utf-8") as f:
+            rows = list(csv.DictReader(f))
+        rows.sort(key=lambda r: r["trade_date"])
+        ds = [r["trade_date"] for r in rows]
+        pe = [fnum(r["pe_ttm_ex_neg"]) for r in rows]
+        pb = [fnum(r["pb_lf"]) for r in rows]
+        dv = [fnum(r["dividend_ratio"]) for r in rows]
+        pep, pbp, dvp = pct_rank(pe, win, mp), pct_rank(pb, win, mp), pct_rank(dv, win, mp)
+        key = bmap.get(m["code"], "M_BROAD_CORE")
+        w = (bmodels.get(key) or {}).get("weights") or {"pb": 0.55, "pe": 0.45}
+        if LEGACY:
+            w = {"pe": 0.5, "pb": 0.5}
+        sc, mu = [], []
+        for i in range(len(ds)):
+            s = model_score(w, {"pe": pep[i], "pb": pbp[i],
+                                "div": None if dvp[i] is None else 100.0 - dvp[i]})
+            if s is None:
+                sc.append(np.nan)
+                mu.append(np.nan)
                 continue
-            sc = align(cal, *[list(x) for x in nav])
-            base = nav
-        else:
-            rows = []
-            with open(fp, encoding="utf-8") as f:
-                rows = list(csv.DictReader(f))
-            rows.sort(key=lambda r: r["trade_date"])
-            ds = [r["trade_date"] for r in rows]
-            pe = [fnum(r["pe_ttm_ex_neg"]) for r in rows]
-            pb = [fnum(r["pb_lf"]) for r in rows]
-            wp, wb = style_w(m["code"])
-            raw = [None] * len(ds)
-            pep, pbp = pct_rank(pe, win, mp), pct_rank(pb, win, mp)
-            for i in range(len(ds)):
-                if pep[i] is None and pbp[i] is None:
-                    continue
-                raw[i] = pbp[i] if pep[i] is None else (pep[i] if pbp[i] is None else wp * pep[i] + wb * pbp[i])
-            sc = align(cal, ds, raw)
-            if not nav:
-                continue
+            zone, _cap, s2 = ((None, None, s) if LEGACY else pick_zone(s, params, pb[i], dv[i], pe[i]))
+            zone = zone or _zone_of(s2, params)
+            sc.append(s2)
+            mu.append(zone["mult"])
         items[m["code"]] = {"kind": "broad", "name": m["name"], "fund": m.get("of_fund"),
-                            "score": sc, "nav": align(cal, list(nav[0]), list(nav[1]))}
+                            "score": align(cal, ds, sc), "mult": align(cal, ds, mu),
+                            "nav": align(cal, list(nav[0]), list(nav[1]))}
 
-    # ---- 行业：申万官方 5 年分位 ----
+    # ---- 行业：申万官方 5 年分位（PB / PS / 股息），point-in-time 列 ----
     with open(IFM, encoding="utf-8") as f:
         fm = json.load(f)["map"]
     for code, v in fm.items():
@@ -132,23 +167,36 @@ def build(cal, params, top_industry):
         nav = load_nav(os.path.join(NAVD, p["fund_code"] + ".csv"))
         if not os.path.exists(fp) or not nav:
             continue
-        ds, raw, roe = [], [], []
+        ds, sc, mu, roe = [], [], [], []
+        key = imap.get(v["name"], "M_DEFAULT")
+        w = (imodels.get(key) or {}).get("weights") or {"pb": 0.5, "ps": 0.5}
+        if LEGACY:
+            w = {"pb": 0.5, "ps": 0.5}
         with open(fp, encoding="utf-8") as f:
             for r in csv.DictReader(f):
-                pb, ps = fnum(r.get("pb_pct")), fnum(r.get("ps_pct"))
-                vals = [x for x in (pb, ps) if x is not None]
-                ds.append(r["date"])
-                raw.append(sum(vals) / len(vals) if vals else None)
+                pbp_, psp_ = fnum(r.get("pb_pct")), fnum(r.get("ps_pct"))
+                dvp_ = fnum(r.get("div_pct"))
                 pbv, pev = fnum(r.get("pb_lf")), fnum(r.get("pe_ttm"))
+                s = model_score(w, {"pb": pbp_, "ps": psp_,
+                                    "div": None if dvp_ is None else 100.0 - dvp_})
+                ds.append(r["date"])
+                if s is None:
+                    sc.append(np.nan)
+                    mu.append(np.nan)
+                else:
+                    zone, _cap, s2 = ((None, None, s) if LEGACY else pick_zone(s, params, pbv, fnum(r.get("div_yield_ttm")), pev))
+                    zone = zone or _zone_of(s2, params)
+                    sc.append(s2)
+                    mu.append(zone["mult"])
                 roe.append(pbv / pev if (pbv and pev and pev > 0) else None)
-        # 隐含 ROE 同比（约 244 交易日 ≈ 1 年）
         roe_chg = [None] * len(roe)
         for i in range(len(roe)):
             j = i - 244
             if j >= 0 and roe[i] is not None and roe[j]:
                 roe_chg[i] = roe[i] / roe[j] - 1.0
         items[code] = {"kind": "industry", "name": v["name"], "fund": p["fund_code"],
-                       "score": align(cal, ds, raw), "nav": align(cal, list(nav[0]), list(nav[1])),
+                       "score": align(cal, ds, sc), "mult": align(cal, ds, mu),
+                       "nav": align(cal, list(nav[0]), list(nav[1])),
                        "roe_chg": align(cal, ds, roe_chg)}
     return items
 
@@ -233,8 +281,11 @@ def run(items, cal, params, unit, top_ind, start_i=0, freq="daily", roe_filter=F
             ind = sorted(ind_pool, key=lambda c: sc[c])[:top_ind]
             for c in broad + ind:
                 s0 = sc[c]
-                mult = 2.0 if s0 < 10 else (1.5 if s0 < 25 else 1.0)
-                amt = unit * mult
+                # 倍数直接取 pick_zone 的结果，不再自己按 10/25 阈值硬算
+                mlt = items[c]["mult"][i]
+                if np.isnan(mlt) or mlt <= 0:
+                    continue
+                amt = unit * mlt
                 invested += amt
                 if c in hold:
                     hold[c]["value"] += amt
@@ -256,11 +307,14 @@ def main():
     ap.add_argument("--start", default="20201102")
     ap.add_argument("--end", default="20261027")
     ap.add_argument("--unit", type=float, default=10)
+    ap.add_argument("--legacy", action="store_true", help="用旧口径做对照（无模型、无 caps）")
     ap.add_argument("--top", type=int, default=5)
     ap.add_argument("--freq", default="daily", choices=["daily", "monthly"])
     ap.add_argument("--roe-filter", action="store_true", help="行业需隐含ROE同比改善才买")
     ap.add_argument("--roe-th", type=float, default=None, help="ROE同比阈值，默认取参数文件")
     args = ap.parse_args()
+    global LEGACY
+    LEGACY = args.legacy
 
     with open(PARAMS, encoding="utf-8") as f:
         params = json.load(f)

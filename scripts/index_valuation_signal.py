@@ -92,8 +92,13 @@ def pct_rank(series, window, min_periods):
     return out
 
 
-def pick_zone(score, params, pb=None, div=None):
+def pick_zone(score, params, pb=None, div=None, pe=None):
     capped = None
+    # PE 绝对水平过高的"便宜"是假便宜：分位低只是因为历史 PE 更高。
+    # 这条规则原本只写在 backtest_index_dca.py 里，实盘没有 → 回测与实盘口径不一致，现统一到实盘。
+    if score < 25 and pe is not None and pe > params.get("pe_cap_no_low", 60.0):
+        score = 25.0
+        capped = "PE>%.0f倍 否决深度低估/低估→偏低下沿" % params.get("pe_cap_no_low", 60.0)
     if score >= 75:
         hit = []
         if pb is not None and pb < params["pb_floor_no_high"]:
@@ -159,6 +164,9 @@ def build_price_item(m, params, target_date):
 
 def build_broad(uni, params, target_date):
     items, missing = [], []
+    broad_models = params.get("broad_models", {}) or {}
+    broad_mmap = params.get("broad_model_map", {}) or {}
+    broad_default = "M_BROAD_CORE" if "M_BROAD_CORE" in broad_models else None
     for m in uni["indices"]:
         code = m["code"]
         if m.get("enabled") is False:
@@ -183,21 +191,37 @@ def build_broad(uni, params, target_date):
                                                       default=len(dates) - 1)
         pe_s = [fnum(r["pe_ttm_ex_neg"]) for r in rows]
         pb_s = [fnum(r["pb_lf"]) for r in rows]
+        div_s = [fnum(r["dividend_ratio"]) for r in rows]
         win = min(params["window_days"], len(rows))
         mp = min(params["min_periods"], max(120, len(rows) // 2))
         pep, pbp = pct_rank(pe_s, win, mp)[idx], pct_rank(pb_s, win, mp)[idx]
+        dvp = pct_rank(div_s, win, mp)[idx]
         if pep is None and pbp is None:
             missing.append((code, m["name"], m.get("market"), "分位无法计算"))
             continue
-        wp, wb = style_weights(code)
-        if pep is None:
-            score = pbp
-        elif pbp is None:
-            score = pep
-        else:
-            score = wp * pep + wb * pbp
+        # 宽基也走模型制：按指数属性给 PE/PB/股息 分配权重，缺指标的权重自动重归一
+        mkey = broad_mmap.get(code, broad_default)
+        spec = broad_models.get(mkey) or (broad_models.get(broad_default) if broad_default else None) or \
+            {"label": "宽基·核心 PB+PE", "weights": {"pb": 0.55, "pe": 0.45}}
+        avails = {
+            "pe": pep,
+            "pb": pbp,
+            # 股息率分位取反：股息率处于历史高位 = 便宜
+            "div": None if dvp is None else (100.0 - dvp),
+        }
+        num = den = 0.0
+        for k, wt in spec["weights"].items():
+            x = avails.get(k)
+            if x is None:
+                continue
+            num += wt * x
+            den += wt
+        if den <= 0:
+            missing.append((code, m["name"], m.get("market"), "模型所需分位全缺"))
+            continue
+        score = num / den
         pe, pb, div = pe_s[idx], pb_s[idx], fnum(rows[idx]["dividend_ratio"])
-        zone, capped, score = pick_zone(score, params, pb, div)
+        zone, capped, score = pick_zone(score, params, pb, div, pe)
         # 载体是主动基金（非纯指数敞口，含 alpha 与基金经理偏离）时，倍数封顶 1.0x：
         # 估值分位讲的是指数，买的是主动基金，2.0x 加码等于放大一个不成立的假设。
         mult = zone["mult"]
@@ -213,6 +237,9 @@ def build_broad(uni, params, target_date):
             "score": round(score, 1), "zone": zone["name"], "action": zone["action"],
             "mult": mult, "caps": capped or "", "note": m.get("note", ""),
             "metric": m.get("metric", ""),
+            "val_model": mkey, "val_model_label": spec.get("label", ""),
+            "val_model_short": _model_short(spec.get("weights") or {}),
+            "div_pct": None if dvp is None else round(dvp, 1),
             "proxy_active_fund": bool(m.get("proxy_active_fund")),
             "fund": m.get("of_fund", ""), "fund_name": m.get("of_fund_name", ""),
             "tracking_error_1y": m.get("of_te"),
@@ -279,7 +306,7 @@ def build_industry(params, target_date):
                 if r0 is not None and r1:
                     roe_chg = r0 / r1 - 1.0
         pb, div = v.get("pb_lf"), v.get("dividend_yield_ttm")
-        zone, capped, score = pick_zone(score, params, pb, div)
+        zone, capped, score = pick_zone(score, params, pb, div, v.get("pe_ttm"))
         items.append({
             "kind": "industry", "code": code, "name": v["name"], "group": "cn_industry",
             "family": code, "market": "CN", "date": v.get("date") or target_date,

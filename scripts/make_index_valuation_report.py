@@ -197,6 +197,8 @@ def render_row(r, idx, cols):
                 parts = ['PE %s' % fmt(r["pePct"], 1), 'PB %s' % fmt(r["pbPct"], 1)]
                 if r["psPct"] is not None:
                     parts.append('PS %s' % fmt(r["psPct"], 1))
+                if r.get("divPct") is not None:
+                    parts.append('股息 %s' % fmt(r["divPct"], 1))
                 v = ('<span style="color:#4b5563;font-size:11.5px;">'
                      + '<span style="color:#d1d5db;margin:0 3px;">\u00b7</span>'.join(parts) + '</span>')
             return "<td style=\"%s\">%s</td>" % (S_TD, v)
@@ -299,6 +301,7 @@ def main():
             "mult": it.get("mult") or 0, "amount": round(unit * (it.get("mult") or 0), 2),
             "pe": it.get("pe"), "pb": it.get("pb"),
             "pePct": it.get("pe_pct"), "pbPct": it.get("pb_pct"), "psPct": it.get("ps_pct"),
+            "divPct": it.get("div_pct"),
             "roe": roe, "fund": it.get("fund") or "", "fundName": it.get("fund_name") or "",
             "model": it.get("val_model_short") or "", "modelLabel": it.get("val_model_label") or "",
             "date": it.get("date") or "", "isPrice": is_price,
@@ -391,7 +394,7 @@ def main():
     nav_html = "".join(nav_items)
 
     # ---- 国内宽基 / 国外宽基：各一张小表，固定展开 ----
-    BROAD_COLS = ["idx", "name", "score", "zone", "mult", "pe", "pb", "detail", "fund", "tags"]
+    BROAD_COLS = ["idx", "name", "model", "score", "zone", "mult", "pe", "pb", "detail", "fund", "tags"]
 
     def cat_section(anchor, cname, crows, hint):
         if not crows:
