@@ -70,6 +70,7 @@ def align(cal, dates, vals):
     return out
 
 
+RECYCLE = True    # True = 卖出回款优先用于再投（不再闲置）
 SELL_RULE = "ladder"   # ladder=持续减仓（默认）| stage=旧的 75/85/95 各触发一次
 USE_ADJ = False   # True = 用 adj_nav（含分红再投资）；默认 unit_nav（保守）
 
@@ -254,6 +255,9 @@ def run(items, cal, params, unit, top_ind, start_i=0, freq="daily", roe_filter=F
     sell_unit = ex.get("sell_unit_cny") or ex.get("unit_amount_cny", 10)
     legacy_stages = sorted(ex.get("sell_stages") or [], key=lambda x: x["min_score"])
     hold, nav_curve, trades, flows = {}, [], [], []
+    cash = 0.0            # 卖出回款现金池
+    cash_curve = []       # 每日闲置现金，用于统计
+    recycled = 0.0        # 用卖出款再投的累计金额
     invested = realized = 0.0
     seen_month = set()
 
@@ -305,6 +309,7 @@ def run(items, cal, params, unit, top_ind, start_i=0, freq="daily", roe_filter=F
                     continue
                 cost_out = hold[c]["cost"] * ratio
                 realized += amt - cost_out
+                cash += amt          # 卖出回款进现金池
                 hold[c]["value"] -= amt
                 hold[c]["cost"] -= cost_out
                 hold[c]["stage"] = st_key
@@ -349,8 +354,14 @@ def run(items, cal, params, unit, top_ind, start_i=0, freq="daily", roe_filter=F
                 if np.isnan(mlt) or mlt <= 0:
                     continue
                 amt = unit * mlt
-                invested += amt
-                flows.append((d, amt))
+                # 先用卖出回款，不够的部分才算外部新增投入
+                pay_cash = min(cash, amt) if RECYCLE else 0.0
+                cash -= pay_cash
+                recycled += pay_cash
+                new_money = amt - pay_cash
+                invested += new_money
+                if new_money > 0:
+                    flows.append((d, new_money))
                 if c in hold:
                     hold[c]["value"] += amt
                     hold[c]["cost"] += amt
@@ -363,7 +374,11 @@ def run(items, cal, params, unit, top_ind, start_i=0, freq="daily", roe_filter=F
         mv = sum(h["value"] for h in hold.values())
         cost = sum(h["cost"] for h in hold.values())
         nav_curve.append((d, invested, realized, mv - cost, mv))
+        cash_curve.append(cash)
 
+    run.last_cash = cash
+    run.recycled = recycled
+    run.cash_curve = cash_curve
     return nav_curve, trades, hold, invested, realized, flows
 
 
@@ -375,6 +390,7 @@ def main():
     ap.add_argument("--legacy", action="store_true", help="用旧口径做对照（无模型、无 caps）")
     ap.add_argument("--broad", default="", help="诊断用：只跑逗号分隔的宽基代码")
     ap.add_argument("--adj", action="store_true", help="用 adj_nav（含分红再投资）对照")
+    ap.add_argument("--no-recycle", action="store_true", help="关闭卖出回款再投，现金闲置（对照用）")
     ap.add_argument("--sell-rule", default="ladder", choices=["ladder", "stage"],
                     help="卖出规则：ladder=持续减仓（默认）/ stage=旧的分档各触发一次")
     ap.add_argument("--top", type=int, default=5)
@@ -382,8 +398,9 @@ def main():
     ap.add_argument("--roe-filter", action="store_true", help="行业需隐含ROE同比改善才买")
     ap.add_argument("--roe-th", type=float, default=None, help="ROE同比阈值，默认取参数文件")
     args = ap.parse_args()
-    global LEGACY, UNIVERSE, USE_ADJ, SELL_RULE
+    global LEGACY, UNIVERSE, USE_ADJ, SELL_RULE, RECYCLE
     LEGACY = args.legacy
+    RECYCLE = not args.no_recycle
     USE_ADJ = args.adj
     SELL_RULE = args.sell_rule
     UNIVERSE = {c.strip() for c in args.broad.split(",") if c.strip()}
@@ -424,6 +441,16 @@ def main():
         (_p ** (1 / _years) - 1) * 100 if _p > 0 else 0))
     if inv > 0:
         print("  总收益率        %11.2f%%" % ((real + final[3]) / inv * 100))
+    _cash = getattr(run, "last_cash", 0.0)
+    _rec = getattr(run, "recycled", 0.0)
+    _cc = getattr(run, "cash_curve", []) or []
+    if RECYCLE:
+        print("  卖出款再投      %12s 元   ← 这部分买入没花你的新钱" % format(_rec, ",.0f"))
+        print("  期末闲置现金    %12s 元" % format(_cash, ",.0f"))
+        if _cc:
+            _avg = sum(_cc) / len(_cc)
+            print("  平均闲置现金    %12s 元   占期末总资产 %.1f%%"
+                  % (format(_avg, ",.0f"), _avg / max(1e-9, total) * 100))
     print("\n  交易：买入 %d 笔 / 卖出 %d 笔；期末持仓 %d 只" % (
         sum(1 for t in trades if t[3] == "B"), sum(1 for t in trades if t[3] == "S"), len(hold)))
 

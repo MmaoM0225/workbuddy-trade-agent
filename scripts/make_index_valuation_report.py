@@ -477,6 +477,7 @@ def main():
         except (ValueError, OSError):
             port = {}
     hold = port.get("holdings", {}) or {}
+    cash = float(port.get("cash_from_sells_cny") or 0)
     inv = float(port.get("cumulative_invested_cny") or 0)
     real = float(port.get("realized_pnl_cny") or 0)
     mv = sum(float(h.get("value") or 0) for h in hold.values())
@@ -508,7 +509,9 @@ def main():
         book = (stat("累计投入", format(inv, ",.0f"), "#111827", " 元")
             + stat("已实现盈亏", format(real, "+,.2f"), pc, " 元")
             + stat("未实现盈亏", format(unreal, "+,.2f"), pc, " 元")
-            + stat("总资产", format(total, ",.0f"), "#111827", " 元 \u00b7 " + format(rr, "+.2f") + "%"))
+            + stat("总资产", format(total, ",.0f"), "#111827",
+                   " 元 \u00b7 " + format(rr, "+.2f") + "%"
+                   + ("\u00b7 现金¥" + format(cash, ",.0f") if cash > 0.5 else "")))
         book_note = ""
 
     data_date = next((r["date"] for r in rows if r["date"]), as_of)

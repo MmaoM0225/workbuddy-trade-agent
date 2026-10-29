@@ -71,6 +71,36 @@ def main():
             print("跳过登记：as_of=%s 已在 history 中（幂等保护）" % d)
         else:
             nb = ns = 0
+            cash = float(port.get("cash_from_sells_cny") or 0.0)
+
+            # ---- 先卖：回款进现金池 ----
+            for s_ in orders.get("sells", []):
+                code = s_["code"]
+                h = hold.get(code)
+                if not h:
+                    continue
+                nav = latest_nav(h.get("fund", ""))[1] or h.get("nav") or 1
+                if s_.get("amount_cny") is not None and nav > 0:
+                    amt = min(float(s_["amount_cny"]), h["shares"] * nav)
+                    sell_shares = amt / nav
+                    ratio = (sell_shares / h["shares"]) if h["shares"] else 0.0
+                else:
+                    ratio = s_["ratio"]
+                    sell_shares = h["shares"] * ratio
+                    amt = sell_shares * nav
+                cost_out = h["cost"] * ratio
+                port["realized_pnl_cny"] += amt - cost_out
+                h["shares"] -= sell_shares
+                h["cost"] -= cost_out
+                h["stage_done"] = s_.get("stage", 0)
+                h["last_action_date"] = d
+                cash += amt
+                ns += 1
+                if h["shares"] < 1e-6:
+                    hold.pop(code, None)
+            port["cash_from_sells_cny"] = cash
+
+            # ---- 再买：优先用现金池，不够的才算新增投入 ----
             for b in orders.get("buys", []):
                 code = b["code"]
                 amt = b["amount_cny"]
@@ -83,35 +113,17 @@ def main():
                 h["fund"] = b.get("fund", "")
                 h["name"] = b["name"]
                 h.setdefault("first_buy_date", d)
-                port["cumulative_invested_cny"] += amt
+                pay_cash = min(cash, amt)
+                cash -= pay_cash
+                port["cumulative_invested_cny"] += (amt - pay_cash)
                 nb += 1
-            for s in orders.get("sells", []):
-                code = s["code"]
-                h = hold.get(code)
-                if not h:
-                    continue
-                nav = latest_nav(h.get("fund", ""))[1] or h.get("nav") or 1
-                if s.get("amount_cny") is not None and nav > 0:
-                    # 按金额卖：取 amount_cny 对应的份额，最多清空
-                    amt = min(float(s["amount_cny"]), h["shares"] * nav)
-                    sell_shares = amt / nav
-                    ratio = (sell_shares / h["shares"]) if h["shares"] else 0.0
-                else:
-                    ratio = s["ratio"]
-                    sell_shares = h["shares"] * ratio
-                cost_out = h["cost"] * ratio
-                proceeds = sell_shares * nav
-                port["realized_pnl_cny"] += proceeds - cost_out
-                h["shares"] -= sell_shares
-                h["cost"] -= cost_out
-                h["stage_done"] = s["stage"]
-                h["last_action_date"] = d
-                port["cash_from_sells_cny"] += proceeds
-                ns += 1
-                if h["shares"] < 1e-6:
-                    hold.pop(code, None)
+                if pay_cash > 0:
+                    print("   %-10s ¥%.0f 中 ¥%.0f 来自卖出回款" % (b["name"], amt, pay_cash))
+            port["cash_from_sells_cny"] = cash
             port["history"].append({"date": d, "buys": nb, "sells": ns,
-                                    "invested": orders.get("total_buy_cny", 0)})
+                                    "invested": orders.get("new_money_cny",
+                                                           orders.get("total_buy_cny", 0)),
+                                    "cash_after": cash})
             with open(args.port, "w", encoding="utf-8") as f:
                 json.dump(port, f, ensure_ascii=False, indent=2)
             print("已登记 %s：买入 %d 笔 / 卖出 %d 笔" % (d, nb, ns))

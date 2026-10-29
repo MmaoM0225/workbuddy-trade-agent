@@ -264,10 +264,23 @@ def main():
     if port["cumulative_invested_cny"] > 0:
         print("  收益率          %11.2f%%" % (profit / port["cumulative_invested_cny"] * 100))
 
+    # 卖出回款再投：买入金额优先用现金池抵扣，只有不足部分才是新增投入
+    cash_pool = float(port.get("cash_from_sells_cny") or 0.0) + total_sell
+    cash_used = min(cash_pool, total_buy)
+    new_money = total_buy - cash_used
+    print("\n【现金池】期初 %s 元 + 本期卖出 %s 元 → 可用于买入 %s 元"
+          % (format(float(port.get("cash_from_sells_cny") or 0.0), ",.0f"),
+             format(total_sell, ",.0f"), format(cash_pool, ",.0f")))
+    print("  本期买入 %s 元中，%s 元来自卖出回款，新增投入 %s 元"
+          % (format(total_buy, ",.0f"), format(cash_used, ",.0f"), format(new_money, ",.0f")))
+
     payload = {"as_of": today, "generated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                "params_version": params["version"], "unit_amount_cny": unit,
                "buys": buys, "sells": sells,
                "total_buy_cny": total_buy, "total_sell_cny": total_sell,
+               "cash_before_cny": round(cash_pool, 2),
+               "cash_used_cny": round(cash_used, 2),
+               "new_money_cny": round(total_buy - cash_used, 2),
                "cumulative_invested_cny": port["cumulative_invested_cny"],
                "realized_pnl_cny": port["realized_pnl_cny"],
                "unrealized_pnl_cny": round(unreal, 2),
