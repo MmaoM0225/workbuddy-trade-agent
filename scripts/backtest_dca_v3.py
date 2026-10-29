@@ -207,10 +207,29 @@ def build(cal, params, top_industry):
     return items
 
 
+def xirr(flows, end_date, end_value):
+    """资金加权年化收益率（含所有买入现金流 + 期末市值）。flows=[(YYYYMMDD, 金额)]"""
+    from datetime import date
+    def dt(x):
+        return date(int(x[:4]), int(x[4:6]), int(x[6:8]))
+    t0 = dt(flows[0][0])
+    pts = [((dt(d) - t0).days / 365.0, -a) for d, a in flows]
+    pts.append(((dt(end_date) - t0).days / 365.0, end_value))
+    lo, hi = -0.99, 3.0
+    for _ in range(300):
+        mid = (lo + hi) / 2
+        v = sum(cf / (1 + mid) ** t for t, cf in pts)
+        if v > 0:
+            lo = mid
+        else:
+            hi = mid
+    return (lo + hi) / 2
+
+
 def run(items, cal, params, unit, top_ind, start_i=0, freq="daily", roe_filter=False, roe_th=0.0):
     ex = params["execute"]
     stages = sorted(ex["sell_stages"], key=lambda x: x["min_score"])
-    hold, nav_curve, trades = {}, [], []
+    hold, nav_curve, trades, flows = {}, [], [], []
     invested = realized = 0.0
     seen_month = set()
 
@@ -293,6 +312,7 @@ def run(items, cal, params, unit, top_ind, start_i=0, freq="daily", roe_filter=F
                     continue
                 amt = unit * mlt
                 invested += amt
+                flows.append((d, amt))
                 if c in hold:
                     hold[c]["value"] += amt
                     hold[c]["cost"] += amt
@@ -305,7 +325,7 @@ def run(items, cal, params, unit, top_ind, start_i=0, freq="daily", roe_filter=F
         cost = sum(h["cost"] for h in hold.values())
         nav_curve.append((d, invested, realized, mv - cost, mv))
 
-    return nav_curve, trades, hold, invested, realized
+    return nav_curve, trades, hold, invested, realized, flows
 
 
 def main():
@@ -339,7 +359,7 @@ def main():
     nb = sum(1 for v in items.values() if v["kind"] == "broad")
     print("可用标的：宽基 %d / 行业 %d" % (nb, len(items) - nb))
 
-    curve, trades, hold, inv, real = run(items, cal, params, args.unit, args.top,
+    curve, trades, hold, inv, real, flows = run(items, cal, params, args.unit, args.top,
                                         freq=args.freq, roe_filter=args.roe_filter, roe_th=args.roe_th)
     final = curve[-1]
     total = inv + real + final[3]
@@ -353,6 +373,9 @@ def main():
     print("  + 已实现盈亏    %12s 元" % format(real, "+,.0f"))
     print("  + 未实现盈亏    %12s 元" % format(final[3], "+,.0f"))
     print("  = 总资产        %12s 元" % format(total, ",.0f"))
+    # 资金加权年化：把每天买入当现金流，期末市值当收回，算 XIRR
+    print("  年化(XIRR)      %11.2f%%   ← 资金加权，这才是可比的" % (
+        xirr(flows, cal[-1], total) * 100 if flows else 0))
     if inv > 0:
         print("  总收益率        %11.2f%%" % ((real + final[3]) / inv * 100))
     print("\n  交易：买入 %d 笔 / 卖出 %d 笔；期末持仓 %d 只" % (
