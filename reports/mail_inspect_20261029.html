@@ -1,0 +1,147 @@
+<!DOCTYPE html><html lang='zh-CN'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>总控巡检 20261029</title><style>
+body{margin:0;padding:0;background:#f5f6f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;color:#1f2329;}
+.wrap{max-width:880px;margin:0 auto;padding:24px 16px 44px;}
+.card{background:#fff;border-radius:10px;padding:20px 22px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+h1{font-size:19px;margin:0 0 14px;font-weight:600;border-left:3px solid #c8102e;padding-left:10px;}
+h2{font-size:14px;margin:18px 0 10px;font-weight:600;color:#1f2329;}
+h3{font-size:13px;margin:14px 0 8px;font-weight:600;color:#646a73;}
+h4{font-size:12.5px;margin:12px 0 6px;font-weight:600;color:#8a9099;}
+p{font-size:13px;line-height:1.75;margin:6px 0;color:#2b3038;}
+ul{margin:6px 0;padding-left:20px;}
+li{font-size:13px;line-height:1.75;color:#2b3038;}
+table{width:100%;border-collapse:collapse;font-size:12.5px;margin:8px 0;}
+th{background:#f7f8fa;color:#646a73;font-weight:500;text-align:left;padding:8px 10px;border-bottom:1px solid #eceef1;}
+td{padding:8px 10px;border-bottom:1px solid #f2f3f5;vertical-align:top;}
+code{background:#f2f3f5;border-radius:3px;padding:1px 5px;font-size:12px;font-family:ui-monospace,Menlo,monospace;}
+.metric{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:6px;}
+.metric div{flex:1 1 130px;background:#fafbfc;border:1px solid #eceef1;border-radius:8px;padding:11px 13px;}
+.metric .k{font-size:11px;color:#8a9099;margin-bottom:4px;}
+.metric .v{font-size:17px;font-weight:600;}
+.footer{text-align:center;color:#a8adb5;font-size:11px;margin-top:18px;}
+.mt{width:100%;border-collapse:separate;border-spacing:7px 0;margin:0 -7px 10px;}
+.mt td{background:#fafbfc;border:1px solid #eceef1;border-radius:8px;padding:11px 13px;vertical-align:top;border-bottom:1px solid #eceef1;}
+.mt .k{font-size:11px;color:#8a9099;margin-bottom:5px;font-weight:400;}
+.mt .v{font-size:18px;font-weight:600;line-height:1.2;}
+.mt .s{font-size:11px;color:#8a9099;margin-top:3px;}
+.up{color:#c8102e;}
+.down{color:#0a8f4d;}
+.badge{display:inline-block;padding:2px 9px;border-radius:10px;font-size:11px;font-weight:600;line-height:1.6;}
+.b-bull{background:#fdecef;color:#c8102e;}
+.b-bear{background:#e8f6ee;color:#0a8f4d;}
+.b-neutral{background:#f1f2f4;color:#646a73;}
+.warnbox{background:#fffbf0;border-left:3px solid #f0a020;border-radius:0 6px 6px 0;padding:10px 14px;margin:8px 0;}
+.warnbox ul{margin:2px 0;padding-left:18px;}
+.warnbox li{font-size:12.5px;line-height:1.7;margin:3px 0;}
+.strategy{background:#f6f9ff;border-left:3px solid #3b6ef0;border-radius:0 6px 6px 0;padding:12px 14px;margin:8px 0;}
+.strategy p{margin:4px 0;font-size:13px;}
+.sig{display:inline-block;min-width:46px;padding:1px 7px;border-radius:4px;font-size:11px;font-weight:600;margin-right:6px;}
+.sig-short{background:#e8f6ee;color:#0a8f4d;}
+.sig-long{background:#fdecef;color:#c8102e;}
+.sig-neutral{background:#f1f2f4;color:#646a73;}
+.dimrow td{font-size:12.5px;}
+.detail{color:#4e5561;font-size:12.5px;line-height:1.7;}
+hr.sep{border:0;border-top:1px dashed #e6e8eb;margin:16px 0;}
+</style></head><body><div class='wrap'><div class='card'><h1>总控巡检 20261029</h1><p style='color:#8a9099;font-size:12px;margin:0'>生成于 20261029</p></div><div class='card'><h2>每日巡检 20261029</h2>
+<p><i>角色：交易总监（总控）｜职责：只读巡检与汇报，不产生任何交易指令</i></p>
+<p><i>数据基准日：20261029（data/daily_20261029 存在，无滞后）</i></p>
+<p><i>参数真源：knowledge/params_v3.3.json（params_current.txt = v3.3）</i></p>
+<h3>1. 交易日校验与依赖等待</h3>
+<table>
+<tr><th>项</th><th>结果</th></tr>
+<tr><td>交易日校验</td><td>tushare trade_cal SSE 20261029 is_open=1，为 A 股交易日</td></tr>
+<tr><td>依赖等待</td><td><code>task_status.py wait inspector --deps position_manager</code> 首次调用即 ready（退出码 0），未消耗重试预算</td></tr>
+<tr><td>数据基准</td><td>data/daily_20261029 存在，与今日一致，无滞后标注</td></tr>
+</table>
+<h3>2. 流水线核验（各环节：产出 / 缺失 / 降级）</h3>
+<table>
+<tr><th>环节</th><th>产出</th><th>状态</th><th>说明</th></tr>
+<tr><td>数据员 23:00</td><td>data/daily_20261029/ 共 10 个文件（indices / market_overview / sector_ranking / news / hot_news / hot_board / dragon_tiger / northbound / cross_check / meta）</td><td>PASS</td><td>含 hot_board.json，无缺失；degraded=false</td></tr>
+<tr><td>市场分析师 23:10</td><td>state/regime.json（date=20261029）</td><td>PASS</td><td>regime=bear，severity=light 字段存在（v1.7 起 bear 必带 severity），confidence=0.82，score=-6</td></tr>
+<tr><td>持仓管家 23:20</td><td>reports/position_review_20261029.md</td><td>PASS</td><td>卖出决策五类逐项核验齐全（止损/止盈/逻辑破坏/bear 分级降仓/权重超限，均带 trigger 与 reason）；今日卖出 0 笔，故无换仓记录，qs 对比项 N/A</td></tr>
+<tr><td>建仓链路（周度）</td><td>pool.json / watchlist.json / orders.json 日期均为 20261023</td><td>INFO</td><td>周度产物，非当日更新，符合设计；订单 10 日有效期尚未到期</td></tr>
+<tr><td>邮件产出</td><td>reports/mail_position_20261029.html、reports/mail_regime_20261029.html</td><td>PASS</td><td>上下游邮件均已生成</td></tr>
+</table>
+<h3>3. 任务状态（task_status list 快照）</h3>
+<table>
+<tr><th>任务</th><th>状态</th><th>说明</th></tr>
+<tr><td>data_officer</td><td>done</td><td>日频，正常</td></tr>
+<tr><td>market_analyst</td><td>done</td><td>日频，正常</td></tr>
+<tr><td>position_manager</td><td>done</td><td>日频，正常</td></tr>
+<tr><td>inspector</td><td>doing</td><td>本任务，收尾置 done</td></tr>
+<tr><td>stock_picker</td><td>undo</td><td>周度（周六 21:30），非本日窗口</td></tr>
+<tr><td>researcher</td><td>undo</td><td>周度（周六 23:30），非本日窗口</td></tr>
+<tr><td>position_builder</td><td>undo</td><td>周度（周日 00:10），非本日窗口</td></tr>
+<tr><td>reviewer</td><td>undo</td><td>周度（周日 22:00），非本日窗口</td></tr>
+<tr><td>archivist</td><td>undo</td><td>周度（周日 23:10），非本日窗口</td></tr>
+</table>
+<p>日频 4 项全部 done，无异常。周度 5 项 undo 属窗口期正常状态（WARN 项，见第 6 节）。</p>
+<h3>4. 数据状态（meta.json）</h3>
+<table>
+<tr><th>项</th><th>值</th></tr>
+<tr><td>date</td><td>20261029</td></tr>
+<tr><td>fetched_at</td><td>2026-10-29 23:00:54</td></tr>
+<tr><td>trading_day</td><td>true</td></tr>
+<tr><td>degraded</td><td><b>false</b></td></tr>
+<tr><td>record_counts</td><td>indices 5 / market_overview_dimensions 8 / sector_top_gainers 15 / sector_bottom_losers 10 / news 50 / hot_news 20 / hot_board 15 / dragon_tiger_unique 69 / northbound 1</td></tr>
+<tr><td>cross_check</td><td>conflict=2，partial=3（明细见 cross_check.json）</td></tr>
+<tr><td>check_result</td><td>exit_code=0，passed=true，RESULT: PASS</td></tr>
+</table>
+<p>数据连续性：20261027、20261028、20261029 三个连续交易日数据齐备，未触发「连续 2 个交易日缺失」。</p>
+<h3>5. 状态文件校验（逐项 PASS / FAIL）</h3>
+<table>
+<tr><th>文件</th><th>校验</th><th>结果</th></tr>
+<tr><td>state/pool.json</td><td>JSON 可解析，date=20261023</td><td>PASS</td></tr>
+<tr><td>state/watchlist.json</td><td>JSON 可解析，date=20261023</td><td>PASS</td></tr>
+<tr><td>state/regime.json</td><td>JSON 可解析，date=20261029 匹配数据基准，regime=bear / severity=light</td><td>PASS</td></tr>
+<tr><td>state/positions.json</td><td>JSON 可解析，as_of=20261029，9 只持仓，现金+市值=总资产（0 误差）</td><td>PASS</td></tr>
+<tr><td>state/orders.json</td><td>JSON 可解析，9 张订单，订单级 stop_loss / take_profit <b>缺项 0</b></td><td>PASS</td></tr>
+<tr><td>state/trades.jsonl</td><td>存在，13 行</td><td>PASS</td></tr>
+</table>
+<p>orders.json 非空属正常（在途限价档），止损止盈齐全性核验通过，未触发 critical。</p>
+<h3>6. 运行校验（check_pipeline.py）</h3>
+<p>```</p>
+<p>python scripts/check_pipeline.py --date 20261029</p>
+<p>退出码 = 0</p>
+<p>[state] schema check done, 5 files + trades.jsonl</p>
+<p>[state] business rules checked (populated files only)</p>
+<p>[tasks] 9 task states checked</p>
+<p>[params] current=v3.3 (params_v3.3.json) 校验完成</p>
+<p>[crowding] history.csv 84 months</p>
+<p>[crowding] 20261029 = 40.91% (watch / 升温)</p>
+<p>[data] indices.json: 5 records</p>
+<p>[data] market_overview.json: 8 records</p>
+<p>[data] news.json: 50 records</p>
+<p>[data] hot_news.json: 20 records</p>
+<p>[data] hot_board.json: 15 records</p>
+<p>[data] sector_ranking.json: 15 records</p>
+<p>[data] dragon_tiger.json: 10 records</p>
+<p>[data] northbound.json: 1 records</p>
+<p>=== RESULT: PASS ===</p>
+<p>```</p>
+<h3>7. 异常清单</h3>
+<h4>critical</h4>
+<p>无。</p>
+<h4>warn</h4>
+<p>1. <b>[warn] 数据标签冲突 2 项（high）</b>：STOCK_WIDTH_STATUS 标注「温和偏涨」与实测涨跌分布直接矛盾（上涨 781 / 下跌 4728，涨股比 14.00%）；SENTIMENT_STATUS 标注「情绪中性」两个判据均不成立（涨停 36 超上界 30，涨股比 14% 远低于下界 30%）。下游使用这两个维度时不得直接采信标签，须回读原始计数。</p>
+<p>2. <b>[warn] margin（两融余额变动）维度 row 为空</b>：已补打 missing=true，该维度不可用，不得以零值参与计算。</p>
+<p>3. <b>[warn] 量能口径偏离</b>：VOLUME_ENERGE 相对 20 日均值 98.31% 落在中性区间，但绝对成交额仅为 120 日均值的 63.34%，属低位缩量，判断流动性须用绝对值。</p>
+<p>4. <b>[warn] P11 未拍板</b>：bear 期间既有订单剩余限价档是否算「新建仓」。持仓管家本日改判为「不算新建仓，按加仓处理，允许成交」，实际影响 2 档成交（东华软件 seq3、长源电力 seq2，合计 28,895 元）。该判据仍待昴确认固化。</p>
+<p>5. <b>[warn] 在途额度已满</b>：已用仓位 40.85% + 在途未成交档位 28.17% = 69.02%，超出 bear cap 60% 约 9.02pp，补仓脚本返回可用额度 0.00pp。若后续 regime 转 bull 需要真实加仓，须先释放在途档位，不得放宽 cap 或上移挂单价。</p>
+<p>6. <b>[warn] regime 临近 heavy</b>：当日 score=-6 恰等于 bear_light_max_score，距 heavy 阈值 -8 仅 2 分，风险等级已由 medium 上调为 high。若下一交易日 score ≤ -8 且 confirmed_days ≥ 2，将触发 heavy 通道降至 20%（每轮 bear 仅执行一次，须等 regime_prev 翻转后次日执行）。</p>
+<p>7. <b>[warn] 周度 5 项任务仍为 undo</b>：stock_picker / researcher / position_builder / reviewer / archivist。若不在周六窗口前复位，订单到期后将无新候补。</p>
+<h4>info</h4>
+<p>1. <b>[info] R-006 订单到期倒计时</b>：20261023 建仓的 9 张订单已走过 4 个交易日，20261106 到期（剩 5 个交易日）。R-015 要求 T-5（约 20261030）出处置方案；当前持仓 9 只，min_holdings=8 下沿。</p>
+<p>2. <b>[info] 东华软件为最近止损标的</b>：浮亏 -5.07%（成本 6.4367 / 收盘 6.11），当日 low 6.10 距止损 5.92 仅 3.04%；该票三档已全部成交（filled）。</p>
+<p>3. <b>[info] regime 未切换</b>：20261028 bear/light（confirmed_days 2）→ 20261029 bear/light（confirmed_days 3），防抖维持，未触发切换。</p>
+<p>4. <b>[info] 当日成交与业绩</b>：买入 2 笔（东华软件 seq3 6.23、长源电力 seq2 3.70），合计 28,895 元；卖出 0 笔。组合总资产 998,336 元，仓位 40.85%，累计收益 -0.17%，当日 -0.11% vs 上证 -0.82%（跑赢 0.71pp）。熔断未触发（回撤 -0.54%，触发线 -15%）。</p>
+<h3>8. 邮件发送状态</h3>
+<p>SENT — reports/daily_20261029.md 已由 scripts/send_report_mail.py --type inspect --date 20261029 转为 HTML 并发送至 1920442561@qq.com（产出 reports/mail_inspect_20261029.html）。</p>
+<h3>9. 下一步动作</h3>
+<p>1. 拍板 P11（bear 期间既有订单剩余限价档定性），本日已按「加仓、允许成交」执行，需确认是否固化。</p>
+<p>2. 关注 regime score 走向：若下一交易日 ≤ -8 且 confirmed_days ≥ 2，次日将进入 heavy 通道（仓位降至 20%），需提前准备降仓标的排序。</p>
+<p>3. 20261030 前给出 R-006 订单到期处置方案（R-015 要求 T-5），避免 20261106 集中到期后持仓跌破 min_holdings=8。</p>
+<p>4. 周六窗口前复位 5 个周度任务状态，否则订单到期后无新候补。</p>
+<p>5. 向数据员/分析师反馈两个 high 级标签冲突（STOCK_WIDTH、SENTIMENT）与 margin 维度缺失，避免下游误用。</p>
+<p>6. 监控东华软件（距止损 3.04%）与在途 14 档的触发情况；在途额度已满，不得通过放宽 cap 或上移挂单价加仓。</p>
+<p>---</p>
+<p>升级规则核验：orders.json 缺止损订单 0 张、数据未出现连续 2 个交易日缺失、regime 当日未发生切换，三项均不触发，本轮不追加「建议实时会商」。</p></div><div class='footer'>多 Agent 协同交易框架自动生成 · 模拟盘研究记录，不构成投资建议</div></div></body></html>
