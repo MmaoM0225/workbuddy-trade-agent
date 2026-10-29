@@ -1,5 +1,5 @@
 {
-  "version": "v2.1",
+  "version": "v2.2",
   "updated": "2026-10-29",
   "note": "宽基池：国内 10 + 国外 5 = 15 个（2026-10-29 新增上证50/中证500/科创50/国证2000/恒生指数/恒生国企）。行业层为申万二级全量124个，见 data/warehouse/sw_industry/latest.json。datasource=index 表示用 neodata 指数估值序列自算分位；datasource=price 表示降级用跟踪基金净值分位。",
   "indices": [
@@ -127,8 +127,8 @@
       "nav_fund": "513520.SH",
       "nav_name": "华夏野村日经225ETF",
       "metric": "价格分位",
-      "note": "库内无日经估值序列；Nikkei官网只提供点位。降级用ETF复权净值滚动分位，仅作逢低买入参考，不产生卖出信号 | 2026-10-29 停用：全市场无 PE/PB 估值源（已穷举 neodata/tushare/westock/中证/JPX/BSE），不参与定投；有数据源后把 enabled 改回 true 即可恢复",
-      "enabled": false
+      "note": "日本无公开指数级 PE/PB（Nikkei 官网只给点位，JPX 只出月度「市场整体」PER）。2026-10-29 恢复启用，走跟踪ETF 513520.SH 复权净值 5 年滚动分位，倍数锁 1.0x、不产生卖出信号。",
+      "enabled": true
     },
     {
       "code": "VNI.GI",
@@ -146,8 +146,8 @@
       "nav_name": "天弘越南市场股票(QDII)A",
       "metric": "价格分位",
       "proxy_active_fund": true,
-      "note": "越南无指数基金，唯一天弘越南市场(008763.OF)主动QDII，即作为买入载体又是分位代理；含主动管理alpha，非纯指数敞口，倍数锁死1.0x | 2026-10-29 停用：全市场无 PE/PB 估值源（已穷举 neodata/tushare/westock/中证/JPX/BSE），不参与定投；有数据源后把 enabled 改回 true 即可恢复",
-      "enabled": false
+      "note": "越南 HOSE 不发布日度指数 PE，只有券商研报 PDF 里的图，无可编程序列。2026-10-29 恢复启用，走天弘越南 008763.OF 复权净值滚动分位，倍数锁 1.0x。",
+      "enabled": true
     },
     {
       "code": "SENSEX.GI",
@@ -165,7 +165,7 @@
       "nav_name": "宏利印度机会股票(QDII)A",
       "metric": "价格分位",
       "proxy_active_fund": true,
-      "note": "印度无指数基金，唯一宏利印度机会(006105.OF)主动QDII，即作为买入载体又是分位代理；含主动alpha，非纯指数敞口，倍数锁死1.0x | 2026-10-29 停用：全市场无 PE/PB 估值源（已穷举 neodata/tushare/westock/中证/JPX/BSE），不参与定投；有数据源后把 enabled 改回 true 即可恢复",
+      "note": "2026-10-29 停用：SENSEX 估值只在 BSE 官网且被 Akamai 反爬（沙箱直连 403），拿不到序列。改用 NIFTY50.NS（NSE 旗舰基准，与 SENSEX 相关性>0.98，公开月度 PE/PB 可拿）。",
       "enabled": false
     },
     {
@@ -263,6 +263,20 @@
       "of_te": null,
       "tradable": true,
       "note": "2026-10-29 新增：H股/中资国企，金融地产权重高"
+    },
+    {
+      "code": "NIFTY50.NS",
+      "name": "印度NIFTY50",
+      "group": "overseas",
+      "family": "in",
+      "market": "IN",
+      "datasource": "index",
+      "of_fund": "006105.OF",
+      "of_fund_name": "宏利印度机会股票(QDII)A",
+      "of_te": null,
+      "tradable": false,
+      "proxy_active_fund": true,
+      "note": "2026-10-29 新增。估值源 = downstox.com 聚合的 NSE 官方月度 PE/PB/股息率（1999 起），脚本 scripts/pull_index_valuation_ext.py 前向填充成日度。载体是世界内唯一印度 QDII 006105.OF（主动基金，含 alpha，非纯指数敞口），故 tradable=false。"
     }
   ]
 }

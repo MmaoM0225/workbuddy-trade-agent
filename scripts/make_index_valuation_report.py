@@ -581,7 +581,9 @@ PAGE = """<!DOCTYPE html>
     <div style="margin-top:14px;padding-top:12px;border-top:1px solid #e5e7eb;font-size:11.5px;color:#9ca3af;line-height:1.9;">
       口径：综合分位为 PE/PB/PS/股息率加权后的百分位得分，越低越便宜；分档 0-10 深度低估 2.0x、10-25 低估 1.5x、25-40 偏低 1.0x、40-75 停投、\u226575 分档减速卖出。<br>
       行业需隐含 ROE（PB/PE）同比 &gt; __ROE_TH__% 且分位 &lt; 40 才入选，每期取分位最低 5 个；ROE 缺失视为不合格。本期 ROE 挡掉 __N_ROE__ 个，停投 __N_STOP__ 个。<br>
-      日经225 / 越南胡志明 / 印度SENSEX / 中韩半导体因全市场无 PE/PB 估值源，自 2026-10-29 起停用，已从本表移除、不参与定投。
+      口径差异（2026-10-29）：<b>日经225 / 越南胡志明</b> 无公开指数级 PE/PB，降级用跟踪ETF复权净值的滚动分位，
+      标 <b>价格分位</b> 标签、倍数锁 1.0x、不产生卖出信号；<b>印度NIFTY50</b> 用 NSE 官方月度 PE/PB（经前向填充成日度），
+      但载体是世界内唯一印度 QDII 主动基金，倍数同样封顶 1.0x；印度原 SENSEX、中韩半导体仍停用（无可用估值源）。
     </div>
   </div>
 </td></tr>
