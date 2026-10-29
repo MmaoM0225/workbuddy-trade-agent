@@ -1,0 +1,817 @@
+{
+  "version": "v3.2",
+  "created": "2026-10-28",
+  "status": "superseded",
+  "is_source_of_truth": false,
+  "supersedes": [
+    "params_v1.0 ~ params_v2.3（全部历史文件）",
+    "v2.3 文件内混入的未编号变更 v2.4（限价成交口径）/ v2.5（目标区间回测）/ v2.6（熔断对齐）/ v2.7（三档买点）",
+    "data/index_params.json v1.1 / v1.2 / v2.0（指数定投线，并入本文件 index_dca 段）",
+    "v3.0（同日中间态：只做参数收敛，未落地即被 v3.1 的排序口径变更取代）",
+    "v3.1（同日：熔断口径改为分档降仓、不清仓）"
+  ],
+  "note": "v3.2 落地熔断口径变更（原 P6）：由「-8% 减半 / -12% 清仓 / 冻结5日 / 日亏-3%冻结」改为「-15% 降到 40% 仓位、回到 -8% 解除、无冻结、不清仓」。六年回测 +46.94% → +60.14%，回撤 -29.76% → -30.58%（几乎不变），Calmar 1.58 → 1.97。核心结论：清仓动作本身是负贡献，不是阈值高低问题。",
+  "change_policy": "①任何阈值/逻辑变更只改本文件并升 version；②禁止在 rules.md、agent 提示语、脚本注释里写死阈值文字副本，只允许引用字段名（R-014）；③脚本一律从 params_{params_current.txt}.json 读取，硬编码默认值仅作异常兜底且必须与本文件一致；④本文件内每个概念只允许出现一次，需要交叉引用时写字段名不写数值。",
+  "runtime_snapshot_20261028": {
+    "as_of": "20261027",
+    "regime": "bear",
+    "severity": "light",
+    "position_cap_pct": 60,
+    "holdings": 9,
+    "position_pct": 38.07,
+    "inflight_pct": 31.06,
+    "free_pct": -9.13,
+    "note": "仅作当日快照记录，非参数。free<0 说明资金配额已排满：只数未达 10 但 cap 已被在途档位吃满，禁止再开新单"
+  },
+  "strategy": {
+    "name": "multi_factor_quant",
+    "universe": {
+      "exclude_bj": true,
+      "exclude_gem_star": true,
+      "exclude_st": true,
+      "min_list_days": 250,
+      "min_amount_20d_avg_cny": 50000000,
+      "require_fina": false,
+      "rules_detail": "exclude_gem_star 必须含 300/301（创业板）与 688/689（科创板），漏 301/689 会多留约 476 只；exclude_st 名称匹配含 *ST；流动性门槛切 rows[-20:] 计算，禁用全历史均值（曾致 universe 虚增）；require_fina=false 自 v1.8 起，财务缺失由研究员在 Top50 阶段处理，不得在选股阶段剔除整个因子"
+    },
+    "factors_status": "legacy",
+    "factors_note": "factors 段 weight 自 v2.0 起不参与选股打分（当前选股走 selection_method.exclusion_plus_target_zone）。保留原因：①compute_full_market.py 无条件读取 weight 字段；②source 字段仍是因子计算口径的唯一说明。禁止再用这些权重做加权求和选股，除非 selection_method.method 回退为 factor_weighted_sum。本段只能包含因子对象，不得放非因子键（脚本会遍历取 weight）。",
+    "factors": {
+      "mom_5d": {
+        "weight": 0.075,
+        "direction": "desc",
+        "group": "momentum",
+        "source": "tushare daily 5 日收盘价"
+      },
+      "mom_10d": {
+        "weight": 0.0875,
+        "direction": "desc",
+        "group": "momentum",
+        "source": "tushare daily 10 日收盘价"
+      },
+      "mom_20d": {
+        "weight": 0.0875,
+        "direction": "desc",
+        "group": "momentum",
+        "source": "tushare daily 20 日收盘价"
+      },
+      "mom_60d": {
+        "weight": 0.0625,
+        "direction": "desc",
+        "group": "momentum",
+        "source": "tushare weekly 近 13 周收盘价"
+      },
+      "vol_20d_inv": {
+        "weight": 0.1,
+        "direction": "desc",
+        "group": "volatility_risk",
+        "source": "tushare daily 20 日收益率标准差取负"
+      },
+      "mdd_20d_inv": {
+        "weight": 0.0875,
+        "direction": "desc",
+        "group": "volatility_risk",
+        "source": "tushare daily 20 日区间最大回撤取负"
+      },
+      "price_pos_20d": {
+        "weight": 0.075,
+        "direction": "desc",
+        "group": "technical_price_volume",
+        "source": "tushare daily (close-min20)/(max20-min20)"
+      },
+      "pv_corr_20d": {
+        "weight": 0.0875,
+        "direction": "desc",
+        "group": "technical_price_volume",
+        "source": "tushare daily corr(20 日 close, amount)"
+      },
+      "turnover_trend_20d": {
+        "weight": 0.0875,
+        "direction": "desc",
+        "group": "technical_price_volume",
+        "source": "tushare daily 20 日 amount 线性回归斜率"
+      },
+      "ep_ttm": {
+        "weight": 0.075,
+        "direction": "desc",
+        "group": "valuation",
+        "source": "tushare daily_basic pe_ttm 倒数（负 PE 记缺失）"
+      },
+      "bp_ttm": {
+        "weight": 0.0625,
+        "direction": "desc",
+        "group": "valuation",
+        "source": "tushare daily_basic pb 倒数"
+      },
+      "sp_ttm": {
+        "weight": 0.05,
+        "direction": "desc",
+        "group": "valuation",
+        "source": "tushare daily_basic ps_ttm 倒数"
+      },
+      "turnover_rate": {
+        "weight": 0.0625,
+        "direction": "desc",
+        "group": "liquidity",
+        "source": "tushare daily_basic 当日换手率"
+      }
+    },
+    "scoring_pipeline_status": "legacy",
+    "scoring_pipeline_note": "cross_section_rank / mad_winsorize / neutralization / score_formula 仅在 factor_weighted_sum 模式下生效。当前 target_zone 模式下只用 factor_groups 做因子清单与写入 scores_full.csv 的表头顺序。",
+    "scoring_pipeline": {
+      "cross_section_rank": true,
+      "mad_winsorize": true,
+      "mad_threshold": 3,
+      "neutralization": "log_total_mv",
+      "score_formula": "sum(factor_rank_pct * weight)",
+      "factor_drop_rule": "缺失数据超过 30% 股票的因子剔除，按组内剩余因子占比重新归一化",
+      "factor_groups": {
+        "momentum": [
+          "mom_5d",
+          "mom_10d",
+          "mom_20d",
+          "mom_60d"
+        ],
+        "volatility_risk": [
+          "vol_20d_inv",
+          "mdd_20d_inv"
+        ],
+        "technical_price_volume": [
+          "price_pos_20d",
+          "pv_corr_20d",
+          "turnover_trend_20d"
+        ],
+        "valuation": [
+          "ep_ttm",
+          "bp_ttm",
+          "sp_ttm"
+        ],
+        "liquidity": [
+          "turnover_rate"
+        ],
+        "_moved_to_researcher": [
+          "roe_ttm",
+          "gross_margin_ttm",
+          "net_margin_ttm",
+          "tr_yoy"
+        ]
+      }
+    },
+    "call_budget": {
+      "limit": 40,
+      "plan": "stock_basic 1 + suspend_d 1 + trade_cal 1 + daily 8 + weekly 8 + fina_indicator 15(含回退) = 35"
+    },
+    "pool_size": 50
+  },
+  "selection_method": {
+    "method": "exclusion_plus_target_zone",
+    "supersedes": "factor_weighted_sum（v1.9 及更早）",
+    "rationale": "线性加权在一半因子方向/区间不对时互相抵消；改为先剔除最差端、再在最稳定区间内选股",
+    "exclusion": {
+      "exclude_q5": [
+        "mom_20d",
+        "turnover_rate",
+        "turnover_trend_20d",
+        "pv_corr_20d",
+        "roe_ttm",
+        "net_margin_ttm"
+      ],
+      "exclude_q1": [
+        "vol_20d_inv",
+        "bp_ttm",
+        "sp_ttm"
+      ],
+      "hard_floor": {
+        "roe_ttm": -15.0,
+        "net_margin_ttm": -30.0
+      },
+      "note": "Q5=分位>80（最高 20%）剔除；Q1=分位<20（最低 20%）剔除；hard_floor 为绝对门槛，防极端亏损股进入候选"
+    },
+    "target_zone_note": "单位=横截面百分位。刻意选低 ROE / 低净利率分位 = 困境反转设计，低财务分入选不是 bug，误改成「高 ROE 优先」会摧毁整条策略。target_zone 内只能放因子→[lo,hi]，不得放说明键（脚本会把所有键当因子取区间）。",
+    "target_zone": {
+      "roe_ttm": [
+        0,
+        20
+      ],
+      "net_margin_ttm": [
+        0,
+        20
+      ],
+      "turnover_trend_20d": [
+        40,
+        60
+      ],
+      "bp_ttm": [
+        60,
+        80
+      ],
+      "sp_ttm": [
+        60,
+        80
+      ]
+    },
+    "score_formula": "score = mean(zone_score(f) for f in target_zone)；zone_score = 100 if pct in [lo,hi] else max(0, 100 - dist(pct, [lo,hi]) * 2)；缺失按 50",
+    "pool_size": 50,
+    "validation": {
+      "worst_group_stable": "9/16 因子（三段：2020-21 / 2022-23 / 2024-26）",
+      "best_group_stable": "4/16 因子",
+      "note": "turnover_rate 最优组三段为 Q2/Q1/Q3 完全漂移，故只作排除器、不作选择器；IC 检验会误判非线性因子，分组收益法为准"
+    },
+    "backtest_legacy_v2_0": {
+      "basis": "旧口径（收盘价判定成交 + 收盘价成交），已废弃，禁止作为当前预期引用",
+      "period": "20191202~20261023（1670 交易日）",
+      "return_pct": 78.7,
+      "excess_pct": 50.37,
+      "max_drawdown_pct": -20.9,
+      "win_rate_pct": 66.4,
+      "trades": 414,
+      "note": "同一策略换成 v2.4 限价成交口径后仅 +57.93%，旧口径虚高约 27pp。新口径结果见 backtest_registry。"
+    }
+  },
+  "researcher_quality": {
+    "owner": "researcher",
+    "role": "v3.1 起只做排雷（去留），不打分、不排序、不参与权重分配",
+    "applicable_to": "stock_picker 产出的 Top50",
+    "ranking_basis": "selection_score",
+    "ranking_note": "quality_score 字段保留但语义已变：= pool.json 的选股分（zone 分）×100。财务因子已并入选股层 target_zone（见 selection_method），研究员不再另算一套财务分。",
+    "weights": {
+      "roe_ttm": 0.35,
+      "net_margin_ttm": 0.25,
+      "gross_margin_ttm": 0.15,
+      "tr_yoy": 0.25,
+      "_status": "retired_v3_1",
+      "_note": "v3.0 及以前用于 researcher_quality 财务分；v3.1 起该打分环节删除，这几个数只作为历史留档，不再被任何脚本读取。财务因子本身已作为 selector 进入 selection_method.target_zone。"
+    },
+    "formula": {
+      "active": "picker_only",
+      "definition": "quality_score = selection_score（选股分区间的 zone 分 ×100）",
+      "status": "resolved_v3_1",
+      "history": {
+        "financial_only": {
+          "backtest_return_pct": 20.65,
+          "verdict": "v3.0 实盘口径，被本版废止"
+        },
+        "picker_only": {
+          "backtest_return_pct": 46.94,
+          "verdict": "本版采用"
+        },
+        "mixed_50_50": {
+          "backtest_return_pct": 7.1,
+          "verdict": "方向相反互相抵消，永久禁用"
+        }
+      },
+      "note": "原三口径并存是 v3.0 的 pending P1，v3.1 已定：排序与权重一律听选股分。财务判断只通过两个渠道进入：(1) 选股层 target_zone 的财务因子区间；(2) researcher_veto 硬否决。"
+    },
+    "buy_watch_rule": {
+      "method": "top_n_by_score",
+      "top_n": 20,
+      "min_quality_score": null,
+      "note": "排雷通过后按选股分降序取前 top_n。min_quality_score=null 表示无绝对门槛。"
+    },
+    "data_source": "优先 westock-mcp data_finance（含 InfoPublDate，可精确控时点）；tushare fina_indicator 仅兜底",
+    "look_ahead_rule": "必须使用公告日 InfoPublDate ≤ 分析基准日的最新一期报告，禁止使用未来财报",
+    "veto_ref": "见 researcher_veto 段（唯一真源，本段不再复述阈值）"
+  },
+  "researcher_veto": {
+    "owner": "researcher",
+    "enabled": true,
+    "logic": "OR",
+    "roe_below": 0.0,
+    "net_margin_below": 2.0,
+    "applies_to": "pool Top50 全部候选，在建仓经理之前执行；ROE 或净利率缺失时本条不触发（缺失由排雷层单独处理）",
+    "status": "active",
+    "pending_ref": "P2：回测显示 AND/5% 组合 +57.93% vs 当前 OR/2% +46.44%，是否回滚待拍板",
+    "rationale": "target_zone 刻意选 roe 分位[0,20]，但 ROE<0 说明主营尚未盈利，叠加低 PB/低 PS 即典型价值陷阱；真困境反转要看营收止跌+利润修复，不是「还没赚到钱」",
+    "known_conflict": "净利率<2% 单条否决与 target_zone 的 net_margin_ttm 分位[0,20] 直接冲突，会显著收缩候选池（实测 50 只池留 9 只）",
+    "counter_evidence": "被 OR 否决的神剑股份买入时 ROE 1.57%/净利率 1.13%，其后最大涨幅 387%；航天科技 269%。收紧 veto 的机会成本真实存在。"
+  },
+  "capital": {
+    "initial_sim_capital_cny": 1000000,
+    "currency": "CNY",
+    "status": "pending",
+    "pending_ref": "P9：模拟资金规模未最终确认，暂按 100 万"
+  },
+  "position_limits": {
+    "max_single_weight_pct": 15,
+    "max_sector_weight_pct": 30,
+    "min_single_weight_pct": 3,
+    "min_order_weight_pct": 2,
+    "first_tranche_max_pct_of_target": 50,
+    "min_holdings": 8,
+    "max_holdings": 12,
+    "default_target_holdings": 10,
+    "note": "default_target_holdings 用于空仓/H<min_holdings 时的补足目标；H>=min_holdings 时目标取 max_holdings。max_sector_weight_pct=30 是回测暴露的三处矛盾之一（见 P7）。"
+  },
+  "regime": {
+    "bull_min_score": 4,
+    "bear_light_max_score": -6,
+    "bear_heavy_max_score": -8,
+    "bear_confirm_days": 2,
+    "anti_flip_confidence": 0.75,
+    "base_position_pct": {
+      "bull": 90,
+      "neutral": 70,
+      "bear": 60,
+      "_note": "唯一真源。建仓经理在 regime.json 缺 position_cap_pct 时回退本段；旧镜像段 regime_base_position_pct 已于 v3.0 删除，禁止重建。",
+      "_history": "v1.x~v2.2 为 80/50/20；2026-10-27 按昴指定改为 90/70/60（区间取中）；该组合尚未经过独立回测验证（见 P3）"
+    },
+    "heavy_target_pct": 20,
+    "severity_action": {
+      "light": "禁止新建仓；不强制降仓（持仓向 base_position_pct.bear 收敛，不主动砍）",
+      "heavy": "禁止新建仓；bear_confirm_days 确认后降仓至 heavy_target_pct，每轮 bear 只执行一次"
+    },
+    "clamp_rule": "空头排列或 20日新低 > 新高×3 时，bull 降级为 neutral",
+    "score_note": "总分 = 趋势 + 宽度 + 情绪 + 量能 (+ 资金 + 板块)，各维 -2..+2；拥挤度不进总分",
+    "output_contract": "市场分析师必须输出 regime.json 的 position_cap_pct（已含拥挤度覆盖折扣）。下游建仓经理/队列脚本一律先读该字段，缺失才回退 base_position_pct。"
+  },
+  "risk": {
+    "single_stop_loss_pct": 8,
+    "single_take_profit_pct": 20,
+    "stop_loss_base": "实际成交加权成本 × (1 - single_stop_loss_pct/100)；未成交前用 ref_price 预览，成交回写必须重算",
+    "take_profit_base": "实际成交加权成本 × (1 + single_take_profit_pct/100)",
+    "stop_loss_recalc_required": true,
+    "forbidden": "禁止 min(ref×(1-8%), 20日低×0.98) 旧写法：锚 ref 会让次档成交即处于止损线下方；用 min 取更宽松一条与「取更严者」语义相反。20 日低退化为纯风险提示字段。",
+    "circuit": {
+      "mode": "step_down_no_liquidate",
+      "steps": [
+        {
+          "drawdown_pct": -15.0,
+          "target_position_pct": 40.0,
+          "label": "深跌降仓至四成",
+          "action": "把现有持仓市值压到总资产的 target_position_pct%，超出部分卖出；保留底仓不离场"
+        }
+      ],
+      "rearm_drawdown_pct": -8.0,
+      "rearm_rule": "净值回撤回到 rearm_drawdown_pct 以内 → 解除强制降仓，恢复按 regime 仓位上限新建仓（不追补，让仓位随反弹自然回升）",
+      "liquidate_pct": null,
+      "liquidate_note": "不设自动清仓。清仓 = 在底部认输离场并错过反弹，回测证明是负贡献（放宽到 -18% 才清仓的对照组回撤反而恶化到 -40.31%）",
+      "freeze_new_days": 0,
+      "freeze_on_daily_loss": false,
+      "daily_loss_stop_pct": -3.0,
+      "daily_loss_note": "保留字段仅作监控告警阈值，不触发冻结（B 组口径无冻结）",
+      "buffer_pct": 5.0,
+      "buffer_note": "当前仓位 > target + buffer_pct 才卖出，避免每日反复摩擦",
+      "executor": "持仓管家执行 / 总控巡检核对",
+      "backtest_sync": "replay_6y_v23.py 的 CIRCUIT_MODE=live 已按本段实现（steps / rearm / liquidate / freeze 全读参数）",
+      "rationale": "熔断单变量对照（同 v3.1 排序、同 veto OR/2%）：A 现行 -8%减半/-12%清仓/冻结5日 = +46.94%；B 本口径 -15%降到40% = +60.14%（回撤仅恶化 0.8pp、Calmar 1.97、交易少 78 笔）；C -12%减半/-18%清仓 = +51.62% / 回撤 -40.31%。差别不在阈值高低，而在「降到四成保留底仓」vs「清仓离场」",
+      "risk_tradeoff": "本口径放弃了「-12% 强制清仓」的极端防守。六年样本未出现需要硬清仓的尾部行情；实盘如遇单一事件型崩盘，靠单票 -8% 止损与 regime bear 禁买兜底。本条不是无风险设计。"
+    }
+  },
+  "weight_allocation": {
+    "method": "quality_normalized",
+    "formula": "weight_i = available_pct × qs_i / Σ(qs_j)；available = position_cap_pct − 持仓占比 − 在途未成交档位占比",
+    "selection": "按 quality_score 降序取 N 只；N 由 min/max_holdings 与行业分散度决定",
+    "clamp": "单票 clamp 到 [min_single_weight_pct, max_single_weight_pct]，迭代归一到 available 总和；票太少顶格也吃不满时按 max_single 满配、余额留现金",
+    "sector_constraint": "单行业合计 ≤ max_sector_weight_pct，超限按 quality_score 从低到高剔除并补入次优；剔除后若已 ≤ min_holdings 则不再减",
+    "amount_rule": "订单只给权重百分比，金额与股数由持仓管家按执行时实际总资产计算",
+    "free_capital_rule": "available ≤ 0 时本轮 0 单。只数未满不代表有空间——在途档位已占用配额"
+  },
+  "price_zone_rule": {
+    "reference_price": "基准日收盘价（建仓经理运行时的最新收盘，必须取 <= base_date 的最后一根）",
+    "fill_logic": "market_open_plus_ladder（v2.7）：首档开盘竞价市价；次档/三档为限价，份额与偏移见 tranche1/2/3；跌破 guard_drop_pct 全天不买",
+    "tranche1": {
+      "weight_share": 0.5,
+      "type": "market_open",
+      "offset_pct": 0.0,
+      "note": "开盘竞价市价买入，成交价=当日 open；仅当 open < guard_price 时该档放弃。首档禁用限价单（牛市必踏空）"
+    },
+    "tranche2": {
+      "weight_share": 0.25,
+      "type": "limit",
+      "offset_pct": -3.0,
+      "zone_offset_pct": [
+        -12.0,
+        -3.0
+      ],
+      "note": "挂 ref×(1-3%)，日内 low 触及即成交"
+    },
+    "tranche3": {
+      "weight_share": 0.25,
+      "type": "limit",
+      "offset_pct": -6.0,
+      "zone_offset_pct": [
+        -12.0,
+        -6.0
+      ],
+      "note": "挂 ref×(1-6%)，日内 low 触及即成交"
+    },
+    "guard_drop_pct": -12.0,
+    "fill_execution": {
+      "tranche1": "开盘价买入（open < guard_price 则放弃），成交价=当日 open",
+      "tranche2_3": "日内 low ≤ 挂单价即成交，成交价 = min(open, 挂单价)",
+      "guard": "open < guard_price → 当天全部档位不买",
+      "forbidden": "①用收盘价判定成交 ②用当日最低价当成交价（前视）③首档用限价单",
+      "basis": "v2.4 限价成交口径；旧「收盘价≤挂单价」判定不可实现，会把成交当成必然事件"
+    },
+    "stop_loss_linkage": "止损锚实际成交加权成本，不锚 ref；三档全成时成本下沿最优，止损线自然低于最低挂单价，档位-止损一致性由构造保证（R-023）",
+    "expire_rule": "挂 execution_queue.order_valid_trading_days 未成交即 expired，禁止上移 price_zone",
+    "bull_rush_rule": {
+      "enabled": true,
+      "trigger": "regime=bull 且 confirmed_days >= min_confirmed_days",
+      "min_confirmed_days": 2,
+      "action": "tr2/tr3 未成交限价档次日开盘直接市价补足，成交价=当日 open；tr1 不受影响；open<guard_price 当天仍不买",
+      "only_relaxes": "只放宽「什么时候买」，不放宽买什么、仓位上限、止损与 R-021/R-022/R-023",
+      "status": "enabled_v3_3",
+      "pending_ref": "P4：回测 +57.41%→+59.09%（+1.7pp）、回撤 -28.9%→-34.35%（恶化 5.5pp）、交易 530→987，须先修熔断再重测才决定是否启用",
+      "enabled_reason": "2026-10-28 昴决定打开：牛市占回测 62% 时间、平均仓位仅 31.9%，三档等回调导致长期半仓"
+    }
+  },
+  "crowding": {
+    "metric": "成交额前5%集中度（月度累计 MTD）",
+    "definition": "当月起累计成交额排名前 5% 个股的成交额合计 / 全市场累计成交额 × 100%；只对当日 amount>0 个股排名，不做 universe 过滤（必须与原始文献历史值可比）",
+    "source": "邢不行《如何判断抱团行情？》+ 广发策略《微观结构恶化，市场如何布局？》",
+    "script": "scripts/compute_crowding.py",
+    "input": "data/warehouse/crowding/latest.json",
+    "history": "data/warehouse/crowding/history.csv",
+    "top_pct": 5,
+    "warn_pct": 45,
+    "alert_pct": 50,
+    "low_pct": 20,
+    "min_days_for_mtd": 5,
+    "calibration": "2026-06 实算 48.81% vs 文献 48.76%（0.05pp）；2021-01 实算 48.54% vs 48.76~49.51%（≤0.97pp）。单日口径 2026-06-30 得 52.26%，偏高 3.5pp，故禁用单日值套阈值",
+    "bands": [
+      {
+        "max": 20,
+        "label": "低迷",
+        "desc": "无人问津，无抱团"
+      },
+      {
+        "max": 35,
+        "label": "正常",
+        "desc": "存量博弈"
+      },
+      {
+        "max": 45,
+        "label": "升温",
+        "desc": "资金开始抱团少数大票"
+      },
+      {
+        "max": 50,
+        "label": "极端抱团",
+        "desc": "最后的多空决战，警戒区"
+      },
+      {
+        "max": 999,
+        "label": "结构恶化",
+        "desc": "微观结构恶化，顶级预警"
+      }
+    ],
+    "overlay_rules": [
+      "crowding>=alert_pct 且 regime=bull → regime 强制降级 neutral，仓位上限额外 -20pp",
+      "crowding>=alert_pct 且 regime=neutral → 维持 neutral，仓位上限额外 -20pp，暂停新建仓",
+      "crowding>=alert_pct 且 regime=bear → 不改 regime，仅 risk_level=high",
+      "warn_pct<=crowding<alert_pct 且 regime=bull → confirmed_days>=bear_confirm_days 降级 neutral；否则维持 bull 但暂停新建仓",
+      "warn_pct<=crowding<alert_pct 且 regime!=bull → risk_level=high，暂停新建仓",
+      "35<=crowding<warn_pct → 只记录，不干预",
+      "crowding<35 → 无影响；若同时 regime=bear 且 crowding<low_pct，记 bottom_signal=possible（仅提示，不解除降仓）"
+    ],
+    "release_rule": "回落至 warn_pct 以下且连续 2 个月环比下行 → 解除警报（cleared=true），后续按普通分档记录",
+    "nature_rule": "45%+ 双向触发：指数 20 日涨跌幅>0（高位）→ 抱团瓦解风险，收紧；< -5%（低位）→ 反向集中/恐慌底，不追加收紧",
+    "not_in_score": true,
+    "note": "慢变量，月度更新；月初累计不足 min_days_for_mtd 个交易日时回退上月完整值（crowding_source=prev_month）"
+  },
+  "rotation": {
+    "enabled": false,
+    "owner": "position_manager",
+    "score_gap_min": 10,
+    "max_per_week": 3,
+    "pnl_band_pct": [
+      -5.0,
+      5.0
+    ],
+    "target_holdings": [
+      8,
+      12
+    ],
+    "candidate_source": "state/watchlist.json（verdict=buy_watch 且未被持有）",
+    "rule": "qs_c − qs_h ≥ score_gap_min 且 H 未触发卖出、浮动在 pnl_band_pct 内 → 卖 H 买 C（权重沿用 H），每周最多 max_per_week 对",
+    "no_rotation_guard": "候选为空或均不优于持仓时不做任何换仓（禁止为有产出而调仓）",
+    "disabled_reason": "六年回测 98 笔换仓平均 +0.75%，纯摩擦；关闭后由止损/止盈/降仓自然腾仓位",
+    "disabled_at": "2026-10-26",
+    "reenable_condition": "需先证明候选池质量分对未来收益有预测力（跨期 IC），否则不得开启"
+  },
+  "execution_queue": {
+    "order_pending_trading_days": 10,
+    "order_pending_rule": "订单挂单超过 order_pending_trading_days 个交易日未成交即 expired，禁止上移 price_zone 续命（R-006）",
+    "queue_valid_trading_days": 20,
+    "queue_valid_rule": "候选队列（order_queue.json）中状态 queued 的记录，自 queued_date 起走过 queue_valid_trading_days 个交易日仍未等到空位即出队（drop_reason=排队已满）",
+    "cooldown_trading_days": 20,
+    "cooldown_rule": "标的因止损/止盈/逻辑破坏清仓后 cooldown_trading_days 内禁止重新建仓；merge 标 status=cooldown，promote 与 build_orders_live 同步过滤；冷却期计算失败时本轮 0 单",
+    "promote_in_automation": false,
+    "promote_note": "候选队列 promote 不接 automation，仅作手工调仓工具，执行前必须 --dry-run 看闸门。六年回测三种自动补位实现全部劣于基线（+48.52% / +45.49% / +32.07% vs 基线 +55.90%），且前后段一致更差",
+    "cooldown_backtest_note": "冷却期六年回测 +55.90%→+74.42%；幅度不可外推（直接拦下的买入仅 9 次，主要来自路径分化），定性可信、定量预期不可信"
+  },
+  "backtest_registry": {
+    "engine": "test/scripts/replay_6y_v23.py（环境变量 VETO_LOGIC / NM_VETO / POOL_N / CROWD_ON / TAG 切换口径）",
+    "period": "2019-12-02 ~ 2026-10-23（约 1671 交易日，上证 +28.33%）",
+    "basis_current": "v2.4 限价成交口径（low ≤ 挂单价即成交，成交价 = min(open, 挂单价)）",
+    "results": [
+      {
+        "tag": "v31_circ_old15",
+        "desc": "熔断单变量对照B：旧口径 -15% 降到 40% 仓位、回到 -8% 解除、无冻结（其余同 v3.1）",
+        "return_pct": 60.14,
+        "excess_pct": 31.82,
+        "mdd_pct": -30.58,
+        "calmar": 1.97,
+        "win_rate_pct": 65.2,
+        "avg_win_pct": 62.6,
+        "avg_loss_pct": -5.2,
+        "trades": 409,
+        "closed": 256,
+        "sell_reasons": {
+          "take_profit": 118,
+          "stop_loss": 70,
+          "circuit": 68
+        },
+        "verdict": "三组最优：较 A 组 +13.2pp，回撤几乎不变（-29.76→-30.58，差 0.8pp），Calmar 1.58→1.97，交易少 78 笔。机制差异不是「砍不砍仓」而是「砍到 40% 保留底仓 vs 清仓离场」"
+      },
+      {
+        "tag": "v31_circ_wide",
+        "desc": "熔断单变量对照C：放宽到 -12% 减半 / -18% 清仓",
+        "return_pct": 51.62,
+        "excess_pct": 23.29,
+        "mdd_pct": -40.31,
+        "calmar": 1.28,
+        "win_rate_pct": 63.6,
+        "avg_win_pct": 80.6,
+        "avg_loss_pct": -6.7,
+        "trades": 429,
+        "closed": 242,
+        "sell_reasons": {
+          "take_profit": 132,
+          "stop_loss": 83,
+          "dd_halve": 10,
+          "derisk_heavy": 11,
+          "dd_liquidate": 6
+        },
+        "verdict": "更差：回撤恶化到 -40.31%（Calmar 仅 1.28）。深跌才清仓 = 在底部锁死亏损、错过反弹；说明「清仓」这个动作本身是负贡献，不是阈值高低问题"
+      },
+      {
+        "tag": "v31_circuit_attribution",
+        "desc": "熔断口径归因（同 v3.1 排序、同 veto OR/2%）",
+        "A_live_neg8_neg12": 46.94,
+        "B_old_neg15_to40": 60.14,
+        "C_wide_neg12_neg18": 51.62,
+        "verdict": "熔断改口径值 +13.2pp；此前 +236% 的主因仍在旧引擎/旧成交口径，熔断只能解释其中约 13pp。上一次判断「熔断是最大杀手」被本组数据修正"
+      },
+      {
+        "tag": "v31_ranking_selection_score",
+        "veto": "OR/2%",
+        "pool": 50,
+        "ranking": "selection_score",
+        "return_pct": 46.94,
+        "excess_pct": 18.61,
+        "mdd_pct": -29.76,
+        "win_rate_pct": 62.3,
+        "avg_win_pct": 69.6,
+        "avg_loss_pct": -6.3,
+        "trades": 487,
+        "closed": 284,
+        "verdict": "v3.1 生效口径：删除研究员财务排序，排序与权重听选股分。较 v3.0 的 +20.65% 提升 26.3pp，回撤恶化 3.1pp，胜率 +6.1pp，交易减少 46 笔"
+      },
+      {
+        "tag": "v31_zone_extra_low",
+        "desc": "在上一组基础上把毛利率/营收同比以低分位 [0,20] 并入选股区间",
+        "return_pct": 46.89,
+        "mdd_pct": -29.75,
+        "win_rate_pct": 62.3,
+        "trades": 487,
+        "verdict": "与不加几乎完全一致（-0.05pp）：这两个因子与 roe/net_margin 高度相关，低分位方向冗余，无增量"
+      },
+      {
+        "tag": "v31_zone_extra_high",
+        "desc": "同上，但以高分位 [80,100] 并入",
+        "return_pct": 46.89,
+        "mdd_pct": -29.75,
+        "win_rate_pct": 62.3,
+        "trades": 487,
+        "verdict": "与低分位结果完全相同（交易数/回撤/胜率逐项一致）——毛利/营收在 zone 均分机制里被稀释，方向都不改变选股结果。结论：target_zone 维持 5 因子不扩容，加因子只把现有因子权重从 20% 摊薄到 14.3%，无收益"
+      },
+      {
+        "tag": "baseline_AND5_pool50",
+        "veto": "AND/5%",
+        "pool": 50,
+        "crowding": false,
+        "return_pct": 57.93,
+        "mdd_pct": -16.12,
+        "win_rate_pct": 67.0,
+        "trades": 334,
+        "circuit_sells": 0,
+        "verdict": "全历史最优（旧排序口径下），P2 待验证与选股分排序叠加后是否更优"
+      },
+      {
+        "tag": "v30_baseline_financial_ranking",
+        "veto": "OR/2%",
+        "pool": 50,
+        "ranking": "financial_only",
+        "return_pct": 20.65,
+        "mdd_pct": -26.65,
+        "win_rate_pct": 56.2,
+        "avg_win_pct": 61.8,
+        "trades": 533,
+        "verdict": "v3.0 口径，已被 v3.1 取代"
+      },
+      {
+        "tag": "v23_OR2_pool50_crowd",
+        "veto": "OR/2%",
+        "pool": 50,
+        "crowding": true,
+        "return_pct": 46.44,
+        "mdd_pct": -33.19,
+        "circuit_sells": 210,
+        "verdict": "旧排序口径下的 OR/2%"
+      },
+      {
+        "tag": "v23_OR2_pool150_crowd",
+        "veto": "OR/2%",
+        "pool": 150,
+        "crowding": true,
+        "return_pct": 53.94,
+        "mdd_pct": -34.95,
+        "circuit_sells": 215,
+        "verdict": "扩池在本口径下略优但回撤仍大"
+      },
+      {
+        "tag": "baseline_align_bullrush",
+        "desc": "基线 + bull_rush 未启用对照",
+        "return_pct": 57.41,
+        "mdd_pct": -28.9,
+        "avgpos_pct": 25.5,
+        "bull_avgpos_pct": 31.0,
+        "trades": 530
+      },
+      {
+        "tag": "with_bullrush2d",
+        "return_pct": 59.09,
+        "mdd_pct": -34.35,
+        "avgpos_pct": 33.4,
+        "bull_avgpos_pct": 39.9,
+        "trades": 987
+      }
+    ],
+    "deprecated_basis": {
+      "desc": "旧口径（收盘价判定 + 收盘价成交）结果全部作废：基线 +84.84%（虚高 26.9pp）；OR/2% 仅虚高 1.7pp，导致两者差距被放大到 36.67pp（真实 11.49pp）",
+      "rule": "任何引用旧口径收益率的报告必须加「口径作废」标注，禁止与 v2.4 口径结果混排对比"
+    },
+    "conclusion": "净利率阈值是主开关（5%→2% 单改掉约 45pp），OR 是次因；拥挤度覆盖层不稳健（基线 -54pp / OR +7pp）；最优组合 = 基线参数 + v2.4 口径。",
+    "_drawdown_bug_20261028": {
+      "found": "2026-10-28 23:30",
+      "bug": "replay_6y_v23.py stats 段用 mdd = min(mdd, pnl_pct - peak_pnl) 计算回撤——这是「收益率百分点差」，不是按净值的复合回撤。收益越高失真越大。",
+      "effect": "本文件 results 里所有 mdd_pct 字段（以及 2026-10-28 之前所有回测结论里的回撤数字）虚高 10~29pp。+183% 那组被算成 -48.96%，真实为 -19.97%。",
+      "fixed": "已改为按总资产相对历史峰值计算：peak_nav/ nav/peak_nav-1。真实值见 results_v2_real_drawdown。",
+      "lesson": "同一个 bug 在 2026-10-27 的 replay_live_chain.py 里修过一次（memory 有记录），但 replay_6y_v23.py 是另写的引擎，没同步修。两套引擎各修各的，这就是「多版本混用」在回测层的表现。"
+    },
+    "results_real_drawdown_20261028": [
+      {
+        "tag": "v30_baseline_financial_ranking",
+        "return_pct": 20.65,
+        "real_mdd_pct": -19.54,
+        "annual_pct": 4.66,
+        "calmar": 0.24
+      },
+      {
+        "tag": "v32_v3.2_circuit_stepdown",
+        "return_pct": 60.14,
+        "real_mdd_pct": -19.54,
+        "annual_pct": 7.11,
+        "calmar": 0.36
+      },
+      {
+        "tag": "v33_tpA_bullrush",
+        "return_pct": 78.03,
+        "real_mdd_pct": -20.53,
+        "annual_pct": 8.78,
+        "calmar": 0.43
+      },
+      {
+        "tag": "v33_veto_and5",
+        "return_pct": 183.13,
+        "real_mdd_pct": -19.97,
+        "annual_pct": 16.39,
+        "calmar": 0.82,
+        "note": "止盈A + bull_rush + veto AND/5%，最优组合"
+      }
+    ]
+  },
+  "pending_decisions": [
+    {
+      "id": "P1",
+      "topic": "quality_score 口径（排序与权重听谁）",
+      "active_now": "picker_only（选股分）",
+      "status": "resolved_v3_1",
+      "resolution": "2026-10-28 昴决定：删除研究员的财务打分环节，排序与权重一律改用选股分。六年回测 +20.65% → +46.94%（回撤 -26.65% → -29.76%，胜率 56.2% → 62.3%，交易 533 → 487）。",
+      "also_confirmed": "财务因子以低分位 [0,20] 并入 target_zone 无增量（+46.89%，差 -0.05pp），故 target_zone 暂不扩容；财务因子通过 researcher_veto 硬否决进入策略。",
+      "residual_risk": "回撤从 -26.65% 恶化到 -29.76%（-3.1pp），需在 P6（熔断阈值）里一并评估"
+    },
+    {
+      "id": "P2",
+      "topic": "researcher_veto 口径",
+      "active_now": "OR / ROE<0 / 净利率<2%",
+      "options": [
+        "保持 OR/2%（回测 +46.44%，回撤 -33.19）",
+        "回滚 AND/5%（回测 +57.93%，回撤 -16.12）"
+      ],
+      "blocking": "决定候选池规模与持仓集中度，直接影响熔断触发频率",
+      "owner": "昴",
+      "recommend": "回滚 AND/5%，代价是放弃神剑股份类标的（ROE 1.57%/净利率 1.13%，后涨 387%）"
+    },
+    {
+      "id": "P3",
+      "topic": "regime 基础仓位 90/70/60",
+      "active_now": "90/70/60",
+      "options": [
+        "保持 90/70/60",
+        "回落 80/50/20"
+      ],
+      "blocking": "未做独立回测验证；bear=60% 意味着熊市也持六成仓，与三级熔断设计意图可能冲突",
+      "owner": "昴",
+      "recommend": "先跑一版 90/70/60 vs 80/50/20 对照再定"
+    },
+    {
+      "id": "P4",
+      "topic": "bull_rush_rule 是否启用",
+      "active_now": false,
+      "options": [
+        "保持关闭",
+        "启用（须先修熔断后重测）"
+      ],
+      "blocking": "当前回测 +1.7pp 收益换 5.5pp 回撤恶化 + 交易翻倍，不划算但不是机制本身的问题",
+      "owner": "昴",
+      "recommend": "熔断修好后重测，暂不启用"
+    },
+    {
+      "id": "P5",
+      "topic": "buy_watch 入选规则",
+      "active_now": "top_n_by_quality(20) 且无绝对门槛",
+      "options": [
+        "保持前 20 无门槛",
+        "启用 min_quality_score 硬门槛"
+      ],
+      "blocking": "启用硬门槛在 50 只池 + 财务分偏低时会让 buy_watch 恒为 0",
+      "owner": "昴",
+      "recommend": "保持现状，等 P1 口径定了再评估"
+    },
+    {
+      "id": "P6",
+      "topic": "组合熔断阈值 -8%/-12% 是否过紧",
+      "active_now": "分档降仓：-15% 降到 40%、-8% 解除、无冻结、不清仓",
+      "options": [
+        "保持",
+        "放宽到 -12%/-18%",
+        "改用波动率自适应阈值"
+      ],
+      "blocking": "全参数对齐回测仅 +20.65%，熔断与 30% 行业上限、质量分口径三选一背锅，尚未定位",
+      "owner": "昴",
+      "recommend": "做单变量对照实验定位后再动",
+      "status": "resolved_v3_2",
+      "resolution": "2026-10-28 昴拍板落地 B 组。-15%→40% 使收益 +13.2pp 而回撤几乎不变；放宽阈值但保留清仓的 C 组反而更差，证明清仓动作本身负贡献。",
+      "residual_risk": "放弃 -12% 硬清仓兜底；尾部单一事件型崩盘依赖单票 -8% 止损 + regime bear 禁买"
+    },
+    {
+      "id": "P7",
+      "topic": "单行业上限 30%",
+      "active_now": 30,
+      "options": [
+        "保持 30%",
+        "放宽到 40%"
+      ],
+      "blocking": "候选枯竭时 30% 上限会进一步压缩持仓数，加剧权重集中",
+      "owner": "昴",
+      "recommend": "与 P2 联动评估"
+    },
+    {
+      "id": "P8",
+      "topic": "候选队列有效期",
+      "active_now": "20 交易日（已迁入 execution_queue.order_valid_trading_days）",
+      "status": "resolved_in_v3_0",
+      "owner": "—"
+    },
+    {
+      "id": "P9",
+      "topic": "模拟初始资金规模",
+      "active_now": 1000000,
+      "options": [
+        "100 万",
+        "其他"
+      ],
+      "owner": "昴"
+    },
+    {
+      "id": "P10",
+      "topic": "实盘通道",
+      "active_now": "框架出指令 + 人工下单（最高状态 awaiting_human_confirm）",
+      "owner": "昴"
+    }
+  ],
+  "changelog_ref": {
+    "v3.1": "第一处实质策略变更：删除研究员财务质量分（原 weights ROE .35/净利率 .25/毛利率 .15/营收 .25）作为排序与权重依据，改为 quality_score = 选股分×100。build_watchlist.py 不再打分，只做排雷+否决+按选股分排序；研究员 agent 降级为排雷官（不打分不排序）。回测 +20.65% → +46.94%。财务因子以低分位并入选股区间无增量（-0.05pp），故 target_zone 暂维持 5 因子。",
+    "v3.0": "参数收敛：删除 regime_base_position_pct 镜像段（唯一真源改 regime.base_position_pct）；quality_score 三套公式合并为一段并标 pending；researcher_quality 权重从三处不同数值统一为 weights 段；queue 有效期与冷却期迁入 execution_queue；指数定投线并入 index_dca；新增 pending_decisions / backtest_registry / runtime_snapshot 三段。策略本身零改动。",
+    "v2.3": "veto AND→OR、净利率 5%→2%；拥挤度覆盖层（v2.2）；target_zone 选股（v2.0）",
+    "v2.4~v2.7": "限价成交口径 / 熔断对齐实盘 / 三档买点 / R-022~R-025（这些变更此前未编号，全部混写在 v2.3 文件的 changelog 里）",
+    "历史明细": "见 knowledge/params_v1.0.json ~ params_v2.3.json（只读归档，禁止再修改或作为真源引用）",
+    "v3.2": "熔断口径落地（P6 结案）：-8%减半/-12%清仓/冻结5日 → -15%降到40%仓位/回到-8%解除/无冻结/不清仓。回测 +46.94%→+60.14%，回撤 -29.76%→-30.58%，Calmar 1.58→1.97。risk.circuit 段重构为 steps/rearm/liquidate/freeze，回测与提示语同步。"
+  },
+  "_superseded_by": "v3.3",
+  "_read_only": true,
+  "_note": "本文件仅作快照留档，禁止读取作为真源；当前唯一真源为 params_v3.3.json"
+}

@@ -1,8 +1,8 @@
 {
   "task": "archivist",
-  "status": "done",
-  "date": "20261025",
-  "reason": "ok",
+  "status": "undo",
+  "date": null,
+  "reason": "replay-v29-reset",
   "artifact": "knowledge/rules.md",
-  "updated_at": "2026-10-25T23:13:03"
+  "updated_at": "2026-10-27T00:57:21"
 }

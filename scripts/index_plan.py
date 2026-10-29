@@ -233,15 +233,32 @@ def main():
     # ---------- 4. 收益核算 ----------
     mv = sum(p.get("value", 0) for p in hold.values())
     cost = sum(p.get("cost", 0) for p in hold.values())
-    unreal = mv - cost
+    # 盯市缺口：有成本却算不出市值（nav 缺失／没跑过 update_index_portfolio）。
+    # 别把 mv=0 当"跌到 0"，否则未实现盈亏会变成 -累计投入，写进 orders 后邮件里就是 -100%。
+    unmarked = [k for k, p in hold.items()
+                if float(p.get("cost") or 0) > 0 and not float(p.get("value") or 0) > 0]
+    if unmarked:
+        unreal = 0.0
+        print("\n【账本未盯市】%d 只持仓缺市值，未实现盈亏暂按 0 记；"
+              "请先跑 python scripts/update_index_portfolio.py 补盯市" % len(unmarked))
+    else:
+        unreal = mv - cost
     total = port["cumulative_invested_cny"] + port["realized_pnl_cny"] + unreal
-    print("\n【收益核算】按你要求的公式")
+    # 口径必须拆开，别混：
+    #   总收益(profit) = 已实现 + 未实现
+    #   总资产(assets) = 累计投入 + 总收益
+    #   收益率        = 总收益 / 累计投入
+    # 旧代码把 assets 当 total 写进 total_return_cny，下游一算 assets=投入+总资产 直接翻倍。
+    profit = port["realized_pnl_cny"] + unreal
+    assets = port["cumulative_invested_cny"] + profit
+    print("\n【收益核算】")
     print("  累计投入        %12s 元" % format(port["cumulative_invested_cny"], ",.0f"))
-    print("  + 已实现盈亏    %12s 元" % format(port["realized_pnl_cny"], "+,.0f"))
-    print("  + 未实现盈亏    %12s 元" % format(unreal, "+,.0f"))
-    print("  = 总收益        %12s 元" % format(total, ",.0f"))
+    print("  + 已实现盈亏    %12s 元" % format(port["realized_pnl_cny"], "+,.2f"))
+    print("  + 未实现盈亏    %12s 元" % format(unreal, "+,.2f"))
+    print("  = 总收益        %12s 元" % format(profit, "+,.2f"))
+    print("  总资产          %12s 元" % format(assets, ",.0f"))
     if port["cumulative_invested_cny"] > 0:
-        print("  收益率          %11.2f%%" % (total / port["cumulative_invested_cny"] * 100))
+        print("  收益率          %11.2f%%" % (profit / port["cumulative_invested_cny"] * 100))
 
     payload = {"as_of": today, "generated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                "params_version": params["version"], "unit_amount_cny": unit,
@@ -250,7 +267,9 @@ def main():
                "cumulative_invested_cny": port["cumulative_invested_cny"],
                "realized_pnl_cny": port["realized_pnl_cny"],
                "unrealized_pnl_cny": round(unreal, 2),
-               "total_return_cny": round(total, 2)}
+               "portfolio_marked": not unmarked,
+               "total_return_cny": round(profit, 2),
+               "total_assets_cny": round(assets, 2)}
     # 保护：上一期计划若未登记成交，先归档，避免被本期覆盖导致成交丢失
     if os.path.exists(ORDERS) and not args.dry_run:
         old = load_json(ORDERS) or {}

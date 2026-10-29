@@ -161,6 +161,52 @@ def check_business():
                 failures.append(f"orders.json: {oid} target_weight {tw}% exceeds single cap 15%")
             if not (o.get("stop_loss") and o.get("take_profit")):
                 failures.append(f"orders.json: {oid} missing stop_loss/take_profit")
+            # ---- v2.4 限价单口径断言（low 触及即成交，成交价 = min(open, limit)）----
+            guard = o.get("guard_price")
+            for ti, t in enumerate(trs, 1):
+                # v2.7/v2.9 首档为「开盘竞价市价」：不设 price_zone 与限价，单独断言
+                if t.get("type") == "market_open":
+                    if t.get("limit_price") is not None:
+                        failures.append(f"orders.json: {oid} tr{ti} market_open 档不应设 limit_price")
+                    if t.get("status") not in ("filled", "pending"):
+                        failures.append(f"orders.json: {oid} tr{ti} status {t.get('status')!r} invalid")
+                    continue
+                zone = t.get("price_zone") or []
+                if len(zone) != 2:
+                    failures.append(f"orders.json: {oid} tr{ti} missing price_zone[lo,hi]")
+                    continue
+                lo_z, hi_z = zone
+                if not (isinstance(lo_z, (int, float)) and isinstance(hi_z, (int, float))):
+                    failures.append(f"orders.json: {oid} tr{ti} price_zone not numeric")
+                    continue
+                if lo_z >= hi_z:
+                    failures.append(f"orders.json: {oid} tr{ti} price_zone not ascending {zone}")
+                limit = t.get("limit_price", hi_z)
+                if abs(limit - hi_z) > 0.011:
+                    failures.append(
+                        f"orders.json: {oid} tr{ti} limit_price {limit} != price_zone 上沿 {hi_z}")
+                if t.get("status") not in ("filled", "pending"):
+                    failures.append(f"orders.json: {oid} tr{ti} status {t.get('status')!r} invalid")
+                fp = t.get("fill_price")
+                if fp is None:
+                    continue
+                if fp > limit + 0.011:
+                    failures.append(
+                        f"orders.json: {oid} tr{ti} fill_price {fp} > limit {limit}（限价单不可能高于挂单价成交）")
+                if isinstance(guard, (int, float)) and fp < guard - 0.011:
+                    failures.append(
+                        f"orders.json: {oid} tr{ti} fill_price {fp} < guard {guard}（破保护线仍成交）")
+                op = t.get("day_open")
+                if isinstance(op, (int, float)):
+                    expect = round(min(op, limit), 2)
+                    if abs(fp - expect) > 0.011:
+                        failures.append(
+                            f"orders.json: {oid} tr{ti} fill_price {fp} != min(open {op}, limit {limit})"
+                            f" = {expect}（v2.4 成交价口径错误）")
+                low = t.get("day_low")
+                if isinstance(low, (int, float)) and low > limit + 0.011:
+                    failures.append(
+                        f"orders.json: {oid} tr{ti} 已成交但 day_low {low} > limit {limit}（未触及不应成交）")
         elif o.get("side") == "sell":
             if not (o.get("reason") and o.get("trigger")):
                 failures.append(f"orders.json: {oid} sell order missing reason/trigger")
@@ -175,6 +221,12 @@ def check_business():
         tid = t.get("trade_id", "?")
         if (t.get("open") or {}).get("price", 0) <= 0:
             failures.append(f"trades.jsonl: {tid} open price <= 0")
+        if t.get("side") == "buy":
+            op_px = (t.get("open") or {}).get("price", 0)
+            lim = t.get("limit")
+            if isinstance(lim, (int, float)) and op_px > lim + 0.011:
+                failures.append(
+                    f"trades.jsonl: {tid} buy price {op_px} > limit {lim}（限价单成交价不合法）")
         if t.get("close"):
             if (t["close"] or {}).get("price", 0) <= 0:
                 failures.append(f"trades.jsonl: {tid} close price <= 0")
@@ -218,6 +270,152 @@ CROWDING_LEVELS = ("normal", "watch", "warn", "alert")
 CROWDING_KEYS = ["crowding", "level", "band", "prev_month", "mom", "pct_rank",
                  "top1_pct", "top10_pct", "mtd_days", "sample_months",
                  "warn_pct", "alert_pct"]
+
+
+def check_params():
+    """参数唯一真源校验（v3.0）。
+
+    目的：不允许再出现「多版本混用 / 同一阈值三处不同数值 / 脚本硬编码绕过参数」。
+    任一条不过 = 参数体系已被污染，必须先修参数再跑流水线。
+    """
+    kn = Path(STATE).parent / "knowledge"
+    cur = kn / "params_current.txt"
+    if not cur.exists():
+        failures.append("params: knowledge/params_current.txt 缺失")
+        return
+    ver = cur.read_text(encoding="utf-8").strip()
+    pfile = kn / f"params_{ver}.json"
+    if not pfile.exists():
+        failures.append(f"params: params_current.txt={ver} 但 {pfile.name} 不存在")
+        return
+    try:
+        p = load_json(pfile)
+    except Exception as e:
+        failures.append(f"params: {pfile.name} 解析失败 ({e})")
+        return
+
+    if p.get("version") != ver:
+        failures.append(f"params: 文件名版本 {ver} 与内部 version={p.get('version')} 不一致")
+
+    # ① 禁止镜像段：regime 基础仓位只允许存在于 regime.base_position_pct
+    if "regime_base_position_pct" in p:
+        failures.append("params: 存在 regime_base_position_pct 镜像段（v3.0 已废止，唯一真源=regime.base_position_pct）")
+    rp = (p.get("regime") or {}).get("base_position_pct") or {}
+    for k in ("bull", "neutral", "bear"):
+        v = rp.get(k)
+        if not isinstance(v, (int, float)) or not (0 < v <= 100):
+            failures.append(f"params: regime.base_position_pct.{k} 非法（{v}）")
+
+    # ② 选股：target_zone 每个键必须是 2 元素数值区间，不得夹带说明键
+    tz = (p.get("selection_method") or {}).get("target_zone") or {}
+    if not tz:
+        failures.append("params: selection_method.target_zone 为空")
+    for k, v in tz.items():
+        if not (isinstance(v, (list, tuple)) and len(v) == 2 and all(isinstance(x, (int, float)) for x in v)):
+            failures.append(f"params: target_zone.{k} 非 [lo,hi] 区间（{v}）——不得在 target_zone 内放说明键")
+
+    # ③ 质量分权重归一（v3.1 起 weights 已 retired，仅当仍在使用时才校验）
+    rq = p.get("researcher_quality") or {}
+    w = rq.get("weights") or {}
+    if w.get("_status") != "retired_v3_1":
+        ws = sum(float(w.get(k, 0)) for k in ("roe_ttm", "net_margin_ttm", "gross_margin_ttm", "tr_yoy"))
+        if abs(ws - 1.0) > 1e-6:
+            failures.append(f"params: researcher_quality.weights 四因子权重和 = {ws:.4f}，应为 1.0")
+
+    # ③b 排序口径（v3.1）：研究员不得再承担排序，必须听选股分
+    f_act = (rq.get("formula") or {}).get("active")
+    if f_act != "picker_only":
+        failures.append(f"params: researcher_quality.formula.active = {f_act}，v3.1 起必须为 picker_only（排序听选股分）")
+    if (rq.get("ranking_basis") or "") != "selection_score":
+        failures.append("params: researcher_quality.ranking_basis 必须为 selection_score（财务不得再参与排名）")
+
+    # ④ 三档买点份额归一
+    pz = p.get("price_zone_rule") or {}
+    ts = sum(float((pz.get(f"tranche{i}") or {}).get("weight_share", 0)) for i in (1, 2, 3))
+    if abs(ts - 1.0) > 1e-6:
+        failures.append(f"params: price_zone_rule 三档 weight_share 和 = {ts:.4f}，应为 1.0")
+    if float(pz.get("guard_drop_pct", 0)) >= float((pz.get("tranche3") or {}).get("offset_pct", 0)):
+        failures.append("params: guard_drop_pct 必须低于 tr3 偏移（否则保护线失效）")
+
+    # ⑤ 因子权重归一（compute_full_market 无条件读取，缺 weight 会 KeyError）
+    fac = ((p.get("strategy") or {}).get("factors") or {})
+    bad = [k for k, v in fac.items() if not isinstance(v, dict) or "weight" not in v]
+    if bad:
+        failures.append(f"params: strategy.factors 含非因子键 {bad}（会导致 compute_full_market KeyError）")
+    else:
+        fw = sum(float(v["weight"]) for v in fac.values())
+        if abs(fw - 1.0) > 1e-6:
+            failures.append(f"params: strategy.factors 权重和 = {fw:.4f}，应为 1.0")
+
+    # ⑤b 熔断口径（v3.2）：分档降仓、不清仓
+    circ = (p.get("risk") or {}).get("circuit") or {}
+    if not circ:
+        failures.append("params: risk.circuit 段缺失（v3.2 起熔断口径唯一真源）")
+    else:
+        steps = circ.get("steps") or []
+        if not steps:
+            failures.append("params: risk.circuit.steps 为空")
+        for st in steps:
+            if not isinstance(st.get("drawdown_pct"), (int, float)):
+                failures.append(f"params: circuit.steps 缺 drawdown_pct（{st}）")
+            tgt = st.get("target_position_pct")
+            if not isinstance(tgt, (int, float)) or not (0 < tgt < 100):
+                failures.append(f"params: circuit.steps.target_position_pct 非法（{tgt}），必须 0<t<100（清仓应走 liquidate_pct）")
+        rraw = circ.get("rearm_drawdown_pct")
+        if not isinstance(rraw, (int, float)):
+            failures.append("params: circuit.rearm_drawdown_pct 缺失")
+        elif steps and isinstance(steps[0].get("drawdown_pct"), (int, float)) and rraw <= steps[0]["drawdown_pct"]:
+            failures.append(f"params: circuit.rearm_drawdown_pct({rraw}) 必须浅于首个触发档({steps[0]['drawdown_pct']})，否则永不解除")
+        if circ.get("mode") != "step_down_no_liquidate":
+            failures.append(f"params: circuit.mode = {circ.get('mode')}，v3.2 起必须为 step_down_no_liquidate")
+        if "drawdown_halve_pct" in (p.get("risk") or {}):
+            failures.append("params: risk 下仍存在 drawdown_halve_pct 旧字段（v3.2 已废止，改由 circuit.steps 表达）")
+
+    # ⑤c v3.3 四项变更落地校验
+    _vet = p.get("researcher_veto") or {}
+    if _vet.get("logic") != "AND" or _vet.get("net_margin_below") != 5.0:
+        failures.append(f"params: researcher_veto 应为 AND / 5.0（v3.3 放宽以扩大候选池），当前 {_vet.get('logic')} / {_vet.get('net_margin_below')}")
+    _tpt = (p.get("risk") or {}).get("take_profit_trailing") or {}
+    if not _tpt.get("enabled"):
+        failures.append("params: risk.take_profit_trailing.enabled 必须为 true（v3.3 止盈改为一次减半+移动止损）")
+    elif int(_tpt.get("max_rounds") or 0) != 1:
+        failures.append(f"params: take_profit_trailing.max_rounds 必须为 1（禁止反复减半），当前 {_tpt.get('max_rounds')}")
+    if not (p.get("execution_queue") or {}).get("topup", {}).get("enabled"):
+        failures.append("params: execution_queue.topup 应启用（每日补仓，v3.3）")
+    _bc = (p.get("position_limits") or {}).get("bull_concentration") or {}
+    if not _bc.get("enabled"):
+        failures.append("params: position_limits.bull_concentration 应启用（牛市集中持仓，v3.3）")
+    else:
+        _n = _bc.get("bull_max_holdings")
+        _mx = (p.get("position_limits") or {}).get("max_holdings")
+        if not isinstance(_n, int) or _n <= 0:
+            failures.append(f"params: bull_concentration.bull_max_holdings 非法（{_n}）")
+        elif isinstance(_mx, int) and _n > _mx:
+            failures.append(f"params: bull_max_holdings({_n}) 不得大于 max_holdings({_mx})")
+    if not (p.get("price_zone_rule") or {}).get("bull_rush_rule", {}).get("enabled"):
+        failures.append("params: bull_rush_rule.enabled 应为 true（v3.3 打开牛市追涨）")
+
+    # ⑤d v3.3 执行脚本必须存在（补仓/集中由持仓管家每日调用，缺脚本则策略无法落地）
+    _root = Path(STATE).parent
+    for _rel in ("scripts/daily_position_manage.py",):
+        if not (_root / _rel).exists():
+            failures.append(f"params: 缺少执行脚本 {_rel}（v3.3 的每日补仓/集中依赖它，缺则回测结论无法在实盘复现）")
+
+    # ⑥ 脚本不得再访问已废止的镜像字段（防回归）
+    scripts = Path(STATE).parent / "scripts"
+    if scripts.is_dir():
+        import re
+        pat = re.compile(r"""(\[\s*["']regime_base_position_pct["']\s*\]|\.get\(\s*["']regime_base_position_pct["'])""")
+        for fp in sorted(scripts.glob("*.py")):
+            try:
+                src = fp.read_text(encoding="utf-8")
+            except Exception:
+                continue
+            for i, line in enumerate(src.splitlines(), 1):
+                if pat.search(line):
+                    failures.append(f"params: {fp.name}:{i} 仍读取已废止字段 regime_base_position_pct")
+
+    print(f"[params] current={ver} ({pfile.name}) 校验完成")
 
 
 def check_crowding():
@@ -358,6 +556,7 @@ def main():
     check_state()
     check_business()
     check_tasks()
+    check_params()
     check_crowding()
     if date_str:
         check_data(date_str)

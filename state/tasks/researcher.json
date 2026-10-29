@@ -1,8 +1,8 @@
 {
   "task": "researcher",
-  "status": "done",
-  "date": "20261025",
-  "reason": "manual-run-8avoid-42pass-20buywatch",
+  "status": "undo",
+  "date": null,
+  "reason": "replay-v29-reset",
   "artifact": "state/watchlist.json",
-  "updated_at": "2026-10-25T18:45:42"
+  "updated_at": "2026-10-27T00:37:32"
 }

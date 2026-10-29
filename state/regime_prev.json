@@ -1,0 +1,174 @@
+{
+  "date": "20261027",
+  "regime": "bear",
+  "severity": "light",
+  "confidence": 0.82,
+  "score": -6,
+  "confirmed_days": 1,
+  "evidence": [
+    "[趋势 -2][bear] 上证 close 3648.30 < MA5 3681.47 < MA20 3778.09 < MA60 3866.12 < MA250 3983.72，完全空头排列；20日涨跌幅 上证 -7.64% / 深证 -18.09% / 创业板 -25.05%（均 < -5%）；MACD -17.83，DIF -59.34 < DEA -50.42，RSI12 27.96。来源：market_overview.json[technical/interval] + indices.json",
+    "[宽度 -2][bear] updown 实测 CNT_RED=606 / CNT_GREEN=4922 / CNT_TOTAL=5577 / CNT_ZERO=49，RATIO_UP=10.87%（远低于 30% 下界，实为极端普跌）；20日新高 237 vs 20日新低 638（2.69 倍，未达 x3）。来源：market_overview.json[updown]",
+    "[情绪 0][neutral] CNT_REACH_UPLIMIT=40、CNT_REACH_DNLIMIT=2（RATIO_UPLIMIT 0.72% / RATIO_DNLIMIT 0.04%）。涨停 40 < 50 未达 bull 阈值，跌停 2 远未达 >20 的 bear 阈值 → 中间档。来源：market_overview.json[updown]",
+    "[量能 0][neutral] MONEY=14609.58亿，20日均值比 90.24%（80-110% 区间）。但 120日比 59.02%、250日比 62.00%，中期缩量幅度远超标签隐含程度；当日指数大跌却未放量（上证收于全天最低 3648.30）。来源：market_overview.json[trade]",
+    "[资金 0][neutral] 北向净流入 north_money_yi=+22.53亿（未达 >30亿 的 bull 阈值，亦非净流出）；龙虎榜 net_buy_top10 合计 +13.12亿（榜首大洋电机 3.01亿）vs net_sell_top10 合计 -9.21亿（榜首金马游乐 -2.13亿），微幅净买。来源：northbound.json + dragon_tiger.json",
+    "[板块 -2][bear] sector_ranking 实测 up_sectors=9 / sector_count=124 = 7.26%（远低于 20%）；资金方向：主力流入 Top10 合计 +30.39亿 vs 跌幅榜 10 行业净流出合计 -157.86亿（半导体单行业 -74.21亿），净流出主导。来源：sector_ranking.json",
+    "[总分] 六维合计 = -2 + -2 + 0 + 0 + 0 + -2 = -6。按映射 -8 < -6 <= -6 → regime=bear，severity=light（只禁止新建仓，不强制降仓）",
+    "[拥挤度 41.03%] compute_crowding.py 输出 MTD 口径 crowding=41.0277%（mtd_days=14，>=5 无需月初回退，crowding_source=mtd），落于 35-45 升温档 → 触发覆盖规则 f「只记录，不干预」，regime 与 position_cap_pct 均不变。上月 42.8679%，环比 -1.8402，历史分位 74.7%，top1_pct 17.533 / top10_pct 55.2949，样本 84 个月，n_stocks 5576 / n_top5 278。来源：data/warehouse/crowding/latest.json（trade_date=20261027，与判定基准日一致，无滞后）",
+    "[拥挤度趋势] 连续 4 个月环比下行：202607 49.7624% → 202608 47.2232% → 202609 42.8679% → 202610(MTD14日) 41.0277%，已回落至 45% 以下且连续多月下行，满足 release_rule → cleared=true",
+    "[方向切换] 由上一交易日(20261026) 的 neutral 切换为 bear。confidence = min(0.85, 0.55 + |−6| x 0.045) = 0.82 ≥ 0.75 防抖门槛，允许切换；本次为新方向首日，confirmed_days 置 1。旧值已备份为 state/regime_prev.json（date=20261026 regime=neutral score=-4）",
+    "[钳制检查] 趋势钳制不适用（结论已为 bear，非空头排列下的 bull 降级场景）。反向钳制不适用：其前提为「中长期多头排列且量能配合」，实际为完全空头排列（close 低于全部四条均线）且 20 日 -7.64%，前提不成立",
+    "[前视防护] 本结论 effective_from=20261028（下一交易日）。当日 23:45 的持仓管家只允许读 state/regime_prev.json（20261026 neutral），禁止用本文件参与当日成交决策"
+  ],
+  "dimensions": {
+    "trend": {
+      "score": -2,
+      "verdict": "bear",
+      "close_szzs": 3648.301,
+      "ma5": 3681.472,
+      "ma20": 3778.0855,
+      "ma60": 3866.1227,
+      "ma250": 3983.721,
+      "chg_20d_szzs": -7.64,
+      "chg_20d_szcz": -18.09,
+      "chg_20d_cybz": -25.05,
+      "macd": -17.8312,
+      "dif": -59.3354,
+      "dea": -50.4198,
+      "rsi12": 27.9582,
+      "source": "market_overview.json[technical/interval] + indices.json",
+      "note": "完全空头排列：close 3648.30 < MA5 3681.47 < MA20 3778.09 < MA60 3866.12 < MA250 3983.72；20日涨跌幅 -7.64%（<-5%），空头排列且20D<-5% → bear(-2)"
+    },
+    "breadth": {
+      "score": -2,
+      "verdict": "bear",
+      "ratio_up": 10.87,
+      "cnt_red": 606,
+      "cnt_green": 4922,
+      "cnt_total": 5577,
+      "cnt_zero": 49,
+      "cnt_high20": 237,
+      "cnt_low20": 638,
+      "low_high_ratio": 2.69,
+      "source": "market_overview.json[updown]",
+      "note": "涨股比 10.87%（<30%）→ bear(-2)；20日新高237 vs 新低638（2.69倍，未达×3）"
+    },
+    "sentiment": {
+      "score": 0,
+      "verdict": "neutral",
+      "uplimit": 40,
+      "dnlimit": 2,
+      "ratio_uplimit": 0.72,
+      "ratio_dnlimit": 0.04,
+      "source": "market_overview.json[updown]",
+      "note": "涨停40（<50，未达 bull）、跌停2（远未达 >20 的 bear 阈值）→ 中间档 neutral(0)"
+    },
+    "volume": {
+      "score": 0,
+      "verdict": "neutral",
+      "money_yi": 14609.58,
+      "r5": 91.49,
+      "r10": 94.37,
+      "r20": 90.24,
+      "r60": 75.17,
+      "r120": 59.02,
+      "r250": 62.0,
+      "source": "market_overview.json[trade]",
+      "note": "成交额14609.58亿，20日均值比90.24%（80-110%区间）→ neutral(0)；但120日59.02%、250日62.00%显示中期严重缩量，且指数大跌未放量"
+    },
+    "capital": {
+      "score": 0,
+      "verdict": "neutral",
+      "north_money_yi": 22.53,
+      "lhb_buy_top10_yi": 13.12,
+      "lhb_sell_top10_yi": -9.21,
+      "source": "northbound.json + dragon_tiger.json",
+      "note": "北向净流入+22.53亿（未达>+30亿的bull阈值，非流出）；龙虎榜净买Top10合计+13.12亿 vs 净卖Top10 -9.21亿，微幅净买 → neutral(0)"
+    },
+    "sector": {
+      "score": -2,
+      "verdict": "bear",
+      "up_sectors": 9,
+      "sector_count": 124,
+      "up_ratio_pct": 7.26,
+      "main_inflow_top10_yi": 30.39,
+      "bottom_losers_outflow_yi": -157.86,
+      "source": "sector_ranking.json",
+      "note": "上涨行业9/124=7.26%（<20%）→ bear(-2)；资金方向：主力流入Top10合计+30.39亿 vs 跌幅榜净流出合计-157.86亿，净流出"
+    }
+  },
+  "crowding": {
+    "value": 41.0277,
+    "source": "mtd",
+    "as_of": "20261027",
+    "mtd_days": 14,
+    "mtd_degraded": false,
+    "band": "升温",
+    "band_desc": "资金开始抱团少数大票",
+    "level": "watch",
+    "prev_month": 42.8679,
+    "mom": -1.8402,
+    "ma3": 43.7063,
+    "pct_rank": 74.7,
+    "top1_pct": 17.533,
+    "top10_pct": 55.2949,
+    "daily_crowding": 41.5225,
+    "n_stocks": 5576,
+    "n_top5": 278,
+    "top_pct": 5,
+    "warn_pct": 45.0,
+    "alert_pct": 50.0,
+    "sample_months": 84,
+    "nature": "不适用（41.0277% 未达 45% 阈值，无需区分抱团瓦解/反向集中；参考值：上证 20 日涨跌幅 -7.64%）",
+    "cleared": true,
+    "overlay": "无干预（35<=41.0277<45，规则 f 只记录，regime 与仓位上限均不变）",
+    "latest_json_value": 41.0277,
+    "latest_json_trade_date": "20261027",
+    "time_guard_note": "latest.json 口径日 20261027 与本判定基准日一致，脚本输入为 <=20261027 的仓库文件（1693 个交易日），无未来数据引用",
+    "trend_note": "连续 4 个月环比下行：202607 49.7624% -> 202608 47.2232% -> 202609 42.8679% -> 202610(MTD14日) 41.0277%，抱团持续瓦解通道"
+  },
+  "position_cap_pct": 60,
+  "effective_from": "20261028",
+  "effective_lag_days": 1,
+  "tag_conflicts": [
+    "[STOCK_WIDTH] summary 标签=「普涨(创新高>200只，或者破位<10只)」STOCK_WIDTH_SCORE=5（最高分）；但 updown 实测 CNT_RED=606 / CNT_GREEN=4922 / RATIO_UP=10.87% / RATIO_DOWN=88.26%，为极端普跌格局。推测标签误用 CNT_HIGH5=960 判创新高。下游以 updown 原始数值为准，禁用该标签",
+    "[SENTIMENT] summary 标签=「情绪中性(涨停15~30只，或者涨股比30~50%，两融横盘)」SENTIMENT_SCORE=3；实测 CNT_REACH_UPLIMIT=40（超标签自述 30 只上界）、RATIO_UP=10.87%（低于标签自述 30% 下界），标签自述三个条件中两个已明确不成立；margin 维度本日 row 为空(missing=true)，第三条件无法验证。实际情绪偏冷而非中性",
+    "[VOLUME_ENERGE] summary 标签=「缩量震荡(成交额90~110%均值)」VOLUME_ENERGE_SCORE=3；MONEY_20DAVG_RATIO=90.24% 贴下界勉强成立，但 MONEY_120DAVG_RATIO=59.02%、MONEY_250DAVG_RATIO=62.00%，中期缩量幅度远大于标签隐含程度。引用「缩量」结论须同时给出上述三个比率",
+    "[缺失] market_overview 维度 margin(两融) row 为空（仅占位符 code/name），已置 missing=true，资金维度改用 northbound + dragon_tiger 判定；valuation（PE_TTM 18.68，3/5/10 年分位 54.10/71.51/59.29）为 T+1 更新，仅作参考不进六维",
+    "[校验通过] 下列标签经数值复核与实测一致，未列入冲突：TREND_LONG_DIRECTION「暴跌(均线空头排列)」、TECHNICAL「偏弱」、SECTOR_WIDTH「全面下跌(上涨板块<20%)」、STYLE_ROTATION「价值主导」（20日 QZJZ +0.79% vs QZCZ -14.58%，差 15.37pp）、CAP_ROTATION「大盘占优」（20日 HS300 -10.79% vs ZZ1000 -17.24%，差 6.45pp）"
+  ],
+  "sector_signals": [
+    {
+      "sector": "银行（股份制/国有大行/城商/农商行）",
+      "direction": "long",
+      "note": "全市场 124 个行业中仅 9 个上涨，银行系占 4 席：股份制银行Ⅱ +1.61%（upCount 9/9，主力净流入 6.59亿）、农商行Ⅱ +1.37%、城商行Ⅱ +1.13%、国有大型银行Ⅱ +0.82%（6/6，净流入 3.54亿）。唯一呈整体性上涨的方向，属普跌日资金避险去处"
+    },
+    {
+      "sector": "半导体",
+      "direction": "short",
+      "note": "-4.54%（upCount 10/183），主力净流出 74.21亿，为当日全市场最大单行业流出；5日累计净流出 94.32亿，抛压持续未缓解"
+    },
+    {
+      "sector": "软件开发",
+      "direction": "short",
+      "note": "-4.57%（upCount 3/130），主力净流出 33.42亿，5日累计 -35.18亿，位列跌幅榜第 2"
+    },
+    {
+      "sector": "航空装备Ⅱ",
+      "direction": "short",
+      "note": "跌幅榜首 -5.13%，upCount 0/46 全线下跌，主力净流出 12.23亿，5日累计 -26.05亿"
+    },
+    {
+      "sector": "电机Ⅱ",
+      "direction": "neutral",
+      "note": "+0.52%（upCount 12/26），主力净流入 6.80亿且 5日累计 +17.06亿，为少数资金持续净流入的板块；但 hot_board 显示 rankdelta +1 尚不稳定，个股依赖凯中精密涨停拉动，暂不列 long"
+    }
+  ],
+  "risk_level": "high",
+  "risk_level_note": "risk_level=high 依据方向轴而非拥挤度：regime=bear + 涨股比 10.87%（88.26% 个股下跌）+ 三大指数 20 日 -7.64%/-18.09%/-25.05% + 完全空头排列 + 上证收盘 3648.30 收于全天最低且逼近 BOLL_LOWER 3604.93。拥挤度 41.03% 落在规则 f 区间，本身不触发 high",
+  "position_hint": "bear+light → 禁止新建仓，维持现有仓位不强制降仓；可用总仓位上限 60%（params v2.3 regime.base_position_pct.bear=60）。拥挤度 41.03% 落 35-45 升温档，触发规则 f「只记录，不干预」，不追加 -20pp 折扣，最终 position_cap_pct=60。本结论自 20261028 起生效；20261027 当日的成交决策请读 state/regime_prev.json（20261026 neutral）",
+  "switched": true,
+  "prev_regime": "neutral",
+  "switch_note": "由 neutral 切换为 bear（confidence 0.82 >= 0.75）",
+  "params_version": "v2.3",
+  "data_basis": "data/daily_20261027（meta.degraded=false，indices/market_overview/sector_ranking/dragon_tiger/northbound/news/hot_news/hot_board/cross_check 齐备，check_pipeline PASS） + data/warehouse/crowding/latest.json(trade_date=20261027)"
+}

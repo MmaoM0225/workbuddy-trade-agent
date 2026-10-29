@@ -1,0 +1,532 @@
+{
+  "date": "20261023",
+  "source_pool_date": "20261023",
+  "items": [
+    {
+      "code": "601919.SH",
+      "name": "中远海控",
+      "quality_score": 75.9,
+      "verdict": "buy_watch",
+      "goodwill_ratio": 0.0263,
+      "reduction_pct": 0.0,
+      "thesis": "ROE 5.8%（横截面90%分位）；净利率 14.0%；营收同比 +2.6%；因子总分 0.926（池内 #23）",
+      "risks": [
+        "PE 为负（亏损），估值因子缺失"
+      ],
+      "veto_flags": []
+    },
+    {
+      "code": "600482.SH",
+      "name": "中国动力",
+      "quality_score": 70.8,
+      "verdict": "buy_watch",
+      "goodwill_ratio": 0.0,
+      "reduction_pct": 0.0,
+      "thesis": "ROE 3.2%（横截面66%分位）；净利率 8.6%；营收同比 +11.5%；因子总分 0.933（池内 #18）",
+      "risks": [
+        "PE 为负（亏损），估值因子缺失"
+      ],
+      "veto_flags": []
+    },
+    {
+      "code": "002601.SZ",
+      "name": "龙佰集团",
+      "quality_score": 69.4,
+      "verdict": "buy_watch",
+      "goodwill_ratio": 0.2613,
+      "reduction_pct": 0.0,
+      "thesis": "ROE 3.7%（横截面72%分位）；净利率 6.7%；营收同比 +8.1%；因子总分 0.913（池内 #35）",
+      "risks": [
+        "商誉/净资产 26.1%，需关注减值风险",
+        "PE 为负（亏损），估值因子缺失"
+      ],
+      "veto_flags": []
+    },
+    {
+      "code": "001391.SZ",
+      "name": "国货航",
+      "quality_score": 60.9,
+      "verdict": "buy_watch",
+      "goodwill_ratio": 0.0,
+      "reduction_pct": 0.0076,
+      "thesis": "ROE 3.4%（横截面69%分位）；净利率 7.3%；营收同比 +14.7%；因子总分 0.918（池内 #32）",
+      "risks": [
+        "近3月股东减持 2 次，占总股本 0.76%",
+        "PE 为负（亏损），估值因子缺失"
+      ],
+      "veto_flags": []
+    },
+    {
+      "code": "600372.SH",
+      "name": "中航机载",
+      "quality_score": 54.0,
+      "verdict": "buy_watch",
+      "goodwill_ratio": 0.0006,
+      "reduction_pct": 0.0,
+      "thesis": "ROE 1.6%（横截面43%分位）；净利率 6.6%；营收同比 -1.9%；因子总分 0.908（池内 #42）",
+      "risks": [
+        "营收同比下滑 -1.9%",
+        "PE 为负（亏损），估值因子缺失"
+      ],
+      "veto_flags": []
+    },
+    {
+      "code": "600575.SH",
+      "name": "淮河能源",
+      "quality_score": 52.6,
+      "verdict": "buy_watch",
+      "goodwill_ratio": 0.0167,
+      "reduction_pct": 0.0,
+      "thesis": "ROE 2.5%（横截面55%分位）；净利率 3.8%；营收同比 +9.1%；因子总分 0.903（池内 #46）",
+      "risks": [
+        "PE 为负（亏损），估值因子缺失"
+      ],
+      "veto_flags": []
+    },
+    {
+      "code": "600320.SH",
+      "name": "振华重工",
+      "quality_score": 51.6,
+      "verdict": "buy_watch",
+      "goodwill_ratio": 0.0163,
+      "reduction_pct": 0.0,
+      "thesis": "ROE 3.1%（横截面65%分位）；净利率 3.2%；营收同比 +1.3%；因子总分 0.905（池内 #44）",
+      "risks": [
+        "PE 为负（亏损），估值因子缺失"
+      ],
+      "veto_flags": []
+    },
+    {
+      "code": "002065.SZ",
+      "name": "东华软件",
+      "quality_score": 46.5,
+      "verdict": "buy_watch",
+      "goodwill_ratio": 0.0453,
+      "reduction_pct": 0.0,
+      "thesis": "ROE 1.8%（横截面46%分位）；净利率 2.4%；营收同比 +1.4%；因子总分 0.978（池内 #4）",
+      "risks": [
+        "PE 为负（亏损），估值因子缺失"
+      ],
+      "veto_flags": []
+    },
+    {
+      "code": "000966.SZ",
+      "name": "长源电力",
+      "quality_score": 39.8,
+      "verdict": "buy_watch",
+      "goodwill_ratio": 0.0619,
+      "reduction_pct": 0.0,
+      "thesis": "ROE 1.3%（横截面38%分位）；净利率 2.3%；营收同比 +3.7%；因子总分 0.911（池内 #39）",
+      "risks": [
+        "PE 为负（亏损），估值因子缺失"
+      ],
+      "veto_flags": []
+    }
+  ],
+  "notes": {
+    "mode": "production",
+    "strategy_version": "v2.3",
+    "params_version": "v2.3",
+    "candidates_scanned": 50,
+    "avoid_count": 41,
+    "avoid_summary": [
+      {
+        "code": "600399.SH",
+        "name": "抚顺特钢",
+        "flags": [
+          "近3月减持占总股本 15.43% >1%",
+          "经营质量否决（OR）：ROE -4.69% < 0% 或 净利率 -6.0% < 2%"
+        ],
+        "goodwill_ratio": 0.0,
+        "reduction_pct": 0.1543
+      },
+      {
+        "code": "600594.SH",
+        "name": "益佰制药",
+        "flags": [
+          "经营质量否决（OR）：ROE -3.74% < 0% 或 净利率 -11.4% < 2%"
+        ],
+        "goodwill_ratio": 0.0,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "601996.SH",
+        "name": "丰林集团",
+        "flags": [
+          "经营质量否决（OR）：ROE -5.80% < 0% 或 净利率 -11.2% < 2%"
+        ],
+        "goodwill_ratio": 0.0018,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "600688.SH",
+        "name": "上海石化",
+        "flags": [
+          "经营质量否决（OR）：净利率 0.7% < 2%"
+        ],
+        "goodwill_ratio": 0.0,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "002449.SZ",
+        "name": "国星光电",
+        "flags": [
+          "经营质量否决（OR）：ROE -2.39% < 0% 或 净利率 -4.5% < 2%"
+        ],
+        "goodwill_ratio": 0.0,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "000731.SZ",
+        "name": "四川美丰",
+        "flags": [
+          "经营质量否决（OR）：ROE -3.54% < 0% 或 净利率 -4.4% < 2%"
+        ],
+        "goodwill_ratio": 0.0,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "000800.SZ",
+        "name": "一汽解放",
+        "flags": [
+          "经营质量否决（OR）：净利率 0.9% < 2%"
+        ],
+        "goodwill_ratio": 0.0,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "000517.SZ",
+        "name": "荣安地产",
+        "flags": [
+          "经营质量否决（OR）：ROE -3.41% < 0% 或 净利率 -14.7% < 2%"
+        ],
+        "goodwill_ratio": 0.0017,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "002798.SZ",
+        "name": "帝欧水华",
+        "flags": [
+          "经营质量否决（OR）：ROE -1.58% < 0% 或 净利率 -3.2% < 2%"
+        ],
+        "goodwill_ratio": 0.0,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "000923.SZ",
+        "name": "河钢资源",
+        "flags": [
+          "经营质量否决（OR）：ROE -0.26% < 0% 或 净利率 -2.5% < 2%"
+        ],
+        "goodwill_ratio": 0.0,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "000539.SZ",
+        "name": "粤电力A",
+        "flags": [
+          "经营质量否决（OR）：ROE -2.36% < 0% 或 净利率 -2.6% < 2%"
+        ],
+        "goodwill_ratio": 0.0001,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "000931.SZ",
+        "name": "中关村",
+        "flags": [
+          "经营质量否决（OR）：ROE -1.85% < 0% 或 净利率 -2.9% < 2%"
+        ],
+        "goodwill_ratio": 0.1411,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "600307.SH",
+        "name": "酒钢宏兴",
+        "flags": [
+          "经营质量否决（OR）：ROE -4.01% < 0% 或 净利率 -1.3% < 2%"
+        ],
+        "goodwill_ratio": 0.0,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "002182.SZ",
+        "name": "宝武镁业",
+        "flags": [
+          "近3月减持占总股本 26.53% >1%",
+          "经营质量否决（OR）：ROE -1.55% < 0% 或 净利率 -1.6% < 2%"
+        ],
+        "goodwill_ratio": 0.0179,
+        "reduction_pct": 0.2653
+      },
+      {
+        "code": "001278.SZ",
+        "name": "一彬科技",
+        "flags": [
+          "经营质量否决（OR）：ROE -8.76% < 0% 或 净利率 -10.6% < 2%"
+        ],
+        "goodwill_ratio": 0.0,
+        "reduction_pct": 0.0011
+      },
+      {
+        "code": "600157.SH",
+        "name": "永泰能源",
+        "flags": [
+          "经营质量否决（OR）：净利率 0.9% < 2%"
+        ],
+        "goodwill_ratio": 0.0981,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "000925.SZ",
+        "name": "众合科技",
+        "flags": [
+          "经营质量否决（OR）：ROE -0.50% < 0% 或 净利率 -1.3% < 2%"
+        ],
+        "goodwill_ratio": 0.0099,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "000936.SZ",
+        "name": "华西股份",
+        "flags": [
+          "经营质量否决（OR）：ROE -3.50% < 0% 或 净利率 -9.3% < 2%"
+        ],
+        "goodwill_ratio": 0.0004,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "603260.SH",
+        "name": "合盛硅业",
+        "flags": [
+          "近3月减持占总股本 2.88% >1%"
+        ],
+        "goodwill_ratio": 0.0002,
+        "reduction_pct": 0.0288
+      },
+      {
+        "code": "002459.SZ",
+        "name": "晶澳科技",
+        "flags": [
+          "经营质量否决（OR）：ROE -12.65% < 0% 或 净利率 -15.3% < 2%"
+        ],
+        "goodwill_ratio": 0.0,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "000959.SZ",
+        "name": "首钢股份",
+        "flags": [
+          "经营质量否决（OR）：净利率 1.1% < 2%"
+        ],
+        "goodwill_ratio": 0.0,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "603324.SH",
+        "name": "盛剑科技",
+        "flags": [
+          "经营质量否决（OR）：ROE -5.94% < 0% 或 净利率 -22.0% < 2%"
+        ],
+        "goodwill_ratio": 0.0,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "000970.SZ",
+        "name": "中科三环",
+        "flags": [
+          "经营质量否决（OR）：净利率 1.9% < 2%"
+        ],
+        "goodwill_ratio": 0.0039,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "002739.SZ",
+        "name": "儒意电影",
+        "flags": [
+          "商誉/净资产 54.7% >30%",
+          "经营质量否决（OR）：ROE -2.11% < 0% 或 净利率 -3.1% < 2%"
+        ],
+        "goodwill_ratio": 0.5466,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "600470.SH",
+        "name": "六国化工",
+        "flags": [
+          "经营质量否决（OR）：ROE -11.16% < 0% 或 净利率 -6.0% < 2%"
+        ],
+        "goodwill_ratio": 0.0,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "000932.SZ",
+        "name": "华菱钢铁",
+        "flags": [
+          "经营质量否决（OR）：净利率 0.9% < 2%"
+        ],
+        "goodwill_ratio": 0.0,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "002022.SZ",
+        "name": "科华生物",
+        "flags": [
+          "经营质量否决（OR）：ROE -4.03% < 0% 或 净利率 -11.4% < 2%"
+        ],
+        "goodwill_ratio": 0.2381,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "600126.SH",
+        "name": "杭钢股份",
+        "flags": [
+          "近3月减持占总股本 2.00% >1%",
+          "经营质量否决（OR）：ROE -0.50% < 0% 或 净利率 -0.5% < 2%"
+        ],
+        "goodwill_ratio": 0.0,
+        "reduction_pct": 0.02
+      },
+      {
+        "code": "000009.SZ",
+        "name": "中国宝安",
+        "flags": [
+          "经营质量否决（OR）：ROE -0.30% < 0%"
+        ],
+        "goodwill_ratio": 0.0427,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "000723.SZ",
+        "name": "美锦能源",
+        "flags": [
+          "经营质量否决（OR）：ROE -4.69% < 0% 或 净利率 -7.1% < 2%"
+        ],
+        "goodwill_ratio": 0.0002,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "000825.SZ",
+        "name": "太钢不锈",
+        "flags": [
+          "经营质量否决（OR）：净利率 0.5% < 2%"
+        ],
+        "goodwill_ratio": 0.0,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "000898.SZ",
+        "name": "鞍钢股份",
+        "flags": [
+          "经营质量否决（OR）：ROE -4.74% < 0% 或 净利率 -4.3% < 2%"
+        ],
+        "goodwill_ratio": 0.0,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "603033.SH",
+        "name": "三维股份",
+        "flags": [
+          "经营质量否决（OR）：ROE -7.29% < 0% 或 净利率 -7.3% < 2%"
+        ],
+        "goodwill_ratio": 0.1887,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "600655.SH",
+        "name": "豫园股份",
+        "flags": [
+          "经营质量否决（OR）：净利率 1.1% < 2%"
+        ],
+        "goodwill_ratio": 0.0307,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "000709.SZ",
+        "name": "河钢股份",
+        "flags": [
+          "经营质量否决（OR）：净利率 1.1% < 2%"
+        ],
+        "goodwill_ratio": 0.0,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "600438.SH",
+        "name": "通威股份",
+        "flags": [
+          "经营质量否决（OR）：ROE -14.10% < 0% 或 净利率 -19.7% < 2%"
+        ],
+        "goodwill_ratio": 0.0072,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "002408.SZ",
+        "name": "齐翔腾达",
+        "flags": [
+          "经营质量否决（OR）：净利率 0.2% < 2%"
+        ],
+        "goodwill_ratio": 0.0572,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "000050.SZ",
+        "name": "深天马A",
+        "flags": [
+          "经营质量否决（OR）：ROE -2.71% < 0% 或 净利率 -4.5% < 2%"
+        ],
+        "goodwill_ratio": 0.0101,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "600339.SH",
+        "name": "中油工程",
+        "flags": [
+          "经营质量否决（OR）：净利率 1.0% < 2%"
+        ],
+        "goodwill_ratio": 0.0,
+        "reduction_pct": 0.0
+      },
+      {
+        "code": "002183.SZ",
+        "name": "怡亚通",
+        "flags": [
+          "近3月减持占总股本 1.16% >1%",
+          "经营质量否决（OR）：净利率 0.0% < 2%"
+        ],
+        "goodwill_ratio": 0.0261,
+        "reduction_pct": 0.0116
+      },
+      {
+        "code": "600676.SH",
+        "name": "久事动娱",
+        "flags": [
+          "经营质量否决（OR）：净利率 0.8% < 2%"
+        ],
+        "goodwill_ratio": 0.0023,
+        "reduction_pct": 0.0
+      }
+    ],
+    "watch_count": 0,
+    "pass_count": 9,
+    "buy_watch_count": 9,
+    "due_diligence_coverage": {
+      "goodwill": 50,
+      "reduction": 50,
+      "audit": 50
+    },
+    "dd_rules": {
+      "goodwill_max": 0.3,
+      "reduction_max_of_total_share": 0.01,
+      "audit": "非标准无保留即 avoid",
+      "researcher_veto": {
+        "enabled": true,
+        "logic": "OR",
+        "rule": "ROE < 0% 或 净利率 < 2% → avoid",
+        "logic_note": "OR=任一命中即否决（严）；AND=两条同时满足才否决（松）",
+        "rationale": "v2.0 target_zone 刻意选低 ROE 分位，但 ROE 为负 = 主营未盈利，配低 PB/PS 属价值陷阱"
+      },
+      "unit_fix": "dec_vol(股) / (total_share(万股)*10000)"
+    },
+    "quality_formula": "ROE .35 / 净利率 .25 / 毛利率 .15 / 营收增速 .25 全市场横截面百分位加权，减持次数扣分",
+    "buy_watch_rule": "通过排雷后按 quality_score 降序取前 20 只（v1.8 相对排名，非绝对门槛）"
+  }
+}

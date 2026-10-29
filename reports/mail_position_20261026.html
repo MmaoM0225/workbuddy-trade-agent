@@ -41,104 +41,138 @@ code{background:#f2f3f5;border-radius:3px;padding:1px 5px;font-size:12px;font-fa
 .dimrow td{font-size:12.5px;}
 .detail{color:#4e5561;font-size:12.5px;line-height:1.7;}
 hr.sep{border:0;border-top:1px dashed #e6e8eb;margin:16px 0;}
-</style></head><body><div class='wrap'><div class='card'><h1>持仓检视 20261026</h1><p style='color:#8a9099;font-size:12px;margin:0'>生成于 20261026</p><h2>持仓检视报告 20261026</h2>
+</style></head><body><div class='wrap'><div class='card'><h1>持仓检视 20261026</h1><p style='color:#8a9099;font-size:12px;margin:0'>生成于 20261026</p></div><div class='card'><h2>收益概览</h2><div style='display:flex;gap:9px;flex-wrap:wrap;margin:6px 0 2px'><div style='flex:1 1 118px;min-width:112px;background:#fafbfc;border:1px solid #eef1f4;border-radius:8px;padding:11px 13px'><div style='color:#8a9099;font-size:11.5px;margin-bottom:3px'>累计收益</div><div style='font-size:19px;font-weight:600;color:#c8102e;line-height:1.25'>+0.49%</div><div style='color:#a0a7b4;font-size:11px;margin-top:2px'>本金 1,004,851 元</div></div><div style='flex:1 1 118px;min-width:112px;background:#fafbfc;border:1px solid #eef1f4;border-radius:8px;padding:11px 13px'><div style='color:#8a9099;font-size:11.5px;margin-bottom:3px'>当日收益</div><div style='font-size:19px;font-weight:600;color:#4b5563;line-height:1.25'>+0.00%</div><div style='color:#a0a7b4;font-size:11px;margin-top:2px'>前一交易日至今</div></div><div style='flex:1 1 118px;min-width:112px;background:#fafbfc;border:1px solid #eef1f4;border-radius:8px;padding:11px 13px'><div style='color:#8a9099;font-size:11.5px;margin-bottom:3px'>相对上证</div><div style='font-size:19px;font-weight:600;color:#c8102e;line-height:1.25'>+0.49%</div><div style='color:#a0a7b4;font-size:11px;margin-top:2px'>同期基准 +0.00%</div></div><div style='flex:1 1 118px;min-width:112px;background:#fafbfc;border:1px solid #eef1f4;border-radius:8px;padding:11px 13px'><div style='color:#8a9099;font-size:11.5px;margin-bottom:3px'>最大回撤</div><div style='font-size:19px;font-weight:600;color:#4b5563;line-height:1.25'>0.00%</div><div style='color:#a0a7b4;font-size:11px;margin-top:2px'>峰值至谷底</div></div><div style='flex:1 1 118px;min-width:112px;background:#fafbfc;border:1px solid #eef1f4;border-radius:8px;padding:11px 13px'><div style='color:#8a9099;font-size:11.5px;margin-bottom:3px'>当前仓位</div><div style='font-size:19px;font-weight:600;color:#1f2329;line-height:1.25'>36.82%</div><div style='color:#a0a7b4;font-size:11px;margin-top:2px'>持仓 9 只</div></div></div><p style='color:#a0a7b4;font-size:11px;margin:9px 0 0'>口径：累计收益 = 总资产/初始本金−1；相对上证以建仓基期为起点；净值由 update_nav.py 每交易日落盘。</p></div><div class='card'><h2>收益率曲线</h2><p style='color:#8a9099;font-size:13px;padding:16px 0;margin:0'>净值记录不足 2 个交易日，曲线将在下一交易日后生成。</p><p style='color:#a0a7b4;font-size:11px;margin:8px 0 0'>数据点 1 个交易日（2026-10-26 ~ 2026-10-26），基准为上证指数 000001.SH。</p></div><div class='card'><h2>持仓检视报告 20261026（周一）</h2>
 <ul>
-<li>运行时间：2026-10-26 23:45（交易日，基准日 20261026）</li>
-<li>上游依赖：data_officer(done/20261026) → market_analyst(done/20261026) → 本任务</li>
-<li>参数版本：v2.0（rotation.enabled=false，v1.9 起换仓已关闭）</li>
-<li>成交价来源：data/warehouse/daily/20261026.csv（本地仓库收盘价，5571 只）</li>
+<li>运行模式：<b>模拟盘重放（replay）第 3 步</b>，成交口径 <b>v2.7 / v2.8 / v2.9 三档阶梯首次实跑</b></li>
+<li>行情来源：<code>data/warehouse/daily/20261026.csv</code> 的 <b>open / high / low / close</b>（判定只用 open 与 low/high，<b>不使用 close 判定成交</b>，close 仅用于收盘估值）</li>
+<li>决策 regime：<b>读取 <code>state/regime_prev.json</code>（20261023，neutral，score=4，position_cap 70%）</b></li>
+<li>报告展示 regime：<code>state/regime.json</code>（20261026，neutral，score=−4）——<b>仅展示，未参与今日成交决策</b></li>
+<li>牛市补齐：<code>regime_prev.regime = neutral</code>（非 bull）→ <b>未触发</b></li>
+<li>本报告取代同日 v2.4 口径版本（该版以"首档 50% + 次档 ref×0.96"两档逻辑记 6 笔成交、仓位 17.14%，口径已作废）</li>
+<li>本轮<b>不发送邮件</b></li>
 </ul>
 <p>---</p>
-<h3>一、组合概览</h3>
+<h3>一、执行口径（本轮判定标准）</h3>
+<table>
+<tr><th>档</th><th>pct</th><th>type</th><th>触发条件</th><th>成交价</th></tr>
+<tr><td>seq1</td><td>50%</td><td><code>market_open</code></td><td>开盘即买，<b>不判价</b></td><td><b>当日开盘价</b></td></tr>
+<tr><td>seq2</td><td>25%</td><td><code>limit</code></td><td><code>low ≤ limit_price</code></td><td><code>min(open, limit_price)</code></td></tr>
+<tr><td>seq3</td><td>25%</td><td><code>limit</code></td><td><code>low ≤ limit_price</code></td><td><code>min(open, limit_price)</code></td></tr>
+</table>
+<p>1. <code>limit_price</code> 一律<b>直接读订单字段</b>，未用 <code>ref×0.97 / ref×0.94</code> 自行重算（订单值：seq2 = ref×0.97、seq3 = ref×0.94）</p>
+<p>2. 首档只要 <code>open ≥ guard_price</code> 即成交，<b>不等回调、不用收盘价</b></p>
+<p>3. 保护线：<code>open &lt; guard_price</code> → 该单全天全部档位不买（本轮 <b>9/9 只 open 均高于 guard，无触发</b>）</p>
+<p>4. <b>严禁以当日 low 作成交价</b>（前视），<b>严禁以 close 判定</b></p>
+<p>5. 单档金额 = <b>执行时点总资产 1,000,000</b> × <code>target_weight_pct</code> × <code>tranche_pct</code>；股数 = <code>floor(金额/成交价/100)×100</code></p>
+<p>6. 止损止盈按<b>实际成交加权成本</b>重算，orders 内 <code>stop_loss/take_profit</code> 为预览值，<b>未 copy</b></p>
+<p>---</p>
+<h3>二、组合概览</h3>
 <table>
 <tr><th>项目</th><th>数值</th></tr>
-<tr><td>总资产</td><td>1,000,000.00 元</td></tr>
-<tr><td>现金</td><td>952,597.00 元</td></tr>
-<tr><td>持仓市值</td><td>47,403.00 元</td></tr>
-<tr><td>实际仓位</td><td>4.74%</td></tr>
-<tr><td>现金占比</td><td>95.26%</td></tr>
-<tr><td>累计收益率</td><td>0.00%</td></tr>
-<tr><td>持仓数量</td><td>2 只（目标 8-12）</td></tr>
-<tr><td>含在途标的</td><td>12（持仓 2 + 未成交 planned 买单 10），未超上限 12</td></tr>
-<tr><td>regime</td><td>neutral（severity=null，confirmed_days=2）</td></tr>
-<tr><td>regime 目标仓位</td><td>50%</td></tr>
-<tr><td>仓位偏差</td><td>-45.26 pct（低于目标 10 pct 以上，warn）</td></tr>
+<tr><td>总资产</td><td>1,004,851.00 元</td></tr>
+<tr><td>现金</td><td>634,866.00 元</td></tr>
+<tr><td>持仓市值</td><td>369,985.00 元</td></tr>
+<tr><td>持仓成本</td><td>365,134.00 元</td></tr>
+<tr><td>实际仓位</td><td>36.82%（目标 70.00%，cap 70%）</td></tr>
+<tr><td>现金占比</td><td>63.18%</td></tr>
+<tr><td>累计收益率</td><td>+0.49%（+4,851.00 元）</td></tr>
+<tr><td>持仓 / 成交</td><td>9 只 / 10 档</td></tr>
+<tr><td>浮动盈亏</td><td>+4,851.00 元</td></tr>
 </table>
-<p>说明：本次为框架建仓首日执行。10 张建仓买单按 v1.5 阶梯（ref=20261023 收盘价，首档 -1%、二档 -4%）挂单，今日仅 2 只回落达标并成交首档（各占目标权重 50%），其余 8 只未触发。仓位从 0% 抬升至 4.74%，与目标 50% 的差额属分批建仓的正常过程，非风险事件。</p>
-<p>---</p>
-<h3>二、未成交订单（8 只未触发 + 2 只部分成交）</h3>
+<p>恒等式：<code>634,866.00 + 369,985.00 = 1,004,851.00</code>（偏差 0.00）✅</p>
+<p>口径：金额为权威，<code>cash_pct = cash_cny / total_asset_cny</code> 由金额推导，未反向推算。</p>
+<h4>行业集中度（占总资产）</h4>
 <table>
-<tr><th>订单</th><th>标的</th><th>收盘</th><th>下一档</th><th>触发价</th><th>尚需回落</th><th>状态</th></tr>
-<tr><td>ORD-20261023-001</td><td>中远海控 601919.SH</td><td>16.36</td><td>首档</td><td>15.69</td><td>-4.10%</td><td>planned</td></tr>
-<tr><td>ORD-20261023-002</td><td>中国动力 600482.SH</td><td>31.23</td><td>二档</td><td>30.58</td><td>-2.08%</td><td>partial（首档已成交）</td></tr>
-<tr><td>ORD-20261023-003</td><td>龙佰集团 002601.SZ</td><td>14.54</td><td>首档</td><td>14.31</td><td>-1.58%</td><td>planned</td></tr>
-<tr><td>ORD-20261023-004</td><td>国货航 001391.SZ</td><td>3.95</td><td>首档</td><td>3.79</td><td>-4.05%</td><td>planned</td></tr>
-<tr><td>ORD-20261023-005</td><td>中航机载 600372.SH</td><td>11.56</td><td>首档</td><td>11.16</td><td>-3.46%</td><td>planned</td></tr>
-<tr><td>ORD-20261023-006</td><td>淮河能源 600575.SH</td><td>3.17</td><td>首档</td><td>3.10</td><td>-2.21%</td><td>planned</td></tr>
-<tr><td>ORD-20261023-007</td><td>中国宝安 000009.SZ</td><td>6.66</td><td>首档</td><td>6.50</td><td>-2.40%</td><td>planned</td></tr>
-<tr><td>ORD-20261023-008</td><td>中科三环 000970.SZ</td><td>10.72</td><td>二档</td><td>10.62</td><td>-0.93%</td><td>partial（首档已成交）</td></tr>
-<tr><td>ORD-20261023-009</td><td>东华软件 002065.SZ</td><td>6.61</td><td>首档</td><td>6.56</td><td>-0.76%</td><td>planned</td></tr>
-<tr><td>ORD-20261023-010</td><td>一汽解放 000800.SZ</td><td>5.79</td><td>首档</td><td>5.67</td><td>-2.07%</td><td>planned</td></tr>
+<tr><th>行业</th><th>权重</th><th>上限 30%</th></tr>
+<tr><td>船舶</td><td>6.53%</td><td>✅</td></tr>
+<tr><td>火力发电</td><td>6.24%</td><td>✅</td></tr>
+<tr><td>水运</td><td>5.05%</td><td>✅</td></tr>
+<tr><td>化工原料</td><td>4.63%</td><td>✅</td></tr>
+<tr><td>仓储物流</td><td>4.17%</td><td>✅</td></tr>
+<tr><td>航空</td><td>3.68%</td><td>✅</td></tr>
+<tr><td>专用机械</td><td>3.44%</td><td>✅</td></tr>
+<tr><td>软件服务</td><td>3.09%</td><td>✅</td></tr>
 </table>
+<p>单票最大 6.53%（中国动力）≤ 15% ✅</p>
+<p>---</p>
+<h3>三、成交明细</h3>
+<table>
+<tr><th>股票</th><th>权重</th><th>ref</th><th>open</th><th>跳空</th><th>首档(50%)</th><th>次档(25%)</th><th>三档(25%)</th><th>总股数</th><th>总金额</th><th>加权成本</th><th>新止损</th><th>新止盈</th><th>浮动盈亏</th></tr>
+<tr><td>中远海控 601919.SH</td><td>10.19%</td><td>15.85</td><td>15.93</td><td>+0.50%</td><td><b>15.93 开盘竞价</b> 3,100 股 / 49,383</td><td>未成交</td><td>未成交</td><td>3,100</td><td>49,383.00</td><td>15.93</td><td>14.66</td><td>19.12</td><td>+1,333.00</td></tr>
+<tr><td>中国动力 600482.SH</td><td>9.50%</td><td>31.85</td><td>31.85</td><td>0.00%</td><td><b>31.85 开盘竞价</b> 1,400 股 / 44,590</td><td><b>30.89 挂单价成交</b> 700 股 / 21,623</td><td>未成交</td><td>2,100</td><td>66,213.00</td><td>31.53</td><td>29.01</td><td>37.84</td><td>−630.00</td></tr>
+<tr><td>龙佰集团 002601.SZ</td><td>9.32%</td><td>14.45</td><td>14.40</td><td>−0.35%</td><td><b>14.40 开盘竞价</b> 3,200 股 / 46,080</td><td>未成交</td><td>未成交</td><td>3,200</td><td>46,080.00</td><td>14.40</td><td>13.25</td><td>17.28</td><td>+448.00</td></tr>
+<tr><td>国货航 001391.SZ</td><td>8.17%</td><td>3.83</td><td>3.82</td><td>−0.26%</td><td><b>3.82 开盘竞价</b> 10,600 股 / 40,492</td><td>未成交</td><td>未成交</td><td>10,600</td><td>40,492.00</td><td>3.82</td><td>3.51</td><td>4.58</td><td>+1,378.00</td></tr>
+<tr><td>中航机载 600372.SH</td><td>7.25%</td><td>11.27</td><td>11.20</td><td>−0.62%</td><td><b>11.20 开盘竞价</b> 3,200 股 / 35,840</td><td>未成交</td><td>未成交</td><td>3,200</td><td>35,840.00</td><td>11.20</td><td>10.30</td><td>13.44</td><td>+1,152.00</td></tr>
+<tr><td>淮河能源 600575.SH</td><td>7.06%</td><td>3.13</td><td>3.11</td><td>−0.64%</td><td><b>3.11 开盘竞价</b> 11,300 股 / 35,143</td><td>未成交</td><td>未成交</td><td>11,300</td><td>35,143.00</td><td>3.11</td><td>2.86</td><td>3.73</td><td>+678.00</td></tr>
+<tr><td>振华重工 600320.SH</td><td>6.93%</td><td>4.18</td><td>4.16</td><td>−0.48%</td><td><b>4.16 开盘竞价</b> 8,300 股 / 34,528</td><td>未成交</td><td>未成交</td><td>8,300</td><td>34,528.00</td><td>4.16</td><td>3.83</td><td>4.99</td><td>0.00</td></tr>
+<tr><td>东华软件 002065.SZ</td><td>6.24%</td><td>6.63</td><td>6.55</td><td>−1.21%</td><td><b>6.55 开盘竞价</b> 4,700 股 / 30,785</td><td>未成交</td><td>未成交</td><td>4,700</td><td>30,785.00</td><td>6.55</td><td>6.03</td><td>7.86</td><td>+282.00</td></tr>
+<tr><td>长源电力 000966.SZ</td><td>5.34%</td><td>3.81</td><td>3.81</td><td>0.00%</td><td><b>3.81 开盘竞价</b> 7,000 股 / 26,670</td><td>未成交</td><td>未成交</td><td>7,000</td><td>26,670.00</td><td>3.81</td><td>3.51</td><td>4.57</td><td>+210.00</td></tr>
+</table>
+<p>成交方式说明：</p>
 <ul>
-<li>保护线检查：10 只全部高于 ref×0.88，无一只触发「跌破 -12% 不买」。</li>
-<li>订单有效期（R-006）：订单基准日 20261023，至 20261026 仅经历 1 个交易日，全部在有效期内，今日无 expired。</li>
-<li>未上移任何 price_zone 追价（R-006 合规）。</li>
+<li>9 笔首档全部为 <b>「开盘竞价成交」</b>（market_open，不判价，成交价 = 当日 open）</li>
+<li>1 笔次档为 <b>「挂单价成交」</b>（中国动力：open 31.85 &gt; limit 30.89，日内 low 30.11 触及 30.89 后按挂单价成交）</li>
+<li>本轮 <b>无「跳空低于挂单价、按开盘价成交」</b> 的档位（所有限价档成交时 open 均高于 limit）</li>
+<li>加权成本重算：中国动力 <code>(1,400×31.85 + 700×30.89) / 2,100 = 31.53</code>，止损 <code>31.53×0.92 = 29.01</code>、止盈 <code>31.53×1.20 = 37.84</code></li>
 </ul>
 <p>---</p>
-<h3>三、卖出决策记录</h3>
-<p>本轮<b>无卖出触发</b>，未生成任何 planned 卖单，orders.json 无新增 sell 单。</p>
+<h3>四、未成交档位（当日 low 与 limit 的差距）</h3>
 <table>
-<tr><th>触发条件</th><th>检查结果</th></tr>
-<tr><td>a. 收盘价 ≤ stop_loss</td><td>无。中国动力 31.23 vs 止损 28.82；中科三环 10.72 vs 止损 10.10</td></tr>
-<tr><td>b. 收盘价 ≥ take_profit</td><td>无。距止盈分别 +22.38% / +23.79%</td></tr>
-<tr><td>c. 逻辑破坏（news 客观利空）</td><td>无。50 条快讯中未检索到与两只持仓及其行业（船舶、矿物制品/磁材）相关的负面消息</td></tr>
-<tr><td>d. bear+heavy 降仓</td><td>不适用。regime=neutral，severity=null</td></tr>
-<tr><td>e. 单票 &gt;15% 或单行业 &gt;30%</td><td>无。最大单票 2.81%，无行业超限</td></tr>
+<tr><th>股票</th><th>档</th><th>limit_price</th><th>当日 low</th><th>low − limit</th><th>结论</th></tr>
+<tr><td>中远海控</td><td>seq2</td><td>15.37</td><td>15.87</td><td>+0.50</td><td>未触及</td></tr>
+<tr><td>中远海控</td><td>seq3</td><td>14.90</td><td>15.87</td><td>+0.97</td><td>未触及</td></tr>
+<tr><td>中国动力</td><td>seq3</td><td>29.94</td><td>30.11</td><td>+0.17</td><td>未触及（差 0.17，最接近）</td></tr>
+<tr><td>龙佰集团</td><td>seq2</td><td>14.02</td><td>14.30</td><td>+0.28</td><td>未触及</td></tr>
+<tr><td>龙佰集团</td><td>seq3</td><td>13.58</td><td>14.30</td><td>+0.72</td><td>未触及</td></tr>
+<tr><td>国货航</td><td>seq2</td><td>3.72</td><td>3.81</td><td>+0.09</td><td>未触及（差 1 个价位）</td></tr>
+<tr><td>国货航</td><td>seq3</td><td>3.60</td><td>3.81</td><td>+0.21</td><td>未触及</td></tr>
+<tr><td>中航机载</td><td>seq2</td><td>10.93</td><td>11.18</td><td>+0.25</td><td>未触及</td></tr>
+<tr><td>中航机载</td><td>seq3</td><td>10.59</td><td>11.18</td><td>+0.59</td><td>未触及</td></tr>
+<tr><td>淮河能源</td><td>seq2</td><td>3.04</td><td>3.10</td><td>+0.06</td><td>未触及（差 1 个价位）</td></tr>
+<tr><td>淮河能源</td><td>seq3</td><td>2.94</td><td>3.10</td><td>+0.16</td><td>未触及</td></tr>
+<tr><td>振华重工</td><td>seq2</td><td>4.05</td><td>4.13</td><td>+0.08</td><td>未触及（差 2 个价位）</td></tr>
+<tr><td>振华重工</td><td>seq3</td><td>3.93</td><td>4.13</td><td>+0.20</td><td>未触及</td></tr>
+<tr><td>东华软件</td><td>seq2</td><td>6.43</td><td>6.51</td><td>+0.08</td><td>未触及（差 2 个价位）</td></tr>
+<tr><td>东华软件</td><td>seq3</td><td>6.23</td><td>6.51</td><td>+0.28</td><td>未触及</td></tr>
+<tr><td>长源电力</td><td>seq2</td><td>3.70</td><td>3.78</td><td>+0.08</td><td>未触及（差 2 个价位）</td></tr>
+<tr><td>长源电力</td><td>seq3</td><td>3.58</td><td>3.78</td><td>+0.20</td><td>未触及</td></tr>
+</table>
+<p>合计 <b>17 档未成交</b>（seq2 8 档、seq3 9 档）→ 对应待用资金 <b>243,134.00 元</b> 仍为现金。挂单按 R-006 保留 10 个交易日有效，status 保持 <code>pending</code>，未上移 <code>price_zone</code>。</p>
+<p>---</p>
+<h3>五、卖出结论</h3>
+<p>逐只用当日 <b>low（止损）/ high（止盈）</b> 判定，成交价按 <code>min(open, stop_loss)</code> / <code>max(open, take_profit)</code> 口径：</p>
+<table>
+<tr><th>股票</th><th>low</th><th>止损</th><th>距离</th><th>high</th><th>止盈</th><th>距离</th><th>结论</th></tr>
+<tr><td>中国动力</td><td>30.11</td><td>29.01</td><td>+1.10</td><td>31.89</td><td>37.84</td><td>−5.95</td><td>无触发</td></tr>
+<tr><td>中远海控</td><td>15.87</td><td>14.66</td><td>+1.21</td><td>16.42</td><td>19.12</td><td>−2.70</td><td>无触发</td></tr>
+<tr><td>龙佰集团</td><td>14.30</td><td>13.25</td><td>+1.05</td><td>14.57</td><td>17.28</td><td>−2.71</td><td>无触发</td></tr>
+<tr><td>国货航</td><td>3.81</td><td>3.51</td><td>+0.30</td><td>3.95</td><td>4.58</td><td>−0.63</td><td>无触发</td></tr>
+<tr><td>中航机载</td><td>11.18</td><td>10.30</td><td>+0.88</td><td>11.58</td><td>13.44</td><td>−1.86</td><td>无触发</td></tr>
+<tr><td>淮河能源</td><td>3.10</td><td>2.86</td><td>+0.24</td><td>3.19</td><td>3.73</td><td>−0.54</td><td>无触发</td></tr>
+<tr><td>振华重工</td><td>4.13</td><td>3.83</td><td>+0.30</td><td>4.19</td><td>4.99</td><td>−0.80</td><td>无触发</td></tr>
+<tr><td>东华软件</td><td>6.51</td><td>6.03</td><td>+0.48</td><td>6.64</td><td>7.86</td><td>−1.22</td><td>无触发</td></tr>
+<tr><td>长源电力</td><td>3.78</td><td>3.51</td><td>+0.27</td><td>3.85</td><td>4.57</td><td>−0.72</td><td>无触发</td></tr>
+</table>
+<p><b>结论：建仓首日 9 只全部未触发止损/止盈，卖出 0 笔。</b> 最接近触发的是淮河能源（low 距止损 0.24）、国货航（0.30）与振华重工（0.30）。</p>
+<p>---</p>
+<h3>六、异常清单</h3>
+<table>
+<tr><th>#</th><th>级别</th><th>事项</th><th>处理</th></tr>
+<tr><td>1</td><td>INFO</td><td><b>实际仓位 36.82% ≪ 目标 70%</b>：三档口径下首档只占目标 50%，理论首档满仓 = 35%；本日 36.82%（含中国动力次档超额 0.47pct）已接近该上限，非执行缺陷</td><td>无需处理；仓位缺口全部由 17 档 pending 挂单承接，非主动放弃</td></tr>
+<tr><td>2</td><td>INFO</td><td><b>17 档"擦肩"未成交</b>：淮河能源/国货航 seq2 仅差 0.06~0.09 元（1 个价位），振华/东华/长源差 0.08（2 个价位）</td><td>记录供复盘官统计「−3% 阶梯在震荡日的填充率」；不改口径、不上移 price_zone</td></tr>
+<tr><td>3</td><td>INFO</td><td><b>中国动力同日两档成交</b>，加权成本 31.53 低于首档 31.85，止损由首档口径 29.30 下移至 29.01</td><td>符合 R-012（按实际加权成本重算）；R-019 关注的"次档买了就在止损线下方"已消除（29.01 &lt; 次档成交价 30.89）</td></tr>
+<tr><td>4</td><td>WARN</td><td><code>orders.json</code> 顶层元数据仍为 <code>date=20261023</code> / <code>params_version=v2.3</code>，与本轮 v2.7/v2.9 成交口径不一致</td><td>订单文件归建仓经理单写，持仓管家不改他人字段；已在 orders 内新增 <code>execution</code> 段记录本轮实际口径，建议建仓经理下轮刷新顶层 <code>params_version</code></td></tr>
+<tr><td>5</td><td>INFO</td><td>601919 中远海控 open 15.93 高于 ref 15.85（+0.50%），首档按 open 成交，成本高于 ref</td><td>v2.7 口径预期行为（首档不判价），非异常</td></tr>
+<tr><td>6</td><td>PASS</td><td>恒等式、15% 单票上限、30% 行业上限、止损&lt;成本&lt;止盈、限价档 <code>fill=min(open,limit)</code> 全部通过 <code>check_pipeline.py --date 20261026</code></td><td>—</td></tr>
 </table>
 <p>---</p>
-<h3>四、换仓记录</h3>
-<p>R-007 已关闭（v1.9）：六年回测 98 笔换仓平均 +0.75%，纯摩擦。</p>
-<p>本轮未做任何换仓比较、未生成 rotate_out 卖单、未生成 ORD-*-R* 买单。orders.json 中不存在历史遗留的 ORD-*-R* 计划单。</p>
-<p>---</p>
-<h3>五、逐持仓明细</h3>
+<h3>七、写回清单</h3>
 <table>
-<tr><th>标的</th><th>股数</th><th>成本</th><th>收盘</th><th>市值(元)</th><th>权重</th><th>盈亏</th><th>止损</th><th>止盈</th><th>止盈已移动</th><th>建仓日</th></tr>
-<tr><td>中国动力 600482.SH</td><td>900</td><td>31.23</td><td>31.23</td><td>28,107.00</td><td>2.81%</td><td>0.00%</td><td>28.82（-7.72%）</td><td>38.22（+22.38%）</td><td>否</td><td>20261026</td></tr>
-<tr><td>中科三环 000970.SZ</td><td>1800</td><td>10.72</td><td>10.72</td><td>19,296.00</td><td>1.93%</td><td>0.00%</td><td>10.10（-5.78%）</td><td>13.27（+23.79%）</td><td>否</td><td>20261026</td></tr>
+<tr><th>文件</th><th>变更</th></tr>
+<tr><td><code>state/positions.json</code></td><td>空仓 → 9 只持仓 / 10 档，cash 634,866.00，total_asset 1,004,851.00，position 36.82%</td></tr>
+<tr><td><code>state/orders.json</code></td><td>9 张单 <code>planned → partially_filled</code>；10 档 <code>pending → filled</code>（含 fill_price / fill_shares / fill_amount_cny / day_open / day_low）；订单级 <code>actual_cost</code> 与 stop_loss/take_profit 按实际成本重算；新增 <code>execution</code> 段</td></tr>
+<tr><td><code>state/trades.jsonl</code></td><td>追加 10 条 <code>side=buy</code> 记录（reason 标明"开盘竞价成交"/"挂单价成交"）</td></tr>
+<tr><td><code>reports/position_review_20261026.md</code></td><td>本报告</td></tr>
+<tr><td>备份</td><td><code>state/orders.json.bak_v29plan_20261026</code>、<code>positions.json.bak_v29plan_20261026</code>、<code>trades.jsonl.bak_v29plan_20261026</code></td></tr>
 </table>
-<ul>
-<li>成交明细：中国动力首档金额 31,000 元 → 900 股 × 31.23 = 28,107 元；中科三环首档金额 20,200 元 → 1800 股 × 10.72 = 19,296 元。</li>
-<li>成交价一律取 20261026 本地仓库收盘价，未使用 ref_price 或上一交易日价格代成交。</li>
-<li>两只均为当日建仓，成本=收盘价，盈亏 0%（未计交易成本）。</li>
-</ul>
-<p>---</p>
-<h3>六、熔断状态</h3>
-<table>
-<tr><th>熔断线</th><th>阈值</th><th>当前</th><th>状态</th></tr>
-<tr><td>日亏损</td><td>≤ -3%</td><td>0.00%（无前收盘持仓，无日内亏损）</td><td>正常</td></tr>
-<tr><td>回撤减半</td><td>≤ -8%</td><td>0.00%（累计收益 0%，净值持平初始资金）</td><td>正常</td></tr>
-<tr><td>回撤清仓</td><td>≤ -12%</td><td>0.00%</td><td>正常，未冻结</td></tr>
-</table>
-<p>---</p>
-<h3>七、异常清单</h3>
-<h4>[CRITICAL]</h4>
-<p>无。</p>
-<h4>[WARN]</h4>
-<p>1. <b>持仓数量不足</b>：实际 2 只 &lt; 下限 8 只。10 张建仓买单仍在等待价格回落，仓位需分批到位。</p>
-<p>2. <b>仓位显著低于 regime 目标</b>：4.74% vs neutral 目标 50%，偏差 -45.26 pct。属建仓期正常状态，但需持续跟踪——若 10 个交易日内多数订单因价格未回落而过期（R-006），仓位将长期不达标，建议届时由建仓经理评估是否重设 ref_price（需总控批准，本 agent 不自行上移）。</p>
-<p>3. <b>次档买点与止损线重叠（遗留问题，待拍板）</b>：中国动力二档区间 [28.03, 30.58] 与止损 28.82 重叠（28.03~28.82 买入即在止损线下方）；中科三环二档区间 [9.73, 10.62] 与止损 10.10 重叠（9.73~10.10 同此问题）。两只的二档今日均只差 0.93%~2.08% 即触发，明日若继续回落将直接暴露该缺陷。建议尽快拍板方案 B（止损锚定实际成交成本价 ×0.92）。</p>
-<h4>[INFO]</h4>
-<p>1. <b>持仓碎片化</b>：中国动力 2.81%、中科三环 1.93%，均低于 min_single_weight_pct=3%。原因：仅成交首档（目标权重的 50%），二档成交后可达 5.6% / 3.9%。</p>
-<p>2. <b>含在途标的 12 只</b>：恰好等于上限 12，未超限；若后续候选池补入新标的需先评估上限。</p>
-<p>3. <b>当日无 expired 订单、无资金不足 1 手、无缺失收盘价标的</b>。</p>
-<p>---</p>
-<h3>八、明日关注</h3>
-<p>1. 中科三环（000970.SZ）：二档触发价 10.62，距收盘仅 -0.93%，明日最可能触发；触发后止损线重叠问题立即生效，需人工确认止损口径。</p>
-<p>2. 中国动力（600482.SH）：二档触发价 30.58，距收盘 -2.08%；同时注意其止损 28.82 位于二档区间内。</p>
-<p>3. 东华软件（002065.SZ）：首档触发价 6.56，距收盘仅 -0.76%，为 8 只未成交单中最接近者。</p>
-<p>4. 中远海控、国货航：分别需回落 -4.10% / -4.05%，短期触发概率低，注意 R-006 的 10 日期倒计时（剩余 9 个交易日）。</p>
-<p>5. 市场层面：regime 维持 neutral 但趋势维度已判 bear（均线完全空头排列，上证 20 日 -5.48%），若后续总分跌破 -6 进入 bear+light，将禁止新建仓——当前 8 只未成交买单的执行资格届时受影响，需提前预案。</p>
-<p>---</p>
-<h3>九、邮件发送状态</h3>
-<p>SENT/FAILED：<b>待发送</b>（本文件落盘后立即执行 send_report_mail.py --type position --date 20261026，发送结果在发送后回填本行）。</p></div><div class='footer'>多 Agent 协同交易框架自动生成 · 模拟盘研究记录，不构成投资建议</div></div></body></html>
+<p><code>python scripts/check_pipeline.py --date 20261026</code> → <b>RESULT: PASS</b></p></div><div class='footer'>多 Agent 协同交易框架自动生成 · 模拟盘研究记录，不构成投资建议</div></div></body></html>

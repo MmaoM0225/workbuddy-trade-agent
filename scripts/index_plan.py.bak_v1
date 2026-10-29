@@ -1,0 +1,258 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""index_plan.py - 指数估值定投「本期行动计划」生成器
+
+读 state/index_signal.json（估值分位）+ state/index_portfolio.json（独立资金池）
++ data/index_params.json，输出本期买/卖计划。
+
+规则（v1.1，已拍板）：
+  买入：分位 <40 才买，金额 = base × mult；40-60 完全停投。
+  同族去重：同一 family（如医药含全指医药/800医药）只买分位最低的一只。
+  卖出：分档减速 —— 首次进 75 档卖当前仓位 1/3，85 档再卖当前 1/2（等价原仓 1/3），
+        95 档清仓；相邻两次减仓间隔 >= sell_interval_td 个交易日。
+  冷却：买入后 min_hold_days 自然日内不卖出。
+  预算：本期买入总额超 max_per_period 时按比例缩减。
+  上限：单指数 <=20% 总资产；组上限 宽基50/行业40/海外25。
+
+用法：
+  python scripts/index_plan.py                  # 生成计划到 state/index_orders.json
+  python scripts/index_plan.py --dry-run        # 只看不写
+"""
+import argparse
+import json
+import os
+import sys
+from datetime import datetime, timedelta
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SIGNAL = os.path.join(ROOT, "state", "index_signal.json")
+PORT = os.path.join(ROOT, "state", "index_portfolio.json")
+PARAMS = os.path.join(ROOT, "data", "index_params.json")
+UNIVERSE = os.path.join(ROOT, "data", "index_universe.json")
+ORDERS = os.path.join(ROOT, "state", "index_orders.json")
+
+
+def load_json(p, default=None):
+    if not os.path.exists(p):
+        return default
+    with open(p, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def trade_days():
+    """交易日历取自 warehouse/daily 文件名（项目内最可靠口径）。"""
+    d = os.path.join(ROOT, "data", "warehouse", "daily")
+    if not os.path.isdir(d):
+        return []
+    return sorted(x[:-4] for x in os.listdir(d) if x.endswith(".csv"))
+
+
+def td_between(d0, d1, cal):
+    """d0 → d1 之间的交易日数（不含 d0）。"""
+    if not d0 or not d1:
+        return 9999
+    return sum(1 for x in cal if d0 < x <= d1)
+
+
+def pick_stage(score, stages):
+    cur = None
+    for s in sorted(stages, key=lambda x: x["min_score"]):
+        if score >= s["min_score"]:
+            cur = s
+    return cur
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--dry-run", action="store_true")
+    args = ap.parse_args()
+
+    params = load_json(PARAMS)
+    sig = load_json(SIGNAL)
+    uni = load_json(UNIVERSE)
+    if not sig:
+        print("缺少 state/index_signal.json，先跑 index_valuation_signal.py")
+        return 1
+
+    ex = params["execute"]
+    guards = params["guards"]
+    cal = trade_days()
+    today = sig["as_of"]
+
+    port = load_json(PORT) or {
+        "version": "v1.0", "created": today,
+        "capital_cny": ex["initial_capital_cny"],
+        "cash_cny": ex["initial_capital_cny"],
+        "holdings": {}, "history": [],
+    }
+    holdings = port.setdefault("holdings", {})
+    meta = {x["code"]: x for x in uni["indices"]}
+    fam_name = {x["family"]: x["name"] for x in uni["indices"]}
+
+    # ---------- 1. 同族去重：每 family 只留分位最低的一只 ----------
+    best = {}
+    dropped = []
+    for it in sig["items"]:
+        if it["group"] == "benchmark":
+            continue
+        fam = meta.get(it["code"], {}).get("family", it["code"])
+        if fam not in best or it["score"] < best[fam]["score"]:
+            if fam in best:
+                dropped.append((best[fam], it))
+            best[fam] = it
+        else:
+            dropped.append((it, best[fam]))
+
+    # ---------- 2. 买入候选（只买有基金可承接的） ----------
+    buys = []
+    no_fund = []
+    for it in sig["items"]:
+        if it["group"] == "benchmark":
+            continue
+        fam = meta.get(it["code"], {}).get("family", it["code"])
+        if best.get(fam, {}).get("code") != it["code"]:
+            continue
+        if it["action"] != "买入" or it["mult"] <= 0:
+            continue
+        if not it.get("tradable"):
+            no_fund.append(it)
+            continue
+        amt = ex["base_amount_per_index_cny"] * it["mult"]
+        buys.append({"code": it["code"], "name": it["name"], "group": it["group"],
+                     "family": fam, "score": it["score"], "zone": it["zone"],
+                     "mult": it["mult"], "amount_cny": int(round(amt)),
+                     "fund": it.get("fund", ""), "fund_name": it.get("fund_name", ""),
+                     "tracking_error_1y": it.get("tracking_error_1y")})
+
+    # ---------- 3. 卖出候选 ----------
+    sells = []
+    for code, pos in holdings.items():
+        if pos.get("value_cny", 0) <= 0:
+            continue
+        it = next((x for x in sig["items"] if x["code"] == code), None)
+        if not it:
+            continue
+        stage = pick_stage(it["score"], ex["sell_stages"])
+        if not stage:
+            continue
+        done = pos.get("stage_done", 0)
+        if stage["min_score"] <= done:
+            continue                                   # 该档已执行
+        last = pos.get("last_action_date", "")
+        if last and td_between(last, today, cal) < ex["sell_interval_td"]:
+            continue                                   # 减速：间隔不够
+        # 买入冷却
+        bought = pos.get("first_buy_date") or pos.get("last_action_date", "")
+        if bought:
+            gap_days = (datetime.strptime(today, "%Y%m%d")
+                        - datetime.strptime(bought, "%Y%m%d")).days
+            if gap_days < ex["min_hold_days"]:
+                continue
+        ratio = stage["sell_current_ratio"]
+        sells.append({"code": code, "name": it["name"], "group": it["group"],
+                      "score": it["score"], "stage": stage["min_score"],
+                      "label": stage["label"], "ratio": ratio,
+                      "amount_cny": int(round(pos["value_cny"] * ratio))})
+
+    # ---------- 4. 预算与上限 ----------
+    total_value = port["cash_cny"] + sum(p.get("value_cny", 0) for p in holdings.values())
+    gross = sum(b["amount_cny"] for b in buys)
+    scale = 1.0
+    if gross > ex["max_per_period_cny"]:
+        scale = ex["max_per_period_cny"] / gross
+    if gross * scale > port["cash_cny"]:
+        scale = min(scale, port["cash_cny"] / gross if gross else 1.0)
+
+    for b in buys:
+        b["amount_cny"] = int(b["amount_cny"] * scale)
+
+    # 单指数与组上限（买入后市值）
+    group_used = {}
+    for code, p in holdings.items():
+        g = meta.get(code, {}).get("group", "cn_industry")
+        group_used[g] = group_used.get(g, 0) + p.get("value_cny", 0)
+    capped = []
+    kept = []
+    for b in buys:
+        hold_val = holdings.get(b["code"], {}).get("value_cny", 0)
+        idx_cap = total_value * guards["single_index_max_pct"] / 100.0
+        if hold_val + b["amount_cny"] > idx_cap:
+            b["amount_cny"] = max(0, int(idx_cap - hold_val))
+            capped.append((b["name"], "单指数%.0f%%上限" % guards["single_index_max_pct"]))
+        gcap = total_value * guards["group_max_pct"].get(b["group"], 100) / 100.0
+        if group_used.get(b["group"], 0) + b["amount_cny"] > gcap:
+            allow = max(0, int(gcap - group_used.get(b["group"], 0)))
+            if allow < b["amount_cny"]:
+                b["amount_cny"] = allow
+                capped.append((b["name"], "组上限%.0f%%" % guards["group_max_pct"].get(b["group"], 100)))
+        if b["amount_cny"] > 0:
+            group_used[b["group"]] = group_used.get(b["group"], 0) + b["amount_cny"]
+            kept.append(b)
+    buys = kept
+
+    # ---------- 5. 输出 ----------
+    print("指数定投 · 本期计划    基准日 %s    参数 %s" % (today, params["version"]))
+    print("总资产 %s 元   现金 %s 元   持仓 %d 只" %
+          (format(total_value, ","), format(port["cash_cny"], ","), len(holdings)))
+    if scale < 1.0:
+        print("注意：本期买入超出预算/现金，按 %.0f%% 缩减" % (scale * 100))
+
+    print("\n【买入】共 %d 只，合计 %s 元" % (len(buys), format(sum(b['amount_cny'] for b in buys), ",")))
+    if buys:
+        print("  %-12s %-14s %5s %5s %8s  %-12s %-20s %s" % (
+            "index", "name", "分位", "倍数", "金额", "买哪只基金", "基金名称", "跟踪误差"))
+        for b in buys:
+            te = b.get("tracking_error_1y")
+            print("  %-12s %-14s %5.0f %5.1f %8s  %-12s %-20s %s" % (
+                b["code"], b["name"], b["score"], b["mult"],
+                format(b["amount_cny"], ","), b["fund"], (b["fund_name"] or "")[:18],
+                "-" if te is None else "%.2f%%" % te))
+
+    if no_fund:
+        print("\n【有信号但买不到】%s —— 无对应基金，仅作行业温度参考" %
+              "、".join("%s(%.0f)" % (x["name"], x["score"]) for x in no_fund))
+
+    print("\n【卖出】共 %d 只" % len(sells))
+    if sells:
+        print("  %-12s %-14s %5s %6s %10s  %s" % ("code", "name", "分位", "比例", "金额", "动作"))
+        for s in sells:
+            print("  %-12s %-14s %5.0f %5.0f%% %10s  %s" % (
+                s["code"], s["name"], s["score"], s["ratio"] * 100,
+                format(s["amount_cny"], ","), s["label"]))
+    else:
+        print("  （无）")
+
+    stop = [x for x in sig["items"] if x["action"] == "停投" and x["group"] != "benchmark"]
+    print("\n【停投】%d 只（正常/偏高区间，不动）" % len(stop))
+    print("  " + "、".join("%s %.0f" % (x["name"], x["score"]) for x in stop))
+
+    if dropped:
+        print("\n【同族去重】保留分位更低的，舍弃：")
+        seen = set()
+        for a, b in dropped:
+            key = (b["code"], a["code"])
+            if key in seen:
+                continue
+            seen.add(key)
+            print("  舍弃 %s(%.0f)  因同族 %s(%.0f) 更低" % (a["name"], a["score"], b["name"], b["score"]))
+
+    if capped:
+        print("\n【上限拦截】%s" % "；".join("%s %s" % c for c in capped))
+
+    payload = {
+        "as_of": today, "generated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "params_version": params["version"],
+        "total_value_cny": total_value, "cash_cny": port["cash_cny"],
+        "buys": buys, "sells": sells,
+    }
+    if args.dry_run:
+        print("\n[dry-run] 未写入 %s" % ORDERS)
+    else:
+        with open(ORDERS, "w", encoding="utf-8") as f:
+            json.dump(payload, f, ensure_ascii=False, indent=2)
+        print("\n写入 %s" % ORDERS)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

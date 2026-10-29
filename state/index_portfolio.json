@@ -1,0 +1,149 @@
+{
+  "version": "v1.0",
+  "created": "20261028",
+  "cumulative_invested_cny": 360.0,
+  "realized_pnl_cny": 0.0,
+  "cash_from_sells_cny": 0.0,
+  "holdings": {
+    "000510.SH": {
+      "shares": 18.658696058285074,
+      "cost": 20.0,
+      "stage_done": 0,
+      "first_buy_date": "20261027",
+      "last_action_date": "20261027",
+      "nav": 1.0706,
+      "fund": "022434.OF",
+      "name": "中证A500",
+      "nav_date": "20261027",
+      "value": 19.976
+    },
+    "000852.SH": {
+      "shares": 22.264823896567098,
+      "cost": 20.0,
+      "stage_done": 0,
+      "first_buy_date": "20261027",
+      "last_action_date": "20261027",
+      "nav": 0.8972,
+      "fund": "011860.OF",
+      "name": "中证1000",
+      "nav_date": "20261027",
+      "value": 19.976
+    },
+    "399006.SZ": {
+      "shares": 21.47956989247312,
+      "cost": 30.0,
+      "stage_done": 0,
+      "first_buy_date": "20261027",
+      "last_action_date": "20261027",
+      "nav": 1.395,
+      "fund": "003765.OF",
+      "name": "创业板指",
+      "nav_date": "20261027",
+      "value": 29.964000000000002
+    },
+    "HSTECH.HK": {
+      "shares": 65.30238640078457,
+      "cost": 40.0,
+      "stage_done": 0,
+      "first_buy_date": "20261027",
+      "last_action_date": "20261027",
+      "nav": 0.6118,
+      "fund": "012804.OF",
+      "name": "恒生科技",
+      "nav_date": "20261027",
+      "value": 39.952
+    },
+    "NDX.US": {
+      "shares": 6.398052655179041,
+      "cost": 40.0,
+      "stage_done": 0,
+      "first_buy_date": "20261027",
+      "last_action_date": "20261027",
+      "nav": 6.2444,
+      "fund": "000834.OF",
+      "name": "纳斯达克100",
+      "nav_date": "20261027",
+      "value": 39.952
+    },
+    "SPTR500N.GI": {
+      "shares": 3.579158603884469,
+      "cost": 20.0,
+      "stage_done": 0,
+      "first_buy_date": "20261027",
+      "last_action_date": "20261027",
+      "nav": 5.5812,
+      "fund": "050025.OF",
+      "name": "标普500",
+      "nav_date": "20261027",
+      "value": 19.976
+    },
+    "01801056.PT": {
+      "shares": 27.65609857399972,
+      "cost": 40.0,
+      "stage_done": 0,
+      "first_buy_date": "20261027",
+      "last_action_date": "20261027",
+      "nav": 1.4446,
+      "fund": "004432.OF",
+      "name": "能源金属",
+      "nav_date": "20261027",
+      "value": 39.952
+    },
+    "01801018.PT": {
+      "shares": 54.120834462205366,
+      "cost": 40.0,
+      "stage_done": 0,
+      "first_buy_date": "20261027",
+      "last_action_date": "20261027",
+      "nav": 0.7382,
+      "fund": "016077.OF",
+      "name": "动物保健Ⅱ",
+      "nav_date": "20261027",
+      "value": 39.952
+    },
+    "01801737.PT": {
+      "shares": 65.86218265743487,
+      "cost": 40.0,
+      "stage_done": 0,
+      "first_buy_date": "20261027",
+      "last_action_date": "20261027",
+      "nav": 0.6066,
+      "fund": "013179.OF",
+      "name": "电池",
+      "nav_date": "20261027",
+      "value": 39.952
+    },
+    "01801193.PT": {
+      "shares": 36.73409341669732,
+      "cost": 40.0,
+      "stage_done": 0,
+      "first_buy_date": "20261027",
+      "last_action_date": "20261027",
+      "nav": 1.0876,
+      "fund": "004069.OF",
+      "name": "证券Ⅱ",
+      "nav_date": "20261027",
+      "value": 39.952
+    },
+    "01801101.PT": {
+      "shares": 42.60486278970568,
+      "cost": 30.0,
+      "stage_done": 0,
+      "first_buy_date": "20261027",
+      "last_action_date": "20261027",
+      "nav": 0.7033,
+      "fund": "001629.OF",
+      "name": "计算机设备",
+      "nav_date": "20261027",
+      "value": 29.964000000000006
+    }
+  },
+  "history": [
+    {
+      "date": "20261027",
+      "buys": 11,
+      "sells": 0,
+      "invested": 360.0
+    }
+  ]
+}

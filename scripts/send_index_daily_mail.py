@@ -355,9 +355,8 @@ def build_notice(orders, sig, params, as_of, data_date, attach_name, attach_kb=0
     size_txt = ("（%.0f KB）" % attach_kb) if attach_kb else ""
     if attach_name and attach_kb:
         attach_head = "完整看板在附件里 → %s %s" % (attach_name, size_txt)
-        attach_tip = ("<b>下载后用浏览器打开</b>：档位折叠 + 锚点跳转、"
-                      "搜索框、点表头排序，全部可用。<br>"
-                      "直接在邮件里预览或内嵌阅读不会执行脚本，按钮是灰的——所以正文不再放看板。")
+        attach_tip = ("<b>下载后用浏览器打开</b>：档位折叠、锚点跳转都可用。"
+                      "邮件内预览可能剥掉样式，折叠会退化成全展开，不影响读数。")
     else:
         attach_head = "本次只发了摘要，没带看板文件"
         attach_tip = ("完整看板请本地打开 reports/index_valuation_<as_of>.html，"
@@ -448,7 +447,7 @@ def build_notice(orders, sig, params, as_of, data_date, attach_name, attach_kb=0
         "c3": cell("卖出", "%.0f" % total_sell, C_NORM, " 元"),
         "c4": cell("停投标的", "%d" % n_stop, C_NORM, " 个"),
         "inc": format(inc, ",.0f"),
-        "pnl": format(realized + unreal, "+,.0f"),
+        "pnl": format(realized + unreal, "+,.2f"),
         "assets": format(assets, ",.0f"),
         "ret": format(ret, "+.2f") + "%",
         "pc": C_UNDER if (realized + unreal) >= 0 else C_SELL,

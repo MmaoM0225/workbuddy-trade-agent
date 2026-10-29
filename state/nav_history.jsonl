@@ -1,0 +1,4 @@
+{"date": "20261023", "total_asset": 1000000.0, "cash": 1000000.0, "market_value": 0.0, "pnl_pct": 0.0, "position_pct": 0.0, "benchmark": 3690.4753, "benchmark_pct": 0.0, "holdings": 0}
+{"date": "20261026", "total_asset": 1004851.0, "cash": 634866.0, "market_value": 369985.0, "pnl_pct": 0.49, "position_pct": 36.82, "benchmark": 3697.5199, "benchmark_pct": 0.19, "holdings": 9}
+{"date": "20261027", "total_asset": 1000205.0, "cash": 619434.0, "market_value": 380771.0, "pnl_pct": 0.02, "position_pct": 38.07, "benchmark": 3648.301, "benchmark_pct": -1.14, "holdings": 9}
+{"date": "20261028", "total_asset": 999444.0, "cash": 619434.0, "market_value": 380010.0, "pnl_pct": -0.06, "position_pct": 38.02, "benchmark": 3681.4691, "benchmark_pct": -0.24, "holdings": 9}

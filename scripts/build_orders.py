@@ -1,5 +1,18 @@
 # -*- coding: utf-8 -*-
-"""建仓经理：watchlist → 建仓计划 → test/state/orders.json（绝不写 state/）"""
+"""建仓经理（DEPRECATED）：watchlist → 建仓计划 → test/state/orders.json
+
+【已废弃 v3.0 / 2026-10-28】本脚本是 v1.4 时代口径，与当前实盘规则不一致，禁止使用：
+  - 买点用「20 日高低三等分」+ 首档 40%，现行为三档（开盘竞价 50% / -3% / -6%）
+  - 止损用 min(low20×0.98, ref×(1-8%))，v2.1 已明令禁止（会取到更宽松的一条，且锚 ref）
+  - 参数硬编码读 params_v1.3.json（早已不是当前版本）
+  - 订单 id 写死 ORD-20261023-*
+生产链路请用 scripts/build_orders_live.py。保留本文件仅为追溯历史实现。
+"""
+import sys
+
+sys.exit("DEPRECATED: build_orders.py 已废弃（v1.4 口径：三等分买点 / min(low20,ref) 止损 / params_v1.3）。\n"
+         "请改用 scripts/build_orders_live.py（v2.7 三档买点 + 实际成交成本止损 + 参数读 params_current.txt）。\n"
+         "v3.0 加此拦截，防止旧口径静默产出错误订单。")
 import csv
 import glob
 import json
@@ -37,7 +50,7 @@ params = json.load(open(PARAMS, encoding="utf-8"))
 scores = {r["ts_code"]: r for r in read_csv(SCORES)}
 
 regime_name = regime.get("regime", "neutral")
-base_pct = params["regime_base_position_pct"].get(regime_name, 50)
+base_pct = (params.get("regime") or {}).get("base_position_pct", {}).get(regime_name, 50)
 # v2.2：优先采信市场分析师的 position_cap_pct（含拥挤度覆盖折扣）
 _cap = regime.get("position_cap_pct")
 if isinstance(_cap, (int, float)) and 0 < float(_cap) <= 100:

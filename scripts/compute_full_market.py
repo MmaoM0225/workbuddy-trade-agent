@@ -15,7 +15,8 @@ ROOT = r"E:\cashfree\agent"
 WH = os.path.join(ROOT, "data", "warehouse")
 # 基准日 = daily_basic 目录里最新的一天
 _db_dates = sorted(os.path.basename(p)[:-4] for p in glob.glob(os.path.join(WH, "daily_basic", "*.csv")))
-BASE_DATE = _db_dates[-1] if _db_dates else "20261023"
+# 默认取 daily_basic 最新一日；重放历史某轮时用 BASE_DATE=YYYYMMDD 环境变量固定基准
+BASE_DATE = os.environ.get("BASE_DATE") or (_db_dates[-1] if _db_dates else "20261023")
 OUT_SCORES = os.path.join(WH, "scores_full.csv")
 # 正式跑写 state/pool.json；彩排时用环境变量 POOL_OUT 指向 test/state/pool.json
 OUT_POOL = os.environ.get("POOL_OUT") or os.path.join(ROOT, "state", "pool.json")

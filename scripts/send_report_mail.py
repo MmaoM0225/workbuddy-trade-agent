@@ -23,6 +23,7 @@ import glob
 import json
 import os
 import re
+import subprocess
 import sys
 
 sys.path.insert(0, r"E:/cashfree/agent/scripts")
@@ -136,14 +137,15 @@ def md_to_html(md):
     return "\n".join(out)
 
 
-def wrap(title, body_html, subtitle=""):
+def wrap(title, body_html, subtitle="", prepend=""):
+    """第一张卡放标题；prepend 里的卡片依次插在标题之后、正文之前；正文单独成卡。"""
     sub = ("<p style='color:#8a9099;font-size:12px;margin:0'>%s</p>" % subtitle) if subtitle else ""
     return ("<!DOCTYPE html><html lang='zh-CN'><head><meta charset='utf-8'>"
             "<meta name='viewport' content='width=device-width,initial-scale=1'>"
             "<title>%s</title><style>%s</style></head><body><div class='wrap'>"
-            "<div class='card'><h1>%s</h1>%s%s</div>"
+            "<div class='card'><h1>%s</h1>%s</div>%s<div class='card'>%s</div>"
             "<div class='footer'>多 Agent 协同交易框架自动生成 · 模拟盘研究记录，不构成投资建议</div>"
-            "</div></body></html>" % (title, CSS, title, sub, body_html))
+            "</div></body></html>" % (title, CSS, title, sub, prepend, body_html))
 
 
 VERDICT_CN = {"bull": "看多", "bear": "看空", "neutral": "中性"}
@@ -360,16 +362,282 @@ def render_regime(date):
                 "基准日 %s · 生成于 %s" % (d.get("date"), now)), None
 
 
-def render_md(path, title, subtitle=""):
+def _nav_rows():
+    """读 state/nav_history.jsonl（update_nav.py 维护的每日净值序列）。"""
+    p = os.path.join(ROOT, "state", "nav_history.jsonl")
+    rows = []
+    if os.path.exists(p):
+        with open(p, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    rows.append(json.loads(line))
+                except json.JSONDecodeError:
+                    continue
+    rows.sort(key=lambda r: r.get("date") or "")
+    return rows
+
+
+def _svg_nav(rows, w=800, h=230):
+    """组合 vs 上证 的收益率曲线（A 股配色：红涨绿跌）。点数少也照画。"""
+    if len(rows) < 2:
+        return ("<p style='color:#8a9099;font-size:13px;padding:16px 0;margin:0'>"
+                "净值记录不足 2 个交易日，曲线将在下一交易日后生成。</p>")
+
+    pad_l, pad_r, pad_t, pad_b = 48, 14, 14, 30
+    iw, ih = w - pad_l - pad_r, h - pad_t - pad_b
+    port = [float(r.get("pnl_pct") or 0) for r in rows]
+    bmk = [float(r.get("benchmark_pct") or 0) for r in rows]
+    vals = port + bmk + [0.0]
+    lo, hi = min(vals), max(vals)
+    if hi - lo < 0.6:                       # 点位太密时撑开，避免压成一条直线
+        mid = (hi + lo) / 2
+        lo, hi = mid - 0.3, mid + 0.3
+    pad = (hi - lo) * 0.12
+    lo, hi = lo - pad, hi + pad
+    span = hi - lo or 1.0
+
+    def px(i):
+        return pad_l + iw * i / (len(rows) - 1)
+
+    def py(v):
+        return pad_t + ih * (hi - v) / span
+
+    def path(series):
+        return "M " + " L ".join("%.1f %.1f" % (px(i), py(v)) for i, v in enumerate(series))
+
+    grid, ticks = [], 5
+    for k in range(ticks):
+        v = lo + span * k / (ticks - 1)
+        y = py(v)
+        grid.append("<line x1='%d' y1='%.1f' x2='%d' y2='%.1f' stroke='#eef1f4' stroke-width='1'/>"
+                    % (pad_l, y, pad_l + iw, y))
+        grid.append("<text x='%d' y='%.1f' fill='#98a2b3' font-size='10' text-anchor='end'>%+.1f%%</text>"
+                    % (pad_l - 6, y + 3.5, v))
+    # 零轴
+    y0 = py(0.0)
+    zero = ("<line x1='%d' y1='%.1f' x2='%d' y2='%.1f' stroke='#c8ced8' stroke-width='1' "
+            "stroke-dasharray='3,3'/>" % (pad_l, y0, pad_l + iw, y0))
+
+    # X 轴标签：超过 8 个点抽样
+    step = max(1, len(rows) // 8)
+    xlab = []
+    for i, r in enumerate(rows):
+        if i % step == 0 or i == len(rows) - 1:
+            d = r.get("date") or ""
+            xlab.append("<text x='%.1f' y='%d' fill='#98a2b3' font-size='10' text-anchor='middle'>%s-%s</text>"
+                        % (px(i), h - 10, d[4:6], d[6:8]))
+
+    # 数据点
+    dots = []
+    for i, r in enumerate(rows):
+        c = "#c8102e" if port[i] >= 0 else "#0a8f4d"
+        dots.append("<circle cx='%.1f' cy='%.1f' r='3' fill='%s'/>" % (px(i), py(port[i]), c))
+
+    area = ("<path d='%s L %.1f %.1f L %.1f %.1f Z' fill='#c8102e' opacity='0.07'/>"
+            % (path(port), px(len(rows) - 1), y0, px(0), y0))
+
+    legend = (
+        "<g font-size='11'>"
+        "<rect x='%d' y='2' width='10' height='3' fill='#c8102e'/>"
+        "<text x='%d' y='7' fill='#4b5563'>组合</text>"
+        "<rect x='%d' y='2' width='10' height='3' fill='#8b95a5'/>"
+        "<text x='%d' y='7' fill='#4b5563'>上证指数</text>"
+        "</g>" % (pad_l, pad_l + 14, pad_l + 58, pad_l + 72))
+
+    return ("<svg viewBox='0 0 %d %d' width='100%%' style='max-width:%dpx;height:auto;display:block' "
+            "xmlns='http://www.w3.org/2000/svg' role='img' aria-label='组合与基准收益率曲线'>"
+            "%s%s%s<path d='%s' fill='none' stroke='#8b95a5' stroke-width='1.6' stroke-dasharray='4,3'/>"
+            "<path d='%s' fill='none' stroke='#c8102e' stroke-width='2'/>%s%s%s</svg>"
+            % (w, h, w, "".join(grid), zero, area, path(bmk), path(port),
+               "".join(dots), "".join(xlab), legend))
+
+
+def render_position_cards():
+    """持仓邮件的【收益概览】+【收益率曲线】两个板块，插在正文最前面。"""
+    rows = _nav_rows()
+    if not rows:
+        return ("<div class='card'><h2>收益概览</h2>"
+                "<p style='color:#8a9099;font-size:13px;margin:0'>尚无净值记录，"
+                "持仓管家下次运行将自动生成。</p></div>")
+
+    last = rows[-1]
+    pnl = float(last.get("pnl_pct") or 0)
+    bmk = float(last.get("benchmark_pct") or 0)
+    excess = round(pnl - bmk, 2)
+    day = round(pnl - float(rows[-2].get("pnl_pct") or 0), 2) if len(rows) >= 2 else 0.0
+    peak, mdd = -1e18, 0.0
+    for r in rows:
+        v = float(r.get("total_asset") or 0)
+        peak = max(peak, v)
+        if peak > 0:
+            mdd = min(mdd, (v / peak - 1) * 100)
+
+    def tone(v):
+        return "#c8102e" if v > 0 else ("#0a8f4d" if v < 0 else "#4b5563")
+
+    def box(label, value, sub, color="#1f2329"):
+        return ("<div style='flex:1 1 118px;min-width:112px;background:#fafbfc;border:1px solid #eef1f4;"
+                "border-radius:8px;padding:11px 13px'>"
+                "<div style='color:#8a9099;font-size:11.5px;margin-bottom:3px'>%s</div>"
+                "<div style='font-size:19px;font-weight:600;color:%s;line-height:1.25'>%s</div>"
+                "<div style='color:#a0a7b4;font-size:11px;margin-top:2px'>%s</div></div>"
+                % (label, color, value, sub))
+
+    cards = (
+        box("累计收益", "%+.2f%%" % pnl, "本金 %s 元" % format(int(last.get("total_asset") or 0), ","), tone(pnl))
+        + box("当日收益", "%+.2f%%" % day, "前一交易日至今", tone(day))
+        + box("相对上证", "%+.2f%%" % excess, "同期基准 %+.2f%%" % bmk, tone(excess))
+        + box("最大回撤", "%.2f%%" % mdd, "峰值至谷底", "#0a8f4d" if mdd < -0.001 else "#4b5563")
+        + box("当前仓位", "%.2f%%" % float(last.get("position_pct") or 0),
+              "持仓 %d 只" % int(last.get("holdings") or 0))
+    )
+
+    return (
+        "<div class='card'><h2>收益概览</h2>"
+        "<div style='display:flex;gap:9px;flex-wrap:wrap;margin:6px 0 2px'>%s</div>"
+        "<p style='color:#a0a7b4;font-size:11px;margin:9px 0 0'>口径：累计收益 = 总资产/初始本金−1；"
+        "相对上证以建仓基期为起点；净值由 update_nav.py 每交易日落盘。</p></div>"
+        "<div class='card'><h2>收益率曲线</h2>%s"
+        "<p style='color:#a0a7b4;font-size:11px;margin:8px 0 0'>数据点 %d 个交易日"
+        "（%s ~ %s），基准为上证指数 000001.SH。</p></div>"
+        % (cards, _svg_nav(rows), len(rows),
+           (rows[0].get("date") or "")[:4] + "-" + (rows[0].get("date") or "")[4:6] + "-" + (rows[0].get("date") or "")[6:8],
+           (rows[-1].get("date") or "")[:4] + "-" + (rows[-1].get("date") or "")[4:6] + "-" + (rows[-1].get("date") or "")[6:8])
+    )
+
+
+def _equity_svg(eq, w=820, h=280):
+    """回测净值曲线：累计收益率（%），带基准可选。"""
+    if len(eq) < 2:
+        return "<p style='color:#8a9099'>数据不足</p>"
+    port = [float(e.get("pnl_pct") or 0) for e in eq]
+    lo, hi = min(port + [0.0]), max(port + [0.0])
+    pad = (hi - lo) * 0.10 or 1
+    lo, hi = lo - pad, hi + pad
+    span = hi - lo or 1
+    pad_l, pad_r, pad_t, pad_b = 56, 16, 16, 30
+    iw, ih = w - pad_l - pad_r, h - pad_t - pad_b
+
+    def px(i):
+        return pad_l + iw * i / (len(eq) - 1)
+
+    def py(v):
+        return pad_t + ih * (hi - v) / span
+
+    path = "M " + " L ".join("%.1f %.1f" % (px(i), py(v)) for i, v in enumerate(port))
+    grid, ticks = [], 5
+    for k in range(ticks):
+        v = lo + span * k / (ticks - 1)
+        y = py(v)
+        grid.append("<line x1='%d' y1='%.1f' x2='%d' y2='%.1f' stroke='#eef1f4'/>" % (pad_l, y, pad_l + iw, y))
+        grid.append("<text x='%d' y='%.1f' fill='#98a2b3' font-size='10' text-anchor='end'>%+.0f%%</text>"
+                    % (pad_l - 6, y + 3.5, v))
+    y0 = py(0.0)
+    zero = ("<line x1='%d' y1='%.1f' x2='%d' y2='%.1f' stroke='#c8ced8' stroke-dasharray='3,3'/>"
+            % (pad_l, y0, pad_l + iw, y0))
+    area = ("<path d='%s L %.1f %.1f L %.1f %.1f Z' fill='#c8102e' opacity='0.06'/>"
+            % (path, px(len(eq) - 1), y0, px(0), y0))
+    step = max(1, len(eq) // 7)
+    xlab = []
+    for i, e in enumerate(eq):
+        if i % step == 0 or i == len(eq) - 1:
+            dt = e.get("date") or ""
+            xlab.append("<text x='%.1f' y='%d' fill='#98a2b3' font-size='10' text-anchor='middle'>%s/%s</text>"
+                        % (px(i), h - 10, dt[:4], dt[4:6]))
+    return ("<svg viewBox='0 0 %d %d' width='100%%' style='max-width:%dpx;height:auto;display:block' "
+            "xmlns='http://www.w3.org/2000/svg'>%s%s%s<path d='%s' fill='none' stroke='#c8102e' stroke-width='2'/>"
+            "%s</svg>" % (w, h, w, "".join(grid), zero, area, path, "".join(xlab)))
+
+
+def render_backtest(pick_path=None):
+    """六年回测报告（默认读 test/replay_6y_v29.json）。"""
+    cand = pick_path or os.path.join(ROOT, "test", "replay_6y_v29.json")
+    if not os.path.exists(cand):
+        return None, "回测结果不存在: %s" % cand
+    d = json.load(open(cand, encoding="utf-8"))
+    s, eq, trades = d["summary"], d["equity"], d["trades"]
+    years = len(eq) / 244.0
+
+    tot = s["total_return_pct"] / 100
+    ann = (1 + tot) ** (1 / years) - 1
+    # 用总资产序列重算复合回撤，不依赖 summary 里的历史字段
+    pk, mdd = 0.0, 0.0
+    for e in eq:
+        v = float(e.get("total") or 0)
+        pk = max(pk, v)
+        if pk > 0:
+            mdd = min(mdd, v / pk - 1)
+    mdd_pct = mdd * 100
+    calmar = ann / abs(mdd) if mdd else 0
+
+    sells = [t for t in trades if t["side"] == "sell"]
+    wins = [t for t in sells if (t.get("pnl_pct") or 0) > 0]
+    win_rate = len(wins) / len(sells) * 100 if sells else 0
+    avg_pos = sum(float(e.get("pos_pct") or 0) for e in eq) / len(eq)
+
+    # 年度收益
+    yr = {}
+    for e in eq:
+        yr[e["date"][:4]] = e["total"]
+    yearly, prev = [], None
+    for k in sorted(yr):
+        if prev:
+            yearly.append((k, (yr[k] / prev - 1) * 100))
+        prev = yr[k]
+
+    # 卖出构成
+    from collections import Counter
+    reason_cn = {"stop_loss": "止损", "take_profit": "止盈", "derisk_heavy": "熊市降仓",
+                 "derisk_light": "轻度降仓", "circuit": "回撤熔断"}
+    cnt = Counter(reason_cn.get(t["why"], t["why"]) for t in sells)
+
+    def kpi(label, val, sub="", color="#1f2329"):
+        return ("<div style='flex:1 1 120px;min-width:114px;background:#fafbfc;border:1px solid #eef1f4;"
+                "border-radius:8px;padding:12px 14px'><div style='color:#8a9099;font-size:11.5px'>%s</div>"
+                "<div style='font-size:20px;font-weight:600;color:%s;margin-top:3px'>%s</div>"
+                "<div style='color:#a0a7b4;font-size:11px;margin-top:2px'>%s</div></div>" % (label, color, val, sub))
+
+    t_color = "#c8102e" if s["total_return_pct"] > 0 else "#0a8f4d"
+    kpis = (kpi("累计收益", "%+.2f%%" % s["total_return_pct"], "期末 %.0f 万" % (s["final_assets"] / 1e4), t_color)
+            + kpi("年化收益", "%.2f%%" % (ann * 100), "%.1f 年（%d 交易日）" % (years, len(eq)), t_color)
+            + kpi("最大回撤", "%.2f%%" % mdd_pct, "复合口径", "#0a8f4d")
+            + kpi("Calmar", "%.2f" % calmar, "年化 / 回撤")
+            + kpi("胜率", "%.1f%%" % win_rate, "%d 笔平仓" % len(sells))
+            + kpi("平均仓位", "%.2f%%" % avg_pos, "交易 %d 笔" % len(trades)))
+
+    yrow = "".join("<tr><td>%s</td><td class='num' style='color:%s;font-weight:600'>%+.2f%%</td></tr>"
+                   % (y, "#c8102e" if v > 0 else "#0a8f4d", v) for y, v in yearly)
+    ytbl = ("<table><thead><tr><th>年度</th><th style='text-align:right'>收益</th></tr></thead><tbody>%s</tbody></table>"
+            % yrow)
+    rrow = "".join("<tr><td>%s</td><td class='num'>%d 笔</td></tr>" % (k, v) for k, v in cnt.most_common())
+
+    sub = "%s · 参数 v2.9 · 三档买点（竞价 50%% / −3%% 25%% / −6%% 25%%）+ 牛市连续 3 日补齐 + 仓位 90/70/60" % s["period"]
+    body = ("<div class='card'><h2>核心指标</h2>"
+            "<div style='display:flex;gap:9px;flex-wrap:wrap;margin:6px 0'>%s</div>"
+            "<p style='color:#a0a7b4;font-size:11px;margin:8px 0 0'>回撤为总资产相对历史峰值的复合回撤；"
+            "未扣除手续费与滑点。</p></div>"
+            "<div class='card'><h2>净值曲线</h2>%s"
+            "<p style='color:#a0a7b4;font-size:11px;margin:8px 0 0'>横轴为交易日，纵轴为累计收益率。</p></div>"
+            "<div class='card'><h2>年度收益</h2>%s</div>"
+            "<div class='card'><h2>卖出构成</h2>"
+            "<table><thead><tr><th>原因</th><th style='text-align:right'>笔数</th></tr></thead><tbody>%s</tbody></table>"
+            "</div>" % (kpis, _equity_svg(eq), ytbl, rrow))
+    return wrap("六年回测报告 · 牛市补齐版", body, sub), None
+
+
+def render_md(path, title, subtitle="", prepend_html=""):
     if not os.path.exists(path):
         return None, "报告不存在: %s" % path
     md = open(path, encoding="utf-8").read()
-    return wrap(title, md_to_html(md), subtitle), None
+    return wrap(title, md_to_html(md), subtitle, prepend=prepend_html), None
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--type", required=True, choices=["regime", "position", "inspect", "review", "pick"])
+    ap.add_argument("--type", required=True, choices=["regime", "position", "inspect", "review", "pick", "backtest"])
     ap.add_argument("--date", default=None)
     ap.add_argument("--to", default=DEFAULT_TO)
     ap.add_argument("--dry-run", action="store_true")
@@ -380,19 +648,30 @@ def main():
         p = os.path.join(ROOT, "state", "pool.json")
         if os.path.exists(p):
             date = json.load(open(p, encoding="utf-8")).get("date")
-    prefix = {"regime": "[市场]", "position": "[持仓]", "inspect": "[巡检]", "review": "[复盘]", "pick": "[选股]"}
+    prefix = {"regime": "[市场]", "position": "[持仓]", "inspect": "[巡检]", "review": "[复盘]", "pick": "[选股]", "backtest": "[回测]"}
 
     if a.type == "regime":
         html, err = render_regime(date)
         subject = "%s 市场环境判断 %s" % (prefix[a.type], date)
     elif a.type == "position":
+        # 发信前自动落一次净值（幂等，同日覆盖），保证曲线不依赖 agent 手动执行 update_nav.py
+        if date:
+            try:
+                subprocess.run([sys.executable, os.path.join(ROOT, "scripts", "update_nav.py"),
+                                "--date", date], check=False, capture_output=True, timeout=120)
+            except (OSError, subprocess.SubprocessError):
+                pass
         html, err = render_md(os.path.join(ROOT, "reports", "position_review_%s.md" % date),
-                              "持仓检视 %s" % date, "生成于 %s" % date)
+                              "持仓检视 %s" % date, "生成于 %s" % date,
+                              prepend_html=render_position_cards())
         subject = "%s 持仓检视 %s" % (prefix[a.type], date)
     elif a.type == "inspect":
         html, err = render_md(os.path.join(ROOT, "reports", "daily_%s.md" % date),
                               "总控巡检 %s" % date, "生成于 %s" % date)
         subject = "%s 总控巡检 %s" % (prefix[a.type], date)
+    elif a.type == "backtest":
+        html, err = render_backtest()
+        subject = "%s 六年回测报告 · 牛市补齐版" % prefix[a.type]
     elif a.type == "review":
         files = sorted(glob.glob(os.path.join(ROOT, "reviews", "weekly_*.md")))
         if not files:

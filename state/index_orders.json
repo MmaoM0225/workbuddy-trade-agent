@@ -1,6 +1,6 @@
 {
   "as_of": "20261028",
-  "generated": "2026-10-29 21:40:40",
+  "generated": "2026-10-29 21:48:57",
   "params_version": "v1.0",
   "unit_amount_cny": 10,
   "buys": [
@@ -166,6 +166,8 @@
   "total_sell_cny": 0,
   "cumulative_invested_cny": 360.0,
   "realized_pnl_cny": 0.0,
-  "unrealized_pnl_cny": -360.0,
-  "total_return_cny": 0.0
+  "unrealized_pnl_cny": -0.43,
+  "portfolio_marked": true,
+  "total_return_cny": -0.43,
+  "total_assets_cny": 359.57
 }

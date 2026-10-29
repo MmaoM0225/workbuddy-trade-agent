@@ -1,0 +1,248 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""index_valuation_signal.py - 指数估值分位与定投分档信号
+
+核心口径（v1.0）：
+  1. 分位数 = 滚动 5 年（1250 交易日）历史分位，min_periods=500；
+     不用全历史分位，避免"历史越长越容易显示低估"的漂移。
+  2. PE 用 pe_ttm_ex_neg（剔除负值），避免亏损成份拉爆 PE 造成假高估。
+  3. 权重按指数性质区分：
+     - cyclical（周期/金融/券商）：PB 0.7 + PE 0.3  —— 盈利塌陷时 PE 虚高，PB 才是真锚
+     - growth（成长/科技/创业板/科创/纳指）：PE 0.7 + PB 0.3
+     - balanced（其他宽基/消费/医药）：PE 0.5 + PB 0.5
+  4. 综合分位 score ∈ [0,100]，越小越便宜。
+  5. 绝对估值兜底：PB < 0.8 的标的无论分位如何不判"高估"；PE > 60 的无论分位如何不判"低估"。
+
+用法：
+  python scripts/index_valuation_signal.py                # 最新一日
+  python scripts/index_valuation_signal.py --date 20261027
+  python scripts/index_valuation_signal.py --json reports/index_signal.json
+"""
+import argparse
+import json
+import os
+import sys
+from datetime import datetime
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+WD = os.path.join(ROOT, "data", "warehouse", "index_valuation")
+POOL = os.path.join(ROOT, "data", "index_universe.json")
+PARAMS = os.path.join(ROOT, "data", "index_params.json")
+
+DEFAULT_PARAMS = {
+    "version": "v1.0",
+    "window_days": 1250,
+    "min_periods": 500,
+    "pb_floor_no_high": 1.0,     # PB 低于此值否决减仓（原 0.8 太苛刻，红利/金融被误杀）
+    "div_yield_no_high": 4.0,    # 股息率高于此值否决减仓
+    "pe_cap_no_low": 60.0,       # PE 高于此值不判低估
+    "zones": [
+        {"name": "深度低估", "lo": 0.0, "hi": 10.0, "action": "买入", "mult": 2.0},
+        {"name": "低估", "lo": 10.0, "hi": 25.0, "action": "买入", "mult": 1.5},
+        {"name": "偏低", "lo": 25.0, "hi": 40.0, "action": "买入", "mult": 1.0},
+        {"name": "正常", "lo": 40.0, "hi": 60.0, "action": "停投", "mult": 0.0},
+        {"name": "偏高", "lo": 60.0, "hi": 75.0, "action": "停投", "mult": 0.0},
+        {"name": "高估", "lo": 75.0, "hi": 90.0, "action": "减仓", "mult": 0.0},
+        {"name": "极高估", "lo": 90.0, "hi": 100.01, "action": "清仓", "mult": 0.0},
+    ],
+}
+
+CYCLICAL = {"000928.SH", "000929.SH", "000986.SH", "000987.SH",
+            "000934.SH", "399975.SZ", "000932.SH"}   # 金融地产归周期，PB 主导
+GROWTH = {"399006.SZ", "000688.SH", "000935.SH", "000993.SH",
+          "399967.SZ", "HSTECH.HK", "IXIC.US", "000933.SH"}  # 医药给了 PE 侧重
+
+
+def load_params():
+    if os.path.exists(PARAMS):
+        with open(PARAMS, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return DEFAULT_PARAMS
+
+
+def style_of(code):
+    if code in CYCLICAL:
+        return "cyclical"
+    if code in GROWTH:
+        return "growth"
+    return "balanced"
+
+
+WEIGHTS = {"cyclical": (0.3, 0.7), "growth": (0.7, 0.3), "balanced": (0.5, 0.5)}
+
+
+def read_series(code):
+    path = os.path.join(WD, code + ".csv")
+    if not os.path.exists(path):
+        return []
+    rows = []
+    with open(path, "r", encoding="utf-8") as f:
+        hdr = next(f).strip().split(",")
+        for line in f:
+            if not line.strip():
+                continue
+            parts = line.rstrip("\n").split(",")
+            if len(parts) != len(hdr):
+                continue
+            d = dict(zip(hdr, parts))
+            rows.append(d)
+    rows.sort(key=lambda r: r["trade_date"])
+    return rows
+
+
+def fnum(v):
+    try:
+        if v in ("", None, "--"):
+            return None
+        return float(v)
+    except (TypeError, ValueError):
+        return None
+
+
+def pct_rank(series, window, min_periods):
+    """滚动分位：当前值在过去 window 天中的位置（含当日），返回 None 表示数据不足。"""
+    out = [None] * len(series)
+    for i, v in enumerate(series):
+        if v is None:
+            continue
+        lo = max(0, i - window + 1)
+        hist = [x for x in series[lo:i + 1] if x is not None]
+        if len(hist) < min_periods:
+            continue
+        less = sum(1 for x in hist if x < v)
+        eq = sum(1 for x in hist if x == v)
+        out[i] = (less + 0.5 * eq) / len(hist) * 100.0
+    return out
+
+
+def pick_zone(score, params):
+    for z in params["zones"]:
+        if z["lo"] <= score < z["hi"]:
+            return z
+    return params["zones"][-1]
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--date", default="")
+    ap.add_argument("--json", default="")
+    ap.add_argument("--md", default="")
+    args = ap.parse_args()
+
+    params = load_params()
+    win, mp = params["window_days"], params["min_periods"]
+
+    with open(POOL, "r", encoding="utf-8") as f:
+        uni = json.load(f)
+    meta = {x["code"]: x for x in uni["indices"]}
+
+    items, missing = [], []
+    for code, m in meta.items():
+        rows = read_series(code)
+        if len(rows) < mp:
+            missing.append((code, m["name"], len(rows)))
+            continue
+        dates = [r["trade_date"] for r in rows]
+        target = args.date or dates[-1]
+        if target not in dates:
+            idx = max((i for i, d in enumerate(dates) if d <= target), default=len(dates) - 1)
+        else:
+            idx = dates.index(target)
+
+        pe_s = [fnum(r["pe_ttm_ex_neg"]) for r in rows]
+        pb_s = [fnum(r["pb_lf"]) for r in rows]
+        pe_pct_s = pct_rank(pe_s, win, mp)
+        pb_pct_s = pct_rank(pb_s, win, mp)
+
+        pe, pb = pe_s[idx], pb_s[idx]
+        div = fnum(rows[idx]["dividend_ratio"])
+        pe_pct, pb_pct = pe_pct_s[idx], pb_pct_s[idx]
+        if pe_pct is None and pb_pct is None:
+            missing.append((code, m["name"], len(rows)))
+            continue
+
+        style = style_of(code)
+        wp, wb = WEIGHTS[style]
+        if pe_pct is not None and pb_pct is not None:
+            score = wp * pe_pct + wb * pb_pct
+        elif pb_pct is not None:
+            score = pb_pct          # 缺 PE（如纳指综合）退化为纯 PB
+        else:
+            score = pe_pct          # 缺 PB 退化为纯 PE
+
+        # 绝对估值兜底（分位法陷阱：长期估值中枢下移会让便宜货显示"历史最贵"）
+        capped = []
+        if score >= 75:
+            hit = []
+            if pb is not None and pb < params["pb_floor_no_high"]:
+                hit.append("PB<%.1f" % params["pb_floor_no_high"])
+            if div is not None and div >= params["div_yield_no_high"]:
+                hit.append("股息率>=%.1f%%" % params["div_yield_no_high"])
+            if hit:
+                score = min(score, 74.9)
+                capped.append("%s 否决减仓→停投" % "/".join(hit))
+        if score < 25 and pe is not None and pe > params["pe_cap_no_low"]:
+            score = 25.0
+            capped.append("PE>%.0f 不判低估" % params["pe_cap_no_low"])
+
+        zone = pick_zone(score, params)
+        items.append({
+            "code": code,
+            "name": m["name"],
+            "group": m["group"],
+            "family": m.get("family", code),
+            "tradable": bool(m.get("tradable")),
+            "fund": m.get("of_fund") or m.get("fund", ""),
+            "fund_name": m.get("of_fund_name") or m.get("fund_name", ""),
+            "tracking_error_1y": m.get("of_te") or m.get("tracking_error_1y"),
+            "fund_venue": "场外" if m.get("of_fund") else ("场内" if m.get("etf") else ""),
+            "etf": m.get("etf", ""),
+            "style": style,
+            "date": dates[idx],
+            "pe_ttm": pe,
+            "pb_lf": pb,
+            "dividend_ratio": div,
+            "pe_pct": None if pe_pct is None else round(pe_pct, 1),
+            "pb_pct": None if pb_pct is None else round(pb_pct, 1),
+            "score": round(score, 1),
+            "zone": zone["name"],
+            "action": zone["action"],
+            "mult": zone["mult"],
+            "caps": capped,
+            "bars": len(rows),
+        })
+
+    order = {"cn_broad": 0, "cn_industry": 1, "overseas": 2, "benchmark": 9}
+    items.sort(key=lambda x: (order.get(x["group"], 5), x["score"]))
+
+    as_of = max((i["date"] for i in items), default="")
+    print("%-12s %-14s %7s %7s %6s %6s %6s %6s  %s" %
+          ("code", "name", "PE*", "PB", "PE%", "PB%", "DIV%", "score", "档位 / 动作"))
+    print("-" * 108)
+    for it in items:
+        print("%-12s %-14s %7s %7s %6s %6s %6s %6s  %s|%s %.1fx%s%s" % (
+            it["code"], it["name"],
+            "-" if it["pe_ttm"] is None else "%.1f" % it["pe_ttm"],
+            "-" if it["pb_lf"] is None else "%.2f" % it["pb_lf"],
+            "-" if it["pe_pct"] is None else "%.0f" % it["pe_pct"],
+            "-" if it["pb_pct"] is None else "%.0f" % it["pb_pct"],
+            "-" if it["dividend_ratio"] is None else "%.1f" % it["dividend_ratio"],
+            "%.0f" % it["score"], it["zone"], it["action"], it["mult"],
+            ("  << " + "/".join(it["caps"])) if it["caps"] else "",
+            "" if it["tradable"] else "  [无基金]"))
+
+    if missing:
+        print("\n数据不足跳过：%s" % ", ".join("%s(%d)" % (n, b) for _, n, b in missing))
+
+    payload = {"as_of": as_of, "generated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+               "params_version": params.get("version"), "items": items}
+    out_json = args.json or os.path.join(ROOT, "state", "index_signal.json")
+    os.makedirs(os.path.dirname(out_json), exist_ok=True)
+    with open(out_json, "w", encoding="utf-8") as f:
+        json.dump(payload, f, ensure_ascii=False, indent=2)
+    print("\n写入 %s" % out_json)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

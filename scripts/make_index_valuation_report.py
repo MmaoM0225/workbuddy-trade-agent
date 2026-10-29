@@ -470,14 +470,35 @@ def main():
     real = float(port.get("realized_pnl_cny") or 0)
     mv = sum(float(h.get("value") or 0) for h in hold.values())
     cost = sum(float(h.get("cost") or 0) for h in hold.values())
-    unreal = mv - cost
-    total = inv + real + unreal
-    rr = ((real + unreal) / inv * 100) if inv > 0 else 0.0
-    pc = "#b91c1c" if (real + unreal) >= 0 else "#15803d"  # 中国习惯：盈利红、亏损绿
-    book = (stat("累计投入", format(inv, ",.0f"), "#111827", " 元")
-            + stat("已实现盈亏", format(real, "+,.0f"), pc, " 元")
-            + stat("未实现盈亏", format(unreal, "+,.0f"), pc, " 元")
+    # 盯市缺口：有成本却算不出市值（nav 缺失／update_index_portfolio 没跑过）。
+    # 此时绝不能把 mv=0 当成「跌到 0」——那会显示未实现 -360、总资产 0、收益率 -100%，
+    # 是假警报。一律显示「—」并在下面挂提示。
+    unmarked = [k for k, h in hold.items()
+                if float(h.get("cost") or 0) > 0 and not float(h.get("value") or 0) > 0]
+    if unmarked:
+        unreal = None
+        book = (stat("累计投入", format(inv, ",.0f"), "#111827", " 元")
+                + stat("已实现盈亏", format(real, "+,.2f"),
+                       "#b91c1c" if real >= 0 else "#15803d", " 元")
+                + stat("未实现盈亏", "—", "#9ca3af", " 未盯市")
+                + stat("总资产", "—", "#9ca3af", " 未盯市"))
+        book_note = (
+            '<tr><td colspan="4" style="padding:10px 12px;background:#fffbeb;'
+            'border:1px solid #fde68a;border-radius:8px;font-size:12px;color:#78350f;'
+            'line-height:1.7;">'
+            '<b>账本未盯市：%d 只持仓缺市值，未实现盈亏与总资产暂不计算。</b>'
+            '先跑 <code>python scripts/update_index_portfolio.py</code> 补盯市，'
+            '否则任何 -100%% 之类的数字都不作数。</td></tr>' % len(unmarked))
+    else:
+        unreal = mv - cost
+        total = inv + real + unreal
+        rr = ((real + unreal) / inv * 100) if inv > 0 else 0.0
+        pc = "#b91c1c" if (real + unreal) >= 0 else "#15803d"  # 中国习惯：盈利红、亏损绿
+        book = (stat("累计投入", format(inv, ",.0f"), "#111827", " 元")
+            + stat("已实现盈亏", format(real, "+,.2f"), pc, " 元")
+            + stat("未实现盈亏", format(unreal, "+,.2f"), pc, " 元")
             + stat("总资产", format(total, ",.0f"), "#111827", " 元 \u00b7 " + format(rr, "+.2f") + "%"))
+        book_note = ""
 
     data_date = next((r["date"] for r in rows if r["date"]), as_of)
 
@@ -489,7 +510,7 @@ def main():
         roe_th=roe_th * 100, unit=unit,
         buy_html=buy_html, cn_broad_html=cn_broad_html,
         os_broad_html=os_broad_html, ind_html=ind_html,
-        legend=legend, nav=nav_html, stats=stats, book=book,
+        legend=legend, nav=nav_html, stats=stats, book=book, book_note=book_note,
     )
 
     os.makedirs(OUTDIR, exist_ok=True)
@@ -518,6 +539,7 @@ def build_page(**k):
                .replace("__UNIT__", str(k["unit"])) \
                .replace("__STATS__", k["stats"]) \
                .replace("__BOOK__", k["book"]) \
+               .replace("__BOOK_NOTE__", k.get("book_note", "")) \
                .replace("__BUY_HTML__", k["buy_html"]) \
                .replace("__CN_BROAD_HTML__", k["cn_broad_html"]) \
                .replace("__OS_BROAD_HTML__", k["os_broad_html"]) \
@@ -555,6 +577,7 @@ PAGE = """<!DOCTYPE html>
         <tr>__STATS__</tr>
         <tr><td colspan="4" style="height:8px;"></td></tr>
         <tr>__BOOK__</tr>
+        __BOOK_NOTE__
       </table>
     </td></tr>
   </table>
