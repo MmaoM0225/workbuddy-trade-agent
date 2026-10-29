@@ -1,6 +1,6 @@
 {
   "as_of": "20261028",
-  "generated": "2026-10-29 21:48:57",
+  "generated": "2026-10-29 21:54:36",
   "params_version": "v1.0",
   "unit_amount_cny": 10,
   "buys": [
@@ -96,37 +96,11 @@
       "match_level": ""
     },
     {
-      "code": "01801056.PT",
-      "name": "能源金属",
-      "kind": "industry",
-      "market": "CN",
-      "score": 6.2,
-      "zone": "深度低估",
-      "mult": 2.0,
-      "amount_cny": 20.0,
-      "fund": "004432.OF",
-      "fund_name": "南方有色金属ETF联接A",
-      "match_level": "near"
-    },
-    {
-      "code": "01801018.PT",
-      "name": "动物保健Ⅱ",
-      "kind": "industry",
-      "market": "CN",
-      "score": 7.1,
-      "zone": "深度低估",
-      "mult": 2.0,
-      "amount_cny": 20.0,
-      "fund": "016077.OF",
-      "fund_name": "华夏中证农业主题ETF发起式联接A",
-      "match_level": "near"
-    },
-    {
       "code": "01801737.PT",
       "name": "电池",
       "kind": "industry",
       "market": "CN",
-      "score": 7.6,
+      "score": 7.2,
       "zone": "深度低估",
       "mult": 2.0,
       "amount_cny": 20.0,
@@ -135,11 +109,24 @@
       "match_level": "exact"
     },
     {
+      "code": "01801018.PT",
+      "name": "动物保健Ⅱ",
+      "kind": "industry",
+      "market": "CN",
+      "score": 7.5,
+      "zone": "深度低估",
+      "mult": 2.0,
+      "amount_cny": 20.0,
+      "fund": "016077.OF",
+      "fund_name": "华夏中证农业主题ETF发起式联接A",
+      "match_level": "near"
+    },
+    {
       "code": "01801193.PT",
       "name": "证券Ⅱ",
       "kind": "industry",
       "market": "CN",
-      "score": 9.5,
+      "score": 7.9,
       "zone": "深度低估",
       "mult": 2.0,
       "amount_cny": 20.0,
@@ -148,11 +135,24 @@
       "match_level": "exact"
     },
     {
+      "code": "01801056.PT",
+      "name": "能源金属",
+      "kind": "industry",
+      "market": "CN",
+      "score": 9.7,
+      "zone": "深度低估",
+      "mult": 2.0,
+      "amount_cny": 20.0,
+      "fund": "004432.OF",
+      "fund_name": "南方有色金属ETF联接A",
+      "match_level": "near"
+    },
+    {
       "code": "01801101.PT",
       "name": "计算机设备",
       "kind": "industry",
       "market": "CN",
-      "score": 14.8,
+      "score": 10.9,
       "zone": "低估",
       "mult": 1.5,
       "amount_cny": 15.0,

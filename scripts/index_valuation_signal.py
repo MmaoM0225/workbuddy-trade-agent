@@ -220,6 +220,13 @@ def build_broad(uni, params, target_date):
     return items, missing
 
 
+def _model_short(weights):
+    """权重键 → 看板列里的短标签，如 {pb:0.6,ps:0.4} → 'PB+PS'。"""
+    names = {"pb": "PB", "ps": "PS", "pe": "PE", "div": "股息"}
+    ks = sorted((k for k in weights if k in names), key=lambda k: -weights[k])
+    return "+".join(names[k] for k in ks)
+
+
 def build_industry(params, target_date):
     if not os.path.exists(SW):
         return [], []
@@ -230,13 +237,33 @@ def build_industry(params, target_date):
         with open(IFM, encoding="utf-8") as f:
             fmap = json.load(f).get("map", {})
     items, missing = [], []
+    models = params.get("industry_models", {}) or {}
+    mmap = params.get("industry_model_map", {}) or {}
+    default_key = "M_DEFAULT" if "M_DEFAULT" in models else None
     for code, v in sw["map"].items():
         pb_pct, ps_pct = v.get("pb_pct_5y"), v.get("ps_pct_5y")
-        vals = [x for x in (pb_pct, ps_pct) if x is not None]
-        if not vals:
-            missing.append((code, v["name"], "SW", "无 PB/PS 分位"))
+        # 四个分位都可能缺；div 要取反（股息率分位高 = 股息率高 = 便宜）
+        avails = {
+            "pb": pb_pct,
+            "ps": ps_pct,
+            "pe": v.get("pe_pct_5y"),
+            "div": None if v.get("div_pct_5y") is None else (1.0 - v["div_pct_5y"]),
+        }
+        # 按行业属性选模型；模型权重里某个指标缺失时，用剩下的权重重新归一
+        mkey = mmap.get(v["name"], default_key)
+        spec = models.get(mkey) or (models.get(default_key) if default_key else None) or \
+            {"label": "通用·PB+PS", "weights": {"pb": 0.5, "ps": 0.5}}
+        num = den = 0.0
+        for k, w in spec["weights"].items():
+            x = avails.get(k)
+            if x is None:
+                continue
+            num += w * x
+            den += w
+        if den <= 0:
+            missing.append((code, v["name"], "SW", "该模型所需指标全缺"))
             continue
-        score = sum(vals) / len(vals) * 100.0
+        score = num / den * 100.0
         # 隐含 ROE 同比（PB/PE），用于"盈利改善"过滤
         roe_chg = None
         hp = os.path.join(SWD, code + ".csv")
@@ -263,6 +290,8 @@ def build_industry(params, target_date):
             "div_pct": None if v.get("div_pct_5y") is None else round(v["div_pct_5y"] * 100, 1),
             "score": round(score, 1), "zone": zone["name"], "action": zone["action"],
             "mult": zone["mult"], "caps": capped or "",
+            "val_model": mkey, "val_model_label": spec.get("label", ""),
+            "val_model_short": _model_short(spec.get("weights") or {}),
             "constituents": v.get("constituent_count"),
             "fund": (fmap.get(code) or {}).get("primary", {}).get("fund_code", "") if fmap.get(code, {}).get("primary") else "",
             "fund_name": (fmap.get(code) or {}).get("primary", {}).get("fund_name", "") if fmap.get(code, {}).get("primary") else "",

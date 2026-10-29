@@ -215,6 +215,12 @@ def render_row(r, idx, cols):
             else:
                 v = '<span style="color:#9ca3af;">无</span>'
             return "<td style=\"%s\">%s</td>" % (S_TD, v)
+        if k == "model":
+            if not r.get("model"):
+                return '<td style="%s"><span style="color:#9ca3af;">\u2014</span></td>' % S_TD
+            return ('<td style="%s"><span style="display:inline-block;font-size:10px;padding:1px 5px;'
+                    'border-radius:3px;background:#eef2ff;color:#3730a3;white-space:nowrap;">%s</span></td>'
+                    % (S_TD_C, r["model"]))
         if k == "tags":
             return "<td style=\"%s\">%s</td>" % (S_TD, "".join(tag_html(t) for t in r["tags"]))
         raise ValueError("unknown col " + k)
@@ -227,6 +233,7 @@ COL_HEAD = {
     "idx": ("#", S_TH),
     "name": ("标的", S_TH),
     "kind": ("类别", S_TH_C),
+    "model": ("估值模型", S_TH_C),
     "score": ("综合分位", S_TH),
     "zone": ("档位", S_TH),
     "mult": ("倍数 / 金额", S_TH_R),
@@ -293,6 +300,7 @@ def main():
             "pe": it.get("pe"), "pb": it.get("pb"),
             "pePct": it.get("pe_pct"), "pbPct": it.get("pb_pct"), "psPct": it.get("ps_pct"),
             "roe": roe, "fund": it.get("fund") or "", "fundName": it.get("fund_name") or "",
+            "model": it.get("val_model_short") or "", "modelLabel": it.get("val_model_label") or "",
             "date": it.get("date") or "", "isPrice": is_price,
             "roeBlocked": roe_blocked, "buy": bought, "tags": tags,
         })
@@ -428,7 +436,7 @@ def main():
             '<div style="padding:2px 2px 2px;">%s</div></details>'
             % (zid(z), op, fg, fg, z, len(rs), rng,
                "已展开 \u00b7 点标题收起" if z in ZONE_OPEN else "已收起 \u00b7 点标题展开",
-               build_table(rs, ["idx", "name", "score", "mult", "pe", "pb", "detail",
+               build_table(rs, ["idx", "name", "model", "score", "mult", "pe", "pb", "detail",
                                 "roe", "fund", "tags"])))
 
     ind_html = ('<div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;'
