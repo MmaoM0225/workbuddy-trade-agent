@@ -226,6 +226,22 @@ def xirr(flows, end_date, end_value):
     return (lo + hi) / 2
 
 
+def twr(curve):
+    """时间加权收益率：剔除"什么时候投钱"的影响，衡量策略自身表现。"""
+    prod, prev = 1.0, None
+    for day, inv, real, unreal, mv in curve:
+        V = inv + real + unreal
+        if prev is not None:
+            v0, i0 = prev
+            flow = inv - i0
+            if v0 > 1e-9 and flow >= 0:
+                r = (V - v0 - flow) / v0
+                if -1 < r < 5:
+                    prod *= (1 + r)
+        prev = (V, inv)
+    return prod
+
+
 def run(items, cal, params, unit, top_ind, start_i=0, freq="daily", roe_filter=False, roe_th=0.0):
     ex = params["execute"]
     stages = sorted(ex["sell_stages"], key=lambda x: x["min_score"])
@@ -374,8 +390,12 @@ def main():
     print("  + 未实现盈亏    %12s 元" % format(final[3], "+,.0f"))
     print("  = 总资产        %12s 元" % format(total, ",.0f"))
     # 资金加权年化：把每天买入当现金流，期末市值当收回，算 XIRR
-    print("  年化(XIRR)      %11.2f%%   ← 资金加权，这才是可比的" % (
+    print("  年化(XIRR)      %11.2f%%   ← 资金加权：我这笔钱实际年化" % (
         xirr(flows, cal[-1], total) * 100 if flows else 0))
+    _years = len(cal) / 244.0
+    _p = twr(curve)
+    print("  年化(TWR)       %11.2f%%   ← 时间加权：策略自身表现（不受投钱节奏影响）" % (
+        (_p ** (1 / _years) - 1) * 100 if _p > 0 else 0))
     if inv > 0:
         print("  总收益率        %11.2f%%" % ((real + final[3]) / inv * 100))
     print("\n  交易：买入 %d 笔 / 卖出 %d 笔；期末持仓 %d 只" % (
@@ -399,6 +419,11 @@ def main():
         peak = max(peak, r)
         mdd = min(mdd, r - peak)
     print("\n  账面收益率最大回撤 %.2f%%" % (mdd * 100))
+    if os.environ.get("BT_DUMP"):
+        with open(os.environ["BT_DUMP"], "w", encoding="utf-8") as _f:
+            json.dump({"flows": flows, "curve": curve, "total": total, "inv": inv},
+                      _f, ensure_ascii=False)
+        print("  [dump] %s" % os.environ["BT_DUMP"])
 
     print("\n期末持仓（按市值）：")
     tot_mv = sum(h["value"] for h in hold.values()) or 1
