@@ -146,6 +146,7 @@ TAG_STYLE = {
     "ROE过滤": ("#fee2e2", "#b91c1c"),
     "无场外基金": ("#fef3c7", "#92400e"),
     "价格分位": ("#e0e7ff", "#3730a3"),
+    "主板PER代理": ("#fef3c7", "#92400e"),
     "主动基金代理": ("#ede9fe", "#6d28d9"),
     "本期买入": ("#d1fae5", "#065f46"),
 }
@@ -266,6 +267,10 @@ def main():
         tags = []
         if is_price:
             tags.append("价格分位")
+        elif (it.get("metric") or "").strip():
+            # 非价格分位的自定义口径（如日经的「主板PER代理」）必须显式标出来，
+            # 不能让人把代理口径的 PE 当成该指数自己的 PE。
+            tags.append(it["metric"].strip())
         if it.get("proxy_active_fund"):
             tags.append("主动基金代理")
         roe_blocked = False

@@ -212,6 +212,7 @@ def build_broad(uni, params, target_date):
             "pb_pct": None if pbp is None else round(pbp, 1),
             "score": round(score, 1), "zone": zone["name"], "action": zone["action"],
             "mult": mult, "caps": capped or "", "note": m.get("note", ""),
+            "metric": m.get("metric", ""),
             "proxy_active_fund": bool(m.get("proxy_active_fund")),
             "fund": m.get("of_fund", ""), "fund_name": m.get("of_fund_name", ""),
             "tracking_error_1y": m.get("of_te"),

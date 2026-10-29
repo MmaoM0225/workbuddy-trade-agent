@@ -1,5 +1,5 @@
 {
-  "version": "v2.2",
+  "version": "v2.3",
   "updated": "2026-10-29",
   "note": "宽基池：国内 10 + 国外 5 = 15 个（2026-10-29 新增上证50/中证500/科创50/国证2000/恒生指数/恒生国企）。行业层为申万二级全量124个，见 data/warehouse/sw_industry/latest.json。datasource=index 表示用 neodata 指数估值序列自算分位；datasource=price 表示降级用跟踪基金净值分位。",
   "indices": [
@@ -118,7 +118,7 @@
       "group": "overseas",
       "family": "jp225",
       "market": "JP",
-      "datasource": "price",
+      "datasource": "index",
       "fund_hint": "513520.SH",
       "of_fund": "020712.OF",
       "of_fund_name": "华安三菱日联日经225ETF联接(QDII)-A",
@@ -126,8 +126,8 @@
       "tradable": true,
       "nav_fund": "513520.SH",
       "nav_name": "华夏野村日经225ETF",
-      "metric": "价格分位",
-      "note": "日本无公开指数级 PE/PB（Nikkei 官网只给点位，JPX 只出月度「市场整体」PER）。2026-10-29 恢复启用，走跟踪ETF 513520.SH 复权净值 5 年滚动分位，倍数锁 1.0x、不产生卖出信号。",
+      "metric": "主板PER代理",
+      "note": "2026-10-29 启用。日经225 自身没有公开 PE（Nikkei 官网只给点位，无 PER 字段；QUICK/Bloomberg 付费才有）。估值改用 JPX 官方月报《市場別 加权平均PER・PBR》的「主板(プライム)・総合」——加权=总市值÷总盈利，等于 TOPIX 的 PE 口径，1999 年起可得，脚本落到 2020-01 起 81 期（JPX 官网只保留近 7 年）。口径错配须知：估值分位代表「日本主板」，买卖载体是日经225 联接（价格加权、科技权重更高），两者高相关但不是同一标的。报告里该行打「主板PER代理」标签。",
       "enabled": true
     },
     {
@@ -146,8 +146,8 @@
       "nav_name": "天弘越南市场股票(QDII)A",
       "metric": "价格分位",
       "proxy_active_fund": true,
-      "note": "越南 HOSE 不发布日度指数 PE，只有券商研报 PDF 里的图，无可编程序列。2026-10-29 恢复启用，走天弘越南 008763.OF 复权净值滚动分位，倍数锁 1.0x。",
-      "enabled": true
+      "note": "2026-10-29 撤出定投池：HOSE 不发布指数 PE/PB，越南无任何免费估值序列（券商研报只有图，不可编程解析）；价格分位已按用户要求弃用。若将来拿到付费源（FiinPro/Bloomberg）再启用。",
+      "enabled": false
     },
     {
       "code": "SENSEX.GI",
