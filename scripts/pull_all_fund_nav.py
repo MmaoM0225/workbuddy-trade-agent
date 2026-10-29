@@ -58,7 +58,7 @@ def main():
     ok,fail=0,[]
     for i,c in enumerate(codes,1):
         try:
-            rows=ts.call('fund_nav',{'ts_code':c,'start_date':'20190101','end_date':'20261027',
+            rows=ts.call('fund_nav',{'ts_code':c,'start_date':'20100101','end_date':'20261027',
                                      'fields':['ts_code','nav_date','unit_nav','adj_nav']}) or []
             data={}
             for r in rows:

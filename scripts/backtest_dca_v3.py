@@ -415,6 +415,8 @@ def main():
     ap.add_argument("--no-recycle", action="store_true", help="关闭卖出回款再投，现金闲置（对照用）")
     ap.add_argument("--sell-rule", default="ladder", choices=["ladder", "stage"],
                     help="卖出规则：ladder=持续减仓（默认）/ stage=旧的分档各触发一次")
+    ap.add_argument("--cal", default="daily", choices=["daily", "index"],
+                    help="交易日历来源：daily=按 data/warehouse/daily 文件名（仅 2019-11 起）/ index=按沪深300估值序列")
     ap.add_argument("--top", type=int, default=5)
     ap.add_argument("--freq", default="daily", choices=["daily", "monthly"])
     ap.add_argument("--roe-filter", action="store_true", help="行业需隐含ROE同比改善才买")
@@ -431,8 +433,14 @@ def main():
         params = json.load(f)
     if args.roe_th is None:
         args.roe_th = params.get("execute", {}).get("industry_roe_filter", {}).get("roe_th", 0.0)
-    d0 = os.path.join(WD, "daily")
-    cal = sorted(x[:-4] for x in os.listdir(d0) if x.endswith(".csv"))
+    if args.cal == "index":
+        # 用沪深300 的估值序列当交易日历：data/warehouse/daily 只保留近 7 年，
+        # 要跑更长的回测必须切到指数序列（2019 年起，回补后 2015 年起）
+        with open(os.path.join(VAL, "000300.SH.csv"), encoding="utf-8") as f:
+            cal = [r["trade_date"] for r in csv.DictReader(f) if r.get("trade_date")]
+    else:
+        d0 = os.path.join(WD, "daily")
+        cal = sorted(x[:-4] for x in os.listdir(d0) if x.endswith(".csv"))
     cal = [d for d in cal if args.start <= d <= args.end]
     print("日历 %s ~ %s 共 %d 交易日" % (cal[0], cal[-1], len(cal)))
 
@@ -487,13 +495,29 @@ def main():
         print("  %s  总资产 %10s  投入 %10s  收益 %+8.2f%%" % (
             y, format(v[0] + v[1] + v[2], ",.0f"), format(v[0], ",.0f"), r))
 
-    # 最大回撤（按总资产曲线，剔除投入影响用账面收益率）
+    # 回撤两种口径：
+    # ① 账面收益率回撤：定投早期本金小，收益率的百分数抖动极大，长周期会失真到 -50% 以上
     rets = [((x[2] + x[3]) / x[1]) if x[1] > 0 else 0 for x in curve]
     peak, mdd = -9e9, 0
     for r in rets:
         peak = max(peak, r)
         mdd = min(mdd, r - peak)
-    print("\n  账面收益率最大回撤 %.2f%%" % (mdd * 100))
+    # ② 净值回撤（标准口径）：把每日 TWR 连乘成净值曲线再算回撤，不受投入节奏影响
+    nav_i, peak_i, mdd_i, prev = 1.0, 1.0, 0.0, None
+    for day, inv, real, unreal, mv in curve:
+        V = inv + real + unreal
+        if prev is not None:
+            v0, i0 = prev
+            flow = inv - i0
+            if v0 > 1e-9 and flow >= 0:
+                r = (V - v0 - flow) / v0
+                if -1 < r < 5:
+                    nav_i *= (1 + r)
+        prev = (V, inv)
+        peak_i = max(peak_i, nav_i)
+        mdd_i = min(mdd_i, nav_i / peak_i - 1)
+    print("\n  净值最大回撤 %.2f%%   （账面收益率回撤 %.2f%%，定投早期本金小、失真大）"
+          % (mdd_i * 100, mdd * 100))
     if os.environ.get("BT_DUMP"):
         with open(os.environ["BT_DUMP"], "w", encoding="utf-8") as _f:
             json.dump({"flows": flows, "curve": curve, "total": total, "inv": inv,
