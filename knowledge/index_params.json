@@ -96,32 +96,12 @@
     },
     "sell_ladder": [
       {
-        "min_score": 95,
-        "mult": 50,
-        "label": "卖50X"
-      },
-      {
-        "min_score": 90,
-        "mult": 25,
-        "label": "卖25X"
-      },
-      {
-        "min_score": 85,
+        "min_score": 75,
         "mult": 10,
         "label": "卖10X"
-      },
-      {
-        "min_score": 80,
-        "mult": 5,
-        "label": "卖5X"
-      },
-      {
-        "min_score": 75,
-        "mult": 2,
-        "label": "卖2X"
       }
     ],
-    "sell_logic": "按金额倍数卖出（与买入对称）：>=75 每 sell_interval_td=5 个交易日，卖出 sell_unit_cny(10元) × mult 元，mult 随分位递增（75→2X / 80→5X / 85→10X / 90→25X / 95→50X）；单次卖出不超过当前仓位市值。分数跌破 75 暂停，回到 >=75 继续。倍数在 knowledge/index_params.json 里改，不需要动代码。",
+    "sell_logic": "单一档位（2026-10-29 用户定案）：分位 >=75 即开始定卖，此后每 sell_interval_td=5 个交易日卖 sell_unit_cny(10元) × 10 = 100 元，不再按分位分档；单次不超过当前仓位市值（不足则卖光）。分数跌破 75 暂停，回到 >=75 继续。",
     "sell_unit_cny": 10
   },
   "pending": [
