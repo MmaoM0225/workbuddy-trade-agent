@@ -1,0 +1,134 @@
+<!DOCTYPE html><html lang='zh-CN'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>总控巡检 20261030</title><style>
+body{margin:0;padding:0;background:#f5f6f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;color:#1f2329;}
+.wrap{max-width:880px;margin:0 auto;padding:24px 16px 44px;}
+.card{background:#fff;border-radius:10px;padding:20px 22px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+h1{font-size:19px;margin:0 0 14px;font-weight:600;border-left:3px solid #c8102e;padding-left:10px;}
+h2{font-size:14px;margin:18px 0 10px;font-weight:600;color:#1f2329;}
+h3{font-size:13px;margin:14px 0 8px;font-weight:600;color:#646a73;}
+h4{font-size:12.5px;margin:12px 0 6px;font-weight:600;color:#8a9099;}
+p{font-size:13px;line-height:1.75;margin:6px 0;color:#2b3038;}
+ul{margin:6px 0;padding-left:20px;}
+li{font-size:13px;line-height:1.75;color:#2b3038;}
+table{width:100%;border-collapse:collapse;font-size:12.5px;margin:8px 0;}
+th{background:#f7f8fa;color:#646a73;font-weight:500;text-align:left;padding:8px 10px;border-bottom:1px solid #eceef1;}
+td{padding:8px 10px;border-bottom:1px solid #f2f3f5;vertical-align:top;}
+code{background:#f2f3f5;border-radius:3px;padding:1px 5px;font-size:12px;font-family:ui-monospace,Menlo,monospace;}
+.metric{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:6px;}
+.metric div{flex:1 1 130px;background:#fafbfc;border:1px solid #eceef1;border-radius:8px;padding:11px 13px;}
+.metric .k{font-size:11px;color:#8a9099;margin-bottom:4px;}
+.metric .v{font-size:17px;font-weight:600;}
+.footer{text-align:center;color:#a8adb5;font-size:11px;margin-top:18px;}
+.mt{width:100%;border-collapse:separate;border-spacing:7px 0;margin:0 -7px 10px;}
+.mt td{background:#fafbfc;border:1px solid #eceef1;border-radius:8px;padding:11px 13px;vertical-align:top;border-bottom:1px solid #eceef1;}
+.mt .k{font-size:11px;color:#8a9099;margin-bottom:5px;font-weight:400;}
+.mt .v{font-size:18px;font-weight:600;line-height:1.2;}
+.mt .s{font-size:11px;color:#8a9099;margin-top:3px;}
+.up{color:#c8102e;}
+.down{color:#0a8f4d;}
+.badge{display:inline-block;padding:2px 9px;border-radius:10px;font-size:11px;font-weight:600;line-height:1.6;}
+.b-bull{background:#fdecef;color:#c8102e;}
+.b-bear{background:#e8f6ee;color:#0a8f4d;}
+.b-neutral{background:#f1f2f4;color:#646a73;}
+.warnbox{background:#fffbf0;border-left:3px solid #f0a020;border-radius:0 6px 6px 0;padding:10px 14px;margin:8px 0;}
+.warnbox ul{margin:2px 0;padding-left:18px;}
+.warnbox li{font-size:12.5px;line-height:1.7;margin:3px 0;}
+.strategy{background:#f6f9ff;border-left:3px solid #3b6ef0;border-radius:0 6px 6px 0;padding:12px 14px;margin:8px 0;}
+.strategy p{margin:4px 0;font-size:13px;}
+.sig{display:inline-block;min-width:46px;padding:1px 7px;border-radius:4px;font-size:11px;font-weight:600;margin-right:6px;}
+.sig-short{background:#e8f6ee;color:#0a8f4d;}
+.sig-long{background:#fdecef;color:#c8102e;}
+.sig-neutral{background:#f1f2f4;color:#646a73;}
+.dimrow td{font-size:12.5px;}
+.detail{color:#4e5561;font-size:12.5px;line-height:1.7;}
+hr.sep{border:0;border-top:1px dashed #e6e8eb;margin:16px 0;}
+</style></head><body><div class='wrap'><div class='card'><h1>总控巡检 20261030</h1><p style='color:#8a9099;font-size:12px;margin:0'>生成于 20261030</p></div><div class='card'><h2>每日巡检 20261030</h2>
+<p><i>角色：交易总监（总控）｜职责：只读巡检与汇报，不产生任何交易指令</i></p>
+<p><i>触发时间：2026-10-31 00:53（跨零点补跑，详见第 1 节）</i></p>
+<p><i>数据基准日：20261030（data/daily_20261030 存在，无滞后）</i></p>
+<p><i>参数真源：knowledge/params_v3.3.json（params_current.txt = v3.3）</i></p>
+<h3>1. 交易日校验与依赖等待</h3>
+<table>
+<tr><th>项</th><th>结果</th></tr>
+<tr><td>触发时点</td><td>2026-10-31 00:53（周六）。tushare trade_cal SSE：20261031 is_open=0（非交易日）、20261030 is_open=1（交易日）、下一交易日 20261102</td></tr>
+<tr><td>基准日判定</td><td>本次为 20261030 周期的补偿运行：position_manager 于 10-31 00:51 才置 done（date=20261030），inspector 上一完成日为 20261029，故按「取最新数据目录」规则将基准定为 <b>20261030</b>，不按非交易日跳过，避免 10-30 巡检空缺（沿用 20261027 周期的同类处理）</td></tr>
+<tr><td>依赖等待</td><td><code>task_status.py wait inspector --deps position_manager</code> 首次调用即 ready（退出码 0），未消耗重试预算</td></tr>
+<tr><td>数据基准</td><td>data/daily_20261030 存在，与持仓管家基准日一致，无滞后标注</td></tr>
+</table>
+<h3>2. 流水线核验（各环节：产出 / 缺失 / 降级）</h3>
+<table>
+<tr><th>环节</th><th>产出</th><th>状态</th><th>说明</th></tr>
+<tr><td>数据员 23:00</td><td>data/daily_20261030/ 共 10 个文件（indices / market_overview / sector_ranking / news / hot_news / hot_board / dragon_tiger / northbound / cross_check / meta）</td><td>PASS</td><td>含 hot_board.json，无缺失；degraded=false；warehouse 20261030.csv 5571 行</td></tr>
+<tr><td>市场分析师 23:10</td><td>state/regime.json（date=20261030，mtime 23:30）</td><td>WARN</td><td>产物已出且内容完整（bear / light / confidence 0.82 / score -6 / confirmed_days 4），但任务状态仍卡 doing、未置 done、无 mail_regime_20261030.html，详见异常 W-1</td></tr>
+<tr><td>持仓管家 23:20</td><td>reports/position_review_20261030.md（14.7 KB）</td><td>PASS</td><td>卖出决策五类齐全且带 trigger/reason：止损 1 笔（东华软件，trigger=low 5.83 ≤ 止损 5.92，reason=止损清仓，成交价 min(open 6.05, 5.92)=5.92，盈亏 -8.03%）、止盈 0 笔、逻辑破坏 0 笔（列 2 项观察）、bear 分级降仓未触发、权重/行业未超限。今日无换仓交易，qs 对比项 N/A</td></tr>
+<tr><td>建仓链路（周度）</td><td>pool.json(20261023, 50 只) / watchlist.json(20261023, 20 项) / orders.json(10 单)</td><td>INFO</td><td>周度产物非当日更新，符合设计；9 张建仓单 20261106 到期</td></tr>
+<tr><td>指数定投链路</td><td>index_signal / index_orders / index_portfolio / index_plan_20261030.md / nav_history.jsonl(6 点)</td><td>INFO</td><td>已连续运行，尚未纳入 check_pipeline 的 5 文件核验范围，待明确是否纳入或隔离</td></tr>
+<tr><td>邮件产出</td><td>mail_position_20261030.html 已生成；mail_regime_20261030.html 缺失</td><td>WARN</td><td>见异常 W-1</td></tr>
+</table>
+<h3>3. 任务状态（task_status list 快照）</h3>
+<table>
+<tr><th>任务</th><th>状态</th><th>说明</th></tr>
+<tr><td>data_officer</td><td>done</td><td>date=20261030，artifact data/daily_20261030</td></tr>
+<tr><td>market_analyst</td><td><b>doing</b></td><td>date=20261030，23:11 起无更新，artifact=null，异常 W-1</td></tr>
+<tr><td>position_manager</td><td>done</td><td>date=20261030，完成于 10-31 00:51</td></tr>
+<tr><td>inspector</td><td>doing</td><td>本任务，收尾置 done</td></tr>
+<tr><td>stock_picker</td><td>undo</td><td>周度（周六 21:30）</td></tr>
+<tr><td>researcher</td><td>undo</td><td>周度（周六 23:30）</td></tr>
+<tr><td>position_builder</td><td>undo</td><td>周度（周日 00:10）</td></tr>
+<tr><td>reviewer</td><td>undo</td><td>周度（周日 22:00）</td></tr>
+<tr><td>archivist</td><td>undo</td><td>周度（周日 23:10）</td></tr>
+</table>
+<p>日频 4 项中 3 项 done、1 项（market_analyst）卡 doing；周度 5 项 undo，今晚起进入窗口期。</p>
+<h3>4. 数据状态（meta.json）</h3>
+<table>
+<tr><th>项</th><th>值</th></tr>
+<tr><td>date</td><td>20261030</td></tr>
+<tr><td>fetched_at</td><td>2026-10-30 23:00:55</td></tr>
+<tr><td>trading_day</td><td>true</td></tr>
+<tr><td>degraded</td><td><b>false</b></td></tr>
+<tr><td>record_counts</td><td>indices 5 / market_overview_dimensions 8 / sector_top_gainers 15 / sector_bottom_losers 10 / news 50 / hot_news 20 / hot_board 15 / dragon_tiger_unique 83 / northbound 1</td></tr>
+<tr><td>notes 分类</td><td>CONFLICT 2（STOCK_WIDTH、SENTIMENT）、PARTIAL 3（VOLUME_ENERGE、TREND_LONG_DIRECTION、CAP_ROTATION）、DATA-QUALITY 1（龙虎榜 net_amount 单位）、MISSING 1（两融 margin 维度 row 空）、INFO 3、WAREHOUSE 1</td></tr>
+<tr><td>check_result</td><td>exit_code=0，RESULT: PASS（5 个 state 文件 + trades.jsonl，9 个任务状态，params v3.3，拥挤度 84 个月样本）</td></tr>
+</table>
+<p>数据连续性：20261023、26、27、28、29、30 连续 6 个交易日数据齐备，未触发「连续 2 个交易日缺失」。</p>
+<h3>5. 状态文件校验（逐项 PASS / FAIL）</h3>
+<table>
+<tr><th>文件</th><th>校验</th><th>结果</th></tr>
+<tr><td>state/pool.json</td><td>JSON 可解析，date=20261023，stocks 50</td><td>PASS</td></tr>
+<tr><td>state/watchlist.json</td><td>JSON 可解析，date=20261023，items 20</td><td>PASS</td></tr>
+<tr><td>state/regime.json</td><td>JSON 可解析，date=20261030 与基准日一致；regime=bear，severity=light 存在（v1.7 起 bear 必带），confidence 0.82，score -6，confirmed_days 4，switched=false，position_cap_pct=60</td><td>PASS</td></tr>
+<tr><td>state/positions.json</td><td>JSON 可解析，as_of=20261030；现金 608,925 + Σ市值 387,961 = 996,886（勾稽一致）；持仓 8 只，单票最大 8.37%（&lt;15%）、行业最大 火力发电 7.34%（&lt;30%）</td><td>PASS</td></tr>
+<tr><td>state/orders.json</td><td>JSON 可解析，10 单（9 买 + 1 卖）。9 张买单 stop_loss / take_profit <b>全部齐全，缺项 0</b>；1 张卖单 ORD-20261030-S001（东华软件止损）无 stop_loss/take_profit，属卖出单设计内豁免，不计缺失</td><td>PASS</td></tr>
+<tr><td>state/trades.jsonl</td><td>16 行，JSONL 逐行可解析；当日新增 3 条（2 买 1 卖），卖单含 close 与 pnl_pct</td><td>PASS</td></tr>
+<tr><td>state/regime_prev.json</td><td>date=20261029（防前视源，已正确轮转），持仓管家交易决策读此文件而非当日 regime.json</td><td>PASS</td></tr>
+</table>
+<h3>6. 异常清单</h3>
+<table>
+<tr><th>级别</th><th>编号</th><th>内容</th></tr>
+<tr><td>WARN</td><td>W-1</td><td>market_analyst 任务卡在 doing：23:11 起无更新、artifact 为 null、未发 mail_regime_20261030.html。持仓管家 5 次 × 9 分钟等待耗尽后，凭四项数据新鲜度核验（data_officer done / warehouse 当日 5571 行 / regime_prev 已轮转 / regime.json 已出）继续执行并披露于日报第 0 节。任务状态未复位若延续至 20261102 将升 critical</td></tr>
+<tr><td>WARN</td><td>W-2</td><td>R-006 到期处置方案逾期：9 张建仓单 20261106 到期，R-015 要求 T-5（即 20261030）出具处置方案，截至本次巡检未见方案文件或决策记录</td></tr>
+<tr><td>WARN</td><td>W-3</td><td>在途 12 档占用 23.98%，已用仓位 38.92% + 在途 23.98% = 62.90% &gt; cap 60%，补仓可用缺口为负，本轮 A 单为 0（连续多轮）</td></tr>
+<tr><td>WARN</td><td>W-4</td><td>regime 临界：score -6 恰等于 bear_light_max_score，距 heavy 门槛 -8 仅 2 分；bear 已连续确认 4 日；risk_level=high。任一中性维度转 -2 即触发 heavy 降仓至 heavy_target_pct</td></tr>
+<tr><td>WARN</td><td>W-5</td><td>数据质量延续项：STOCK_WIDTH / SENTIMENT 两项 high 级标签冲突（标签与 82.52% 个股下跌的现实背离）、两融 margin 维度缺失致情绪第三判据无法验证、龙虎榜 net_amount 单位实为万元（字段名标亿，差 10000 倍）</td></tr>
+<tr><td>WARN</td><td>W-6</td><td>周度 5 任务仍为 undo（stock_picker / researcher / position_builder / reviewer / archivist），需在今晚 21:30 起的窗口复位，否则订单到期后无新候补</td></tr>
+<tr><td>INFO</td><td>I-1</td><td>当日成交：买入 2 笔（中国动力 seq3 29.94×700=20,958 元；中航机载 seq2 10.93×1600=17,488 元），卖出 1 笔（东华软件止损清仓 5.92×9600=56,832 元，-8.03%），东华软件进入 20 个交易日冷却</td></tr>
+<tr><td>INFO</td><td>I-2</td><td>当日 -0.15% vs 上证 -1.44%，超额 +1.29pp；总资产 996,886（累计 -0.31%），仓位 38.92%，现金 61.08%，持仓 8 只；净值曲线 6 点</td></tr>
+<tr><td>INFO</td><td>I-3</td><td>待拍板项未销项：P11（bear 下既有订单剩余限价档是否放行，今日据此成交 2 档）、P12（是否把「单季 ROE&lt;0 且单季净利率&lt;5%」写入逻辑破坏清仓判据）、P2（researcher_veto 与卖出判据口径对齐）</td></tr>
+<tr><td>INFO</td><td>I-4</td><td>距止损最近：中国动力 +4.02%（28.64）、长源电力 +4.90%（3.47）；最接近成交的 pending 档：淮河能源 seq2（3.04，+0.66%）、长源电力 seq3（3.58，+0.84%）</td></tr>
+<tr><td>INFO</td><td>I-5</td><td>拥挤度 40.77%（MTD，升温带），覆盖规则 f「只记录不干预」，cap 不打折；连续 4 期环比下行，cleared=true</td></tr>
+</table>
+<p>无 CRITICAL。升级规则三项均未触发：买单缺止损 0 张、数据无连续 2 日缺失、regime 未切换（bear/light → bear/light，confirmed_days 3→4），故本次不追加「建议实时会商」。</p>
+<h3>7. 邮件发送状态</h3>
+<p>SENT（send_report_mail.py --type inspect --date 20261030 → 1920442561@qq.com）</p>
+<h3>8. 下一步动作</h3>
+<p>1. 复位 market_analyst：确认 20261030 的 regime.json 已完整产出后手工置 done 并补发 regime 邮件；若 20261102 仍为 doing，按协议升 critical 并考虑实时会商。</p>
+<p>2. R-006：20261102-20261106 内给出 9 单到期处置方案（展期 / 冻结 / 自然到期），并按 R-015 补齐 T-5 流程。</p>
+<p>3. 在途档位：决定是缩短 order_pending_trading_days，还是在 bear 下冻结老单，以释放 cap 额度（当前补仓为 0）。</p>
+<p>4. 周度链路：今晚 21:30 stock_picker → 23:30 researcher → 周日 00:10 position_builder，务必跑通，否则 20261106 后无新候补。</p>
+<p>5. 拍板 P11 / P12 / P2，并同步 script / params / rules / agent 提示语四处。</p>
+<p>6. 重点观察：中国动力（距止损 4.02%）、长源电力（4.90%，且 Q3 单季亏损）；淮河能源 seq2 为最可能下一档成交。</p>
+<p>---</p>
+<ul>
+<li>报告：reports/daily_20261030.md</li>
+<li>状态：state/tasks/inspector.json → done（date=20261030, reason=ok）</li>
+<li>本次巡检未修改 state/ 与 data/ 任何业务文件</li>
+</ul></div><div class='footer'>多 Agent 协同交易框架自动生成 · 模拟盘研究记录，不构成投资建议</div></div></body></html>
