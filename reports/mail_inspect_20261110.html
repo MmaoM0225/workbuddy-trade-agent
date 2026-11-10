@@ -1,0 +1,257 @@
+<!DOCTYPE html><html lang='zh-CN'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>总控巡检 20261110</title><style>
+body{margin:0;padding:0;background:#f5f6f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;color:#1f2329;}
+.wrap{max-width:880px;margin:0 auto;padding:24px 16px 44px;}
+.card{background:#fff;border-radius:10px;padding:20px 22px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+h1{font-size:19px;margin:0 0 14px;font-weight:600;border-left:3px solid #c8102e;padding-left:10px;}
+h2{font-size:14px;margin:18px 0 10px;font-weight:600;color:#1f2329;}
+h3{font-size:13px;margin:14px 0 8px;font-weight:600;color:#646a73;}
+h4{font-size:12.5px;margin:12px 0 6px;font-weight:600;color:#8a9099;}
+p{font-size:13px;line-height:1.75;margin:6px 0;color:#2b3038;}
+ul{margin:6px 0;padding-left:20px;}
+li{font-size:13px;line-height:1.75;color:#2b3038;}
+table{width:100%;border-collapse:collapse;font-size:12.5px;margin:8px 0;}
+th{background:#f7f8fa;color:#646a73;font-weight:500;text-align:left;padding:8px 10px;border-bottom:1px solid #eceef1;}
+td{padding:8px 10px;border-bottom:1px solid #f2f3f5;vertical-align:top;}
+code{background:#f2f3f5;border-radius:3px;padding:1px 5px;font-size:12px;font-family:ui-monospace,Menlo,monospace;}
+.metric{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:6px;}
+.metric div{flex:1 1 130px;background:#fafbfc;border:1px solid #eceef1;border-radius:8px;padding:11px 13px;}
+.metric .k{font-size:11px;color:#8a9099;margin-bottom:4px;}
+.metric .v{font-size:17px;font-weight:600;}
+.footer{text-align:center;color:#a8adb5;font-size:11px;margin-top:18px;}
+.mt{width:100%;border-collapse:separate;border-spacing:7px 0;margin:0 -7px 10px;}
+.mt td{background:#fafbfc;border:1px solid #eceef1;border-radius:8px;padding:11px 13px;vertical-align:top;border-bottom:1px solid #eceef1;}
+.mt .k{font-size:11px;color:#8a9099;margin-bottom:5px;font-weight:400;}
+.mt .v{font-size:18px;font-weight:600;line-height:1.2;}
+.mt .s{font-size:11px;color:#8a9099;margin-top:3px;}
+.up{color:#c8102e;}
+.down{color:#0a8f4d;}
+.badge{display:inline-block;padding:2px 9px;border-radius:10px;font-size:11px;font-weight:600;line-height:1.6;}
+.b-bull{background:#fdecef;color:#c8102e;}
+.b-bear{background:#e8f6ee;color:#0a8f4d;}
+.b-neutral{background:#f1f2f4;color:#646a73;}
+.warnbox{background:#fffbf0;border-left:3px solid #f0a020;border-radius:0 6px 6px 0;padding:10px 14px;margin:8px 0;}
+.warnbox ul{margin:2px 0;padding-left:18px;}
+.warnbox li{font-size:12.5px;line-height:1.7;margin:3px 0;}
+.strategy{background:#f6f9ff;border-left:3px solid #3b6ef0;border-radius:0 6px 6px 0;padding:12px 14px;margin:8px 0;}
+.strategy p{margin:4px 0;font-size:13px;}
+.sig{display:inline-block;min-width:46px;padding:1px 7px;border-radius:4px;font-size:11px;font-weight:600;margin-right:6px;}
+.sig-short{background:#e8f6ee;color:#0a8f4d;}
+.sig-long{background:#fdecef;color:#c8102e;}
+.sig-neutral{background:#f1f2f4;color:#646a73;}
+.dimrow td{font-size:12.5px;}
+.detail{color:#4e5561;font-size:12.5px;line-height:1.7;}
+hr.sep{border:0;border-top:1px dashed #e6e8eb;margin:16px 0;}
+</style></head><body><div class='wrap'><div class='card'><h1>总控巡检 20261110</h1><p style='color:#8a9099;font-size:12px;margin:0'>生成于 20261110</p></div><div class='card'><h2>每日巡检 20261110</h2>
+<ul>
+<li>巡检 agent：交易总监（总控）</li>
+<li>实际运行时间：2026-11-10 21:00（计划 23:50，流水线已于 20:34 全部收官，提前巡检）</li>
+<li>数据基准日：20261110（<code>data/daily_20261110/</code> 存在，无滞后）</li>
+<li>交易日校验：<code>mcp__tushare__trade_cal</code> SSE 20261110 <code>is_open=1</code>，下一交易日 20261111（11-11/11-12/11-13 均 <code>is_open=1</code>）</li>
+<li>参数真源：<code>knowledge/params_v3.3.json</code></li>
+<li>结论：<b>1 CRITICAL + 8 WARN + 6 INFO</b>；<code>check_pipeline --date 20261110</code> 退出码 1 FAIL（唯一失败项 <code>market_overview.json: empty</code>）</li>
+</ul>
+<p>---</p>
+<h3>流水线核验（各环节：产出/缺失/降级）</h3>
+<table>
+<tr><th>环节</th><th>计划</th><th>实际</th><th>产出</th><th>判定</th></tr>
+<tr><td>数据员</td><td>23:00</td><td>20:05-20:07（提前约 3 小时）</td><td><code>data/daily_20261110/</code> 11 文件</td><td><b>降级</b>（五文件空壳）</td></tr>
+<tr><td>市场分析师</td><td>23:10</td><td>done @20:20:10</td><td><code>state/regime.json</code></td><td>PASS</td></tr>
+<tr><td>持仓管家</td><td>23:20</td><td>done @20:34:00</td><td><code>reports/position_review_20261110.md</code>（18.0 KB）</td><td>PASS</td></tr>
+<tr><td>总控巡检</td><td>23:50</td><td>本报告</td><td><code>reports/daily_20261110.md</code></td><td>进行中</td></tr>
+<tr><td>选股师（周六）</td><td>周六 21:30</td><td>done @2026-11-07 20:05</td><td><code>state/pool.json</code>(20261106, 50 只)</td><td>PASS（artifact 字段空缺，见 W-6）</td></tr>
+<tr><td>研究员（周六）</td><td>周六 23:30</td><td>done @2026-11-07 21:50</td><td><code>state/watchlist.json</code>(20261106, 16 只)</td><td>PASS（落后本次数据 2 个交易日，属周频正常）</td></tr>
+<tr><td>建仓经理（周日）</td><td>周日 00:10</td><td><b>undo @2026-11-07 21:13</b></td><td>无（<code>orders.json</code> 未改写）</td><td><b>WARN</b>（见 W-1）</td></tr>
+<tr><td>复盘官（周日）</td><td>周日 22:00</td><td>done @2026-11-08 23:13</td><td><code>reviews/weekly_202645.md</code></td><td>PASS</td></tr>
+<tr><td>档案管理员</td><td>周日 23:10</td><td>done @2026-11-08 23:13</td><td><code>knowledge/rules.md</code></td><td>PASS</td></tr>
+</table>
+<h4>a. 数据员</h4>
+<ul>
+<li>11 个文件全部落盘：<code>indices / market_overview / sector_ranking / news / hot_news / hot_board / dragon_tiger / northbound / cross_check / same_day_derived / meta</code>。</li>
+<li><b>五文件为空壳</b>（<code>missing=true</code>）：<code>market_overview</code>、<code>sector_ranking</code>、<code>news</code>、<code>hot_news</code>、<code>hot_board</code>。根因 westock-mcp 401 未授权，无人值守环境 <code>reconnect_plugin</code> 被拒（refused）。<b>11-09、11-10 连续 2 个交易日</b>，已达 critical 门槛（见 C-1）。</li>
+<li>有效数据：<code>indices</code> 5、<code>dragon_tiger</code> 51 只去重（58 条）、<code>northbound</code> 1、<code>same_day_derived</code>（warehouse 全A 5573 只自算宽度）。</li>
+<li><code>degraded=true</code>，<code>meta</code> 内已如实标注 <code>[connector]</code> 待人工补跑，未用前一日数据顶替（合规）。</li>
+</ul>
+<h4>b. 市场分析师</h4>
+<ul>
+<li><code>regime.json</code> <code>date=20261110</code> 与数据基准日一致；<code>regime=bear</code>、<code>severity=light</code>（v1.7 起 bear 必带 severity，字段存在）。</li>
+<li>score <b>+4</b>、confidence <b>0.73</b>、<code>confirmed_days</code> 2→3、<code>position_cap_pct=60</code>、<code>effective_from=20261111</code>、<code>switched=false</code>。</li>
+<li>切换链路（防抖第 4 次拦截）：纯分数 +4 ≥ <code>bull_min_score</code> 4 → bull；趋势钳制（close 3663.72 &lt; MA20 3679.62）→ 降 neutral；conf 0.73 &lt; <code>anti_flip_confidence</code> 0.75 → 维持 bear/light。与 20261104 完全同型（+4 / 0.73 / 差 0.02）。</li>
+<li><b>板块维度缺失按铁律不计分（score 0 仅占位）</b>，六维实际只有五维参与：趋势 0 / 宽度 +2 / 情绪 +2 / 量能 0 / 资金 0 / 板块 0（缺）。</li>
+<li>该维度的缺失不是中性事件：据分析师自述，若补采后板块为 +2，score 将达 +6、conf 0.82 → <b>切 neutral、cap 60→70</b>。即当前 bear 判定在相当程度上是「缺数据压制」的结果。</li>
+</ul>
+<h4>c. 持仓管家</h4>
+<ul>
+<li><code>reports/position_review_20261110.md</code> 存在且完整（10 节）。</li>
+<li><b>卖出决策 0 笔，逐类判定齐全</b>：止损（8 只逐一 <code>low ≤ stop_loss</code>，0 触发）、止盈（<code>high ≥ take_profit</code>，0 触发）、逻辑破坏（快讯源缺失，改用 <code>sector_signals</code> 交叉，0 触发）、bear 降仓（severity=light 不触发）、单票/行业超限（无）、换仓（<code>rotation.enabled=false</code>）。</li>
+<li>无卖单，故「每张卖单带 trigger/reason」无可核验对象；换仓记录不适用。</li>
+<li><b>成交执行 4 笔</b>（<code>ORD-20261109-A003~A006</code>），全部按当日开盘价成交：龙佰 1,700@15.45、国货航 7,700@4.12、长源 9,300@3.79、振华 9,300@4.29，合计 28,000 股 / 133,133 元。<b>未用收盘价判定、未用最低价当成交价，v2.4 口径正确</b>。</li>
+<li>补仓脚本 <code>topup --apply</code>：已用 58.6%、在途 0.0%、可用 1.39pp &lt; 最小缺口 1.50pp → 本轮不补（脚本按设计判定，未改参数凑单）。</li>
+<li>集中模式 <code>concentrate --apply</code>：regime=bear 不触发（仅 bull）。</li>
+<li>熔断：回撤 <b>-0.6845%</b>（防前视口径）距 -15% 触发线 14.3pp，未触发。</li>
+<li>组合终态：总资产 <b>999,241</b>，当日 <b>-0.7609%</b> vs 上证 +0.0801%（超额 <b>-0.84pp</b>），累计 <b>-0.0759%</b> vs 基准 -0.72%（累计超额 <b>+0.65pp</b>），仓位 <b>58.61%</b>、现金 41.39%、持仓 8 只。现金与市值勾稽一致（413,612 + 585,629 = 999,241）。</li>
+</ul>
+<h4>d. 任务状态</h4>
+<p>9 个任务中 8 个 done，1 个 undo（<code>position_builder</code>）。</p>
+<p>---</p>
+<h3>任务状态（task_status list 快照）</h3>
+<p>```</p>
+<p>data_officer       done   date=20261110  reason=ok              artifact=data/daily_20261110            updated=2026-11-10T20:07:35</p>
+<p>market_analyst     done   date=20261110  reason=ok              artifact=state/regime.json              updated=2026-11-10T20:20:10</p>
+<p>position_manager   done   date=20261110  reason=ok              artifact=reports/position_review_20261110.md  updated=2026-11-10T20:34:00</p>
+<p>inspector          doing  date=20261110  reason=None            artifact=None                           updated=2026-11-10T21:00:57</p>
+<p>stock_picker       done   date=20261106  reason=None            artifact=None                           updated=2026-11-07T20:05:05</p>
+<p>researcher         done   date=20261107  reason=ok              artifact=state/watchlist.json           updated=2026-11-07T21:50:10</p>
+<p>position_builder   undo   date=20261107  reason=stale-watchlist  artifact=None                           updated=2026-11-07T21:13:36</p>
+<p>reviewer           done   date=20261107  reason=ok              artifact=reviews/weekly_202645.md       updated=2026-11-07T21:03:59</p>
+<p>archivist          done   date=20261108  reason=ok              artifact=knowledge/rules.md             updated=2026-11-08T23:13:50</p>
+<p>```</p>
+<ul>
+<li>日频 4 任务（数据员 / 分析师 / 持仓管家 / 总控）全部当日完成，链路无断点。</li>
+<li><code>position_builder</code> 自 2026-11-07 起维持 undo，状态零变化，已连续 3 个日历日、跨 1 个交易周（详见 W-1）。</li>
+<li><code>stock_picker</code> 置 done 但 <code>reason</code> 与 <code>artifact</code> 均为 null（见 W-6），实际产物 <code>state/pool.json</code>(20261106, 50 只) 已生成。</li>
+</ul>
+<p>---</p>
+<h3>数据状态（record_counts、degraded、check_result）</h3>
+<table>
+<tr><th>项</th><th>值</th></tr>
+<tr><td><code>degraded</code></td><td><b>true</b>（连续第 2 个交易日）</td></tr>
+<tr><td><code>fetched_at</code></td><td>2026-11-10 20:05:47（较计划 23:00 提前约 3 小时）</td></tr>
+<tr><td>indices</td><td>5</td></tr>
+<tr><td>market_overview_dimensions</td><td><b>0</b> / 8（应 8）</td></tr>
+<tr><td>sector_top_gainers / bottom_losers</td><td><b>0 / 0</b></td></tr>
+<tr><td>news / hot_news / hot_board</td><td><b>0 / 0 / 0</b></td></tr>
+<tr><td>dragon_tiger_unique</td><td>51（58 条记录）</td></tr>
+<tr><td>northbound</td><td>1（北向净流入 +19.83 亿，连续第 3 日净流入）</td></tr>
+<tr><td>trading_day</td><td>true</td></tr>
+</table>
+<p><b>当日市场（same_day_derived，warehouse 全A 自算）</b>：涨 4266 / 跌 1156 / 平 149，涨股比 <b>76.58%</b>，中位 <b>+1.31%</b>、均值 +1.73%；涨停约 94-95、跌停约 0-3；成交 <b>15,167.45 亿</b> = 20 日均 16,447.48 亿的 <b>92.22%</b>（环比 +1.48%）；20 日新高 447、新低 71。</p>
+<p><b>指数</b>：上证 3663.72（+0.08%）、深证 11241.54（+0.86%）、创业板 2494.40（+1.46%）、沪深300 4059.11（+0.07%）、中证500 6645.89（+0.91%）。五指数全红但幅度极小，<b>指数与个股宽度严重背离</b>（个股中位 +1.31% 跑赢沪深300 1.24pp）——权重股拖累、指数严重低估个股赚钱效应。五大指数均仍在 MA20/MA60 下方（上证距 MA60 -4.38%、创业板 -19.70%）。</p>
+<p><b><code>check_result</code>（<code>scripts/check_pipeline.py --date 20261110</code>）</b>：退出码 <b>1</b>，<code>=== RESULT: FAIL ===</code>，唯一失败项 <code>market_overview.json: empty</code>。</p>
+<p>通过项：<code>[state] 5 files + trades.jsonl schema ok</code>、<code>[state] business rules ok</code>、<code>[tasks] 9 task states ok</code>、<code>[params] current=v3.3 (params_v3.3.json)</code>、<code>[crowding] history.csv 85 months</code>、<code>[data] indices 5 / dragon_tiger 10(top) / northbound 1</code>。</p>
+<p>说明：失败项与 state/tasks/params 无关，根因为连接器未授权导致的空文件，非数据结构或脚本错误。</p>
+<p><b>拥挤度</b>：MTD 口径 <b>42.5118%</b>（mtd_days=7，pct_rank 84.5），落 [35, 45) <b>升温档 / watch</b>，距 <code>warn_pct</code> 45 仅 <b>2.49pp</b>；<code>prev_month</code> 40.769%、<code>mom</code> +1.74pp；日频 42.6564%。覆盖规则 f（只记录、不干预），cap 不打折。</p>
+<p><b>交叉校验</b>（<code>cross_check.json</code>）：consistent 1 / conflict 1 / info 9 / data_quality 2。唯一 conflict 为 <code>index-vs-breadth</code>（指数与宽度背离，属事实描述非错误）；2 项 data_quality 为「五文件缺失」与「成交额口径差异」。</p>
+<p>---</p>
+<h3>状态文件校验（pool/watchlist/regime/positions/orders.json + trades.jsonl）</h3>
+<table>
+<tr><th>文件</th><th>关键内容</th><th>判定</th></tr>
+<tr><td><code>state/pool.json</code></td><td>date=20261106，strategy_version=v3.3，universe_size=2502，count=50</td><td><b>PASS</b></td></tr>
+<tr><td><code>state/watchlist.json</code></td><td>date=20261106，source_pool_date=20261106，items=16，mode=production</td><td><b>PASS</b>（落后本次数据 2 个交易日，属周频节奏）</td></tr>
+<tr><td><code>state/regime.json</code></td><td>date=20261110，bear/light，score=+4，conf=0.73，cd=3，cap=60，eff=20261111，switched=false，severity 字段存在</td><td><b>PASS</b></td></tr>
+<tr><td><code>state/regime_prev.json</code></td><td>date=20261109，bear/light，cap=60，eff=20261110（防前视基准，持仓管家据此决策）</td><td><b>PASS</b></td></tr>
+<tr><td><code>state/positions.json</code></td><td>as_of=20261110，持仓 8 只，cash 413,612 + mv 585,629 = 999,241，权重合计 58.62% + 现金 41.39% = 100%</td><td><b>PASS</b></td></tr>
+<tr><td><code>state/orders.json</code></td><td>16 张（9 filled / 7 expired / <b>0 pending</b>），date=20261023。15 张买单靠 sl/tp 全覆盖；1 张卖单 <code>ORD-20261030-S001</code> 无 sl/tp 属设计豁免</td><td><b>PASS（止损止盈齐全，缺项 0）</b></td></tr>
+<tr><td><code>state/trades.jsonl</code></td><td>22 行，逐行 JSON 解析通过，最新 3 行为今日 A004/A005/A006 成交</td><td><b>PASS</b></td></tr>
+<tr><td><code>state/nav_history.jsonl</code></td><td>新增 20261110：total_asset 999,241、pnl -0.08%、position 58.61%、benchmark 3663.7235</td><td><b>PASS</b></td></tr>
+</table>
+<p>补充核验：</p>
+<ul>
+<li>单票上限：最大 中远海控 8.47% &lt; 15% PASS；行业上限：最大 火力发电 11.10%（长源 7.49 + 淮河 3.61）&lt; 30% PASS。</li>
+<li>8 只持仓 <code>stop_loss</code> / <code>take_profit</code> 全部齐全且与持仓管家日报逐项一致（positions.json 为权威执行值）。</li>
+<li><code>orders.json</code> 中 7 张已成交买单 <code>stop_loss_recalc_required=true</code>，表明其 sl/tp 仍是建仓预览值，<b>与 positions.json 存在系统性偏差</b>（见 W-3，属数值陈旧、非缺失，不触发会商）。</li>
+</ul>
+<p>---</p>
+<h3>异常清单（逐条标注 critical/warn/info）</h3>
+<h4>CRITICAL</h4>
+<p><b>C-1　消息面与板块结构连续 2 个交易日全缺（westock 401）</b></p>
+<ul>
+<li>事实：<code>market_overview / sector_ranking / news / hot_news / hot_board</code> 五文件在 20261109、20261110 连续两个交易日均 <code>missing=true</code>、record_counts 全 0。11-06 时为完整（8 维度 / 15 / 50 / 20 / 15）。</li>
+<li>根因：westock-mcp 连接器 <code>auth-required</code>（401）。数据员已在无人值守环境尝试 <code>reconnect_plugin</code>，被判 refused，无法自愈，必须人工在连接器面板重新授权「腾讯自选股」。</li>
+<li>影响（三层，均已在当日被下游显式披露）：</li>
+</ul>
+<p>  1. <b>regime 判定被压制</b>：板块维度缺失按铁律不计分。分析师测算若补采为 +2，则 score +4→+6、conf 0.73→0.82 → 切 neutral、cap 60→70。即当前「bear/light cap 60」有可能是缺数据造成的假性维持，而不是市场真实状态。</p>
+<p>  2. <b>逻辑破坏检测失效 2 日</b>：持仓管家 <code>news.json</code> 0 条，个股级负面（立案、减持、业绩爆雷）完全不可识别，只能退化到 <code>sector_signals</code> 行业级交叉。当前 8 只持仓在该盲区下运行。</p>
+<p>  3. <b>定性标签、板块结构、估值分位</b>全部不可用，<code>cross_check</code> 已判 data_quality 并明令不得用前一日数据顶替（两日市场结构已完全反转：11-09 沪强深弱、56.51% 个股下跌；11-10 成长领涨、76.58% 个股上涨）。</p>
+<ul>
+<li>为何本轮升 critical：规则门槛为「连续 2 日缺失」。昨日（11-09）按单日缺失记 warn，并在报告中承诺「若明日仍缺则升 critical」。今日确认第 2 日，故升级，非新问题。</li>
+<li>解除条件：人工重新授权 westock-mcp → <code>fetch_daily_mcp.py --date 20261110</code> 重跑覆盖空壳（11-09 需一并补跑）→ <code>check_pipeline</code> 退出码回 0。</li>
+</ul>
+<h4>WARN</h4>
+<p><b>W-1　建仓经理（position_builder）维持 undo，结构性缺陷未修（连续第 3 轮）</b></p>
+<ul>
+<li>状态：<code>undo @2026-11-07 21:13，reason=stale-watchlist</code>，零变化。<code>skip_log</code> 记录：当日 <code>watchlist.json</code> date=20261030（落后 5 个交易日）、<code>regime=bear/light</code>（R-001 禁新建仓）、<code>available = 60 - 39.65 - 30.35 = -10.00%</code> 三重独立阻断 → 0 单，<code>orders.json</code> 未改写。</li>
+<li>定性：<b>业务结论正确，状态语义与调度机制有缺陷</b>。三重阻断中任意一条单独即可判定 0 单，在 bear/light 下「不建仓」是合规而非故障；建仓经理选择不写盘、不改 <code>orders.json</code> 也是正确的风险处置（<code>build_orders_live.py</code> 的 bear 分支存在破坏性写盘，只在沙箱副本执行）。</li>
+<li>真正的问题在调度侧，有两个独立缺陷：</li>
+</ul>
+<p>  1. <b><code>task_status.py wait</code> 只看 <code>status</code> 不看 <code>date</code></b>：11-07 21:13 时 <code>researcher</code> 仍是上周的 <code>done</code>（date=20261030），wait 立即通过，建仓经理拿到的却是陈旧 watchlist。</p>
+<p>  2. <b>流水线整体提前，环节间隔被压没</b>：本次各环节实际在 20:05-20:34 完成（计划 23:00-23:20）；11-07 当天 <code>researcher</code> 21:10 触发、21:50 完成，而 <code>position_builder</code> 21:13 触发——<b>比上游早 37 分钟</b>，必然读到陈旧数据。</p>
+<ul>
+<li>影响可控但会复发：当前 <code>orders.json</code> 已 0 在途（9 filled / 7 expired），明日无自动成交，不存在资金风险；<code>watchlist.json</code> 现已更新到 20261106（16 只），下次窗口 11-15（周日 00:10）若不修，大概率重演。<b>必须在 11-15 前把 wait 改为「status=done 且 date ≥ 目标数据日」</b>。</li>
+</ul>
+<p><b>W-2　<code>orders.json</code> 计划集停在 20261023，整套限价体系空转（第 12 个交易日）</b></p>
+<ul>
+<li>16 张订单全部终结：9 filled、7 expired（<code>ORD-20261023-001~009</code> 按 R-006 于 20261109 到期，12 档作废，在途 23.98%→0）。</li>
+<li>当前无任何 pending 档位，<code>build_orders_live</code> 的 carried 逻辑不会接续 expired 单，<b>下一轮全新订单序列完全依赖 11-15 建仓经理</b>。若 W-1 不修，则 11-16 起组合将持续「只有存量、无新增买入路径」。</li>
+</ul>
+<p><b>W-3　已成交买单 sl/tp 为预览值，未按实际成本回算（<code>recalc_required=true</code>，中国动力第 7 日）</b></p>
+<ul>
+<li><code>orders.json</code> 与 <code>positions.json</code> 系统性不一致（positions 为准）：</li>
+</ul>
+<table>
+<tr><th>标的</th><th>orders sl/tp</th><th>positions sl/tp（权威）</th><th>状态</th></tr>
+<tr><td>中国动力</td><td>29.01 / 37.84</td><td>28.64 / 37.36</td><td>陈旧第 7 日</td></tr>
+<tr><td>中远海控</td><td>14.66 / 19.12</td><td>15.19 / 19.81</td><td>陈旧</td></tr>
+<tr><td>中航机载</td><td>10.22 / 13.33</td><td>10.38 / 13.54</td><td>陈旧</td></tr>
+<tr><td>龙佰集团</td><td>13.25 / 17.28</td><td>13.58 / 17.72</td><td>陈旧</td></tr>
+<tr><td>国货航</td><td>3.51 / 4.58</td><td>3.63 / 4.74</td><td>陈旧</td></tr>
+<tr><td>长源电力</td><td>3.47 / 4.53</td><td>3.48 / 4.54</td><td>陈旧</td></tr>
+<tr><td>振华重工</td><td>3.83 / 4.99</td><td>3.89 / 5.07</td><td>陈旧</td></tr>
+<tr><td>淮河能源</td><td>2.86 / 3.73</td><td>2.86 / 3.73</td><td>一致</td></tr>
+</table>
+<ul>
+<li>属数值陈旧、非缺失，不触发会商；但两处真源并存是隐患（若下游误读 orders.json 会提前 0.37 元止损中国动力）。</li>
+</ul>
+<p><b>W-4　指数定投链路 as_of 停 20261106，滞后 2 个交易日（连续第 5 轮，仍未纳入 check_pipeline）</b></p>
+<ul>
+<li><code>index_signal.json</code> / <code>index_orders.json</code> 均 <code>as_of=20261106</code>，<code>index_portfolio.json</code> 无 as_of 字段；文件最后写入 2026-11-09 21:25。</li>
+<li>该链路至今未进入 <code>check_pipeline</code> 的 5 文件核验范围，缺失不会被自动发现。</li>
+</ul>
+<p><b>W-5　数据员 20:05 提前取数（第 6 日）</b></p>
+<ul>
+<li>较计划 23:00 提前约 3 小时。本轮 <code>news/hot</code> 因连接器本无数据，时点偏差不构成额外损失；<code>indices/dragon_tiger/northbound</code> 为 tushare 收盘后定稿值，不受影响。但该模式已固化，若某日 westock 恢复，20:05 取数将漏掉当日 20:05-23:00 快讯。</li>
+</ul>
+<p><b>W-6　<code>stock_picker</code> 置 done 但 <code>reason</code> 与 <code>artifact</code> 均为 null</b></p>
+<ul>
+<li>实际产物存在（<code>state/pool.json</code> date=20261106, universe 2502, count 50），仅状态字段不完整。巡检据此无法从 task 文件直接追溯产物，需回读 pool.json 才能确认。</li>
+</ul>
+<p><b>W-7　拥挤度距警戒线仅 2.49pp，且处 84.5 历史分位</b></p>
+<ul>
+<li>MTD 42.5118%（升温档），<code>warn_pct=45</code>、<code>alert_pct=50</code>。越线将触发规则 e：<code>risk_level=high</code> + 禁止新建仓（不改 regime/cap）。在「已无在途订单」的状态下影响有限，但在 11-15 重建订单后会直接压制成交。</li>
+<li>月环比 +1.74pp、ma3 42.05%，趋势向上。</li>
+</ul>
+<p><b>W-8　补仓通道实质关闭：仓位 58.61% 距 cap 60 仅 1.39pp</b></p>
+<ul>
+<li><code>topup</code> 判定可用缺口 1.39pp &lt; <code>min_gap_pp</code> 1.50pp → 本轮不补。在 regime 维持 bear（cap 60）且无新建仓许可的前提下，<b>明日依旧没有买入路径</b>；反之若 regime 切 neutral（cap 70），可用额度将一次性跳到 11.39pp，需先重算再下单（P14 已预警）。</li>
+</ul>
+<h4>INFO</h4>
+<p><b>I-1　指数与个股宽度严重背离，组合风格正好站在弱势一侧</b></p>
+<ul>
+<li>五指数全红但上证仅 +0.08%、沪深300 +0.07%；个股涨股比 76.58%、中位 +1.31%。组合 -0.7609%，超额 -0.84pp。</li>
+<li>归因：组合集中在船舶/水运/航空/电力/化工（权重 + 资源 + 防御），正是当日资金流出方；存量持仓贡献 -6,407 元，今日 4 笔补仓按「开盘买、收盘计」贡献 -1,255 元，<b>补仓不是主因</b>。</li>
+</ul>
+<p><b>I-2　持仓结构与风控约束全部合规</b>：8 只、单票最大 8.47% &lt; 15%、行业最大 11.10% &lt; 30%、持仓数 8 = <code>min_holdings</code> 下沿（bear 禁新建仓故未达 default 10 只）。</p>
+<p><b>I-3　熔断未触发但仓位已越过「熔断目标 40% + buffer 5pct」</b>：当前 58.61% &gt; 45%。极端情形下若回撤直接击穿 -15%，将立即产生约 18.6pp（18.6 万元）的强制减仓指令。当前回撤 -0.6845%，距触发线 14.3pp。</p>
+<p><b>I-4　中国动力距止损仅 +1.92%，为建仓以来最紧</b>：low 29.19 vs 止损 28.64。若明日低开跌破，将清仓 8.25% 仓位并进入 20 个交易日冷却期。</p>
+<p><b>I-5　v2.4 成交口径执行正确</b>：4 张 A 单全部按开盘价成交，未用收盘价判定、未用最低价当成交价；R-023 因无在途档位作废 0 档；未上调任何挂单价追价。</p>
+<p><b>I-6　分歧点：<code>market_overview</code> 缺失的实际方向影响是「向下压制仓位」</b>：缺数据 → 板块 0 分 → 未触发 bull → 维持 bear cap 60。这与「缺数据 → 看不清 → 降仓」的直觉一致，但代价是若板块实际为正，组合会错过一次 cap 60→70 的扩容窗口（约 10pp 额度）。两种错误都不致命，但连续 2 日存在即需拍板。</p>
+<p>---</p>
+<h3>邮件发送状态</h3>
+<ul>
+<li>邮件：已发送至 1920442561@qq.com（<code>scripts/send_report_mail.py --type inspect --date 20261110</code>），状态 <b>SENT</b></li>
+</ul>
+<p>---</p>
+<h3>下一步动作</h3>
+<p>1. <b>【最高优先，人工】重新授权 westock-mcp「腾讯自选股」连接器</b>，随后执行 <code>fetch_daily_mcp.py --date 20261110</code> 覆盖空壳，并补跑 20261109（两日五文件均已丢失且不可回溯：<code>hot_news</code>/<code>hot_board</code> 为实时榜，历史不可回看；<code>news</code> 仅覆盖近 24 小时）。完成后 <code>check_pipeline --date 20261110</code> 应回退出码 0。</p>
+<p>2. <b>【11-15 前必须修】<code>task_status.py wait</code> 增加 date 新鲜度判定</b>（要求 <code>status=done 且 date ≥ 目标数据日</code>），否则建仓经理在 11-15 仍会立刻通过 wait 并再次判 stale-watchlist，连续第 3 个周期 0 单。</p>
+<p>3. <b>【11-15 前】重排周日窗口的触发顺序</b>：<code>researcher</code> 与 <code>position_builder</code> 在提前到 21:00 窗口后间隔仅 3 分钟（11-07 实测 pb 早 37 分钟），需保证 pb 晚于 researcher 完成，或让 pb 显式等待当日 watchlist 落盘。</p>
+<p>4. <b>【持仓管家】回算并回写 7 张已成交买单的 sl/tp 到 <code>orders.json</code></b>（以 positions.json 为源），清除 <code>recalc_required=true</code>，消除两处真源并存；中国动力已陈旧 7 日。</p>
+<p>5. <b>【持仓管家/次日】中国动力止损盯盘</b>：low 29.19 距 28.64 仅 1.92%，为最近标的；同时关注 中远海控（-2.37%、距成本 +2.50%）是否连续跑输行业。</p>
+<p>6. <b>【参数线】<code>check_pipeline</code> 纳入指数链路（index_signal/index_orders/index_portfolio）或明确标记为停用</b>——已连续 5 轮滞后，至今无自动发现机制。</p>
+<p>7. <b>【待拍板汇编】</b> P11/P17（bear 期间 A 单是否算新建仓，今日据此成交 13.29pp）、P13/P20（<code>check_pipeline</code> 应接受 expired/cancelled 档状态）、P19（补仓单单档 100% 与每单 ≥2 档互斥）、P16（qs_map 取不到老持仓质量分）、P12（单季 ROE&lt;0 且净利率&lt;5% 是否写入逻辑破坏）、P14（regime 切 neutral 后额度跳升需先重算）、P21（熔断未触发时 40% 是否作软上限）、P22（五文件连续缺失期间是否需要降级规则：例如强制 cap 打折或暂停新建仓）。</p>
+<p>---</p>
+<h3>建议实时会商</h3>
+<p><b>触发依据</b>：数据连续 2 个交易日缺失（C-1，<code>market_overview/sector_ranking/news/hot_news/hot_board</code> 连续两日全空）。</p>
+<p>建议议程：</p>
+<p>1. <b>缺数据期间的仓位规则</b>：当前 bear cap 60 是在「板块维度 0 分」下得出的。是维持现状（缺数据按不计分、等效不降仓也不扩容），还是在五文件缺失日强制 cap 打折 / 暂停新建仓？该规则一旦确定，可同时覆盖 P22。</p>
+<p>2. <b>C-1 的处置责任链</b>：无人值守 automation 无法完成 westock 重新授权，这是流程硬约束。需确认由谁在什么时点补授权，以及授权后 11-09/11-10 两日的补跑由哪个 agent 执行（<code>news</code>/<code>hot_news</code>/<code>hot_board</code> 历史不可回溯，只能记缺）。</p>
+<p>3. <b>W-1 的修复归属与截止时间</b>：<code>task_status.py wait</code> 缺 date 判定 + 周日窗口环节倒置，两项必须在本周内修完，否则 11-15 建仓经理第 3 个周期仍为 0 单，11-16 起框架无新增买入路径。建议在会上直接指定改动人与验收标准。</p></div><div class='footer'>多 Agent 协同交易框架自动生成 · 模拟盘研究记录，不构成投资建议</div></div></body></html>
