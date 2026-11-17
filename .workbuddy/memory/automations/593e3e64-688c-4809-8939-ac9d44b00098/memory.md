@@ -208,3 +208,16 @@
 - regime 未切换：bear/light，score -4→-6（趋势由 0 转 -2，MA5 一日内下穿 MA10）、conf 0.73→0.82、cd 6→7、cap 60、eff 20261117、switched=false。三项升级规则仅「数据连续缺失」命中 → 追加「建议实时会商」三议程（heavy 门槛被数据悬置 / pm 挂死处置责任链 / 11-17 起空转是否接受）。
 - 产出：reports/daily_20261116.md（约 15 KB）+ mail_inspect_20261116.html（25.9 KB），邮件 SENT（queued=true，已核验正文含会商段）；commit a522dde，**push 成功**（连带补推 11-13 的 37e254d，积压清零）。
 - 经验：①协议里的「不写报告」是用来防「基于半成品数据下结论」，本轮数据是定稿的、缺的是汇报件，性质不同——**判 upstream 是否就绪要看「产物是否定稿」而非只看状态位**，但这类偏离必须显式声明并留下可撤销的痕迹；②「假 doing」与「假 undo」同一轮出现，说明框架的**状态位已普遍脱离事实**，巡检应同时核对状态与产物两条线；③把风险从「可能」量化到「差 0.95pp」比反复写 critical 更有用——下轮若板块回升至 23 个行业即解除，可直接对表。
+
+## 2026-11-17（第十七次运行，成功；当日 21:00 触发，流水线 20:34 收官）
+- 交易日确认：trade_cal SSE 20261117 is_open=1（tushare 正常）。数据基准 data/daily_20261117 齐备 12 文件、无滞后、degraded=true；依赖 position_manager 首次 wait 即 ready，预算 0 消耗。
+- 结论：**3 CRITICAL + 9 WARN + 6 INFO**。check_pipeline --date 20261117 退出码 1 FAIL，唯一项 market_overview.json: empty（第 7 日）；8 任务 done + position_builder undo；7 个状态文件核验（positions.json 顶层勾稽轻度 FAIL）；17 张买单订单级 sl/tp 缺项 0（2 张卖单豁免）。
+- **C-3（本轮核心，首次进巡检报告）**：`build_orders_live.py`（mtime 2026-10-29，19 天未修）bear 分支 L114-146 与满仓分支 L182-192 写盘只保留 `side==buy && status==filled` 并覆盖写，丢全部卖单/expired/planned 在途、头部 15 字段只剩 6、date 取 `wl["date"]` 会回退；build 经理 11-15 沙箱实测 19→9 张。check_pipeline 只校验现存结构 → 静默损毁，trades.jsonl order_id 悬空（R-018）。pb 已记录 3 次（11-01/11-07/11-15）但从未上报，本轮靠读 pb_status_20261115.html 才发现。**教训：其他 agent 的 HTML 状态报告是被埋没的信号源，不能只看 task_status + 主产物。**
+- **C-2（新增，决策级）**：板块代理口径 11/105=10.48% 已破 20% 阈值 9.52pp（11-16 为「差 0.95pp」，本轮反向突破且当日五指数盘中全创 52 周新低）→ 若采信则 score -8 → bear/heavy → cd=8≥2 须立即降至 20%（卖约 35.2pp/34.9 万元，7 只全受影响）。按「缺失不计分」取 light 属合规，但制度默认乐观；11-18 开盘前须裁定（P24）。
+- **C-1（延续第 7 日）**：westock 401 五文件全空。**W-1 三因并行**：①`task_status.py:97` wait 仍只判 status 不看 date（mtime 10-25）；②周六 11-14 周度窗口整体未运行（researcher 停 11-07）；③11-15 补跑时 pb 13:51 早于 researcher 14:11 → 第 3 个连续 0 单周期，11-22 第 4 次。今日 orders pending=0/planned=0，连续第 8 个交易日无新建仓单。
+- 上轮 C-1（pm 卡 doing）解除：11-16 中断在 doing，11-17 自愈接管 + 补 nav 两点 + 报告第 0 节披露；上轮 nav_history FAIL 已修复（18 条）。P25（doing 告警）仍未落地。
+- 新 W：W-2 positions.json 顶层 market_value_cny=545,016 为 11-16 残值（Σ持仓 547,527，差 2,511；position_pct 55.10 vs 55.21）；W-3 orders.json 头部 planned_* 残值（holdings_before=0 实际 7 只、planned_new=9 实际 0、planned_total_weight 70 > base 60，P24 第 2 日）；W-6 拥挤度 42.8928% 距 45 余 2.11pp；W-8 指数链路 as_of 停 20261113 第 7 轮。
+- 当日：0 买 0 卖（账面无可执行买单）；总资产 991,687、当日 +0.2538% vs 上证 -0.4994%（超额 +0.753pp）、累计 -0.8313% vs -2.87%（超额扩至 +2.04pp）、仓位 55.21%、7 只、回撤 -2.4330% 熔断未触发。
+- regime 未切换（bear/light cd 7→8，score -6=light 下边界，conf 0.82，cap 60，eff 20261118）。三条升级规则仅「数据连续 2 日缺失」命中 → 追加「建议实时会商」三议程（板块口径裁定 / C-3 修前禁用 / 11-22 兜底）。
+- 产出：reports/daily_20261117.md（18.2 KB）+ mail_inspect_20261117.html（25.2 KB），邮件 SENT（queued=true），commit 8586c9a。
+- 经验：①每轮除 task_status 与主产物外，必须抽读**下游 agent 的 HTML 状态报告**（pb_status_*.html），本轮 C-3 只存在于该文件；②同一规则连续多轮产生同一方向偏差（缺失维度默认不计分 → 连续 7 日压住 heavy），应升级为「制度默认值」议题而非继续按日记录。
