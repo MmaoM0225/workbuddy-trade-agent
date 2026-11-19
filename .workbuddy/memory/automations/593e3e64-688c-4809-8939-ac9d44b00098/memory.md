@@ -221,3 +221,26 @@
 - regime 未切换（bear/light cd 7→8，score -6=light 下边界，conf 0.82，cap 60，eff 20261118）。三条升级规则仅「数据连续 2 日缺失」命中 → 追加「建议实时会商」三议程（板块口径裁定 / C-3 修前禁用 / 11-22 兜底）。
 - 产出：reports/daily_20261117.md（18.2 KB）+ mail_inspect_20261117.html（25.2 KB），邮件 SENT（queued=true），commit 8586c9a。
 - 经验：①每轮除 task_status 与主产物外，必须抽读**下游 agent 的 HTML 状态报告**（pb_status_*.html），本轮 C-3 只存在于该文件；②同一规则连续多轮产生同一方向偏差（缺失维度默认不计分 → 连续 7 日压住 heavy），应升级为「制度默认值」议题而非继续按日记录。
+
+## 2026-11-18（第十八次运行，成功；当日 21:01 触发，流水线 20:55 收官）
+- 交易日确认：trade_cal SSE 20261118 is_open=1（下一交易日 20261119）。数据基准 data/daily_20261118 齐备 12 文件、无滞后、degraded=true；依赖 position_manager 首次 wait 即 ready，预算 0 消耗。
+- 结论：**2 CRITICAL + 9 WARN + 7 INFO**。check_pipeline --date 20261118 退出码 1 FAIL，唯一项 market_overview.json: empty（第 8 日）；8 任务 done + position_builder undo；11 个状态断面全 PASS（positions 顶层勾稽本轮已修复，11-17 的 W-2 销项）；17 张买单 sl/tp 缺项 0（2 张卖单豁免）。
+- **C-1 延续第 8 日**：westock 401，五文件 11-09~11-18 全空（对照 11-06 完整日 8/15/50/20/15）。**C-2 决策级第 2 日未裁**：代理口径 10/105=9.52%（11-17 为 11/105=10.48%，连续 2 日在 20% 下方）→ 采信即 -8/bear/heavy，confirmed_days=9≥2 须降 heavy_target_pct=20，卖约 35pp/35 万元，7 只全受影响。
+- **W-1 第 4 个连续 0 单周期**：pb 仍 undo @20261115，源头仍是 `cmd_wait` 只判 status 不看 date（脚本 mtime 2026-10-25 未修）+ 周六窗口环节倒置（pb 13:51 早于 researcher 14:11）。orders 无 pending/planned，连续第 8 个交易日无新建仓单；11-22 00:10 为第 5 次。
+- regime 未切换（bear/light，score -6，conf 0.82，cd 8→9，cap 60，eff 20261119，switched=false）。三项升级规则仅「数据连续 2 日缺失」命中 → 报告末尾追加「建议实时会商」三议程（板块口径终裁 / 授权责任链 / 11-22 兜底）。
+- 当日：0 买 0 卖（账面无可执行买单）；总资产 989,701、当日 -0.2003% vs 上证 +0.0910%（超额 -0.291pp）、累计 -1.0299% vs -2.78%（超额 +1.75pp）、仓位 55.12%、7 只、回撤 -2.3812% 熔断未触发。盘中 3 指数创 52 周新低却全收涨（长下影）。
+- 新记录：W-7 tushare 20:01~20:33 全站 502（10 探 9 DOWN），当日行情仅单次落盘；W-8 中航机载 low 距止损仅 +2.41%（一日收窄 3.76pp）+ 放量 2.21 倍创 20 日新低；I-3「创 52 周新低」盘中/收盘两口径表述相反（meta 记无、regime 记 3 只），分析师已在 tag_conflicts 标注；I-6 订单级 sl 陈旧收敛到仅 A008 偏差 1.06% 且方向保守。
+- 产出：reports/daily_20261118.md（16.8 KB）+ mail_inspect_20261118.html（23.3 KB），邮件 SENT（queued=true，已核验正文含会商段），commit 9afae12 **push 成功**。
+- 经验：①「连续 2 日缺失」是唯一稳定命中的升级规则，报告里应把 C-1/C-2 拆成「数据可得性」与「决策悬置」两条，否则第 8 日仍会写成同一个 critical；②同一缺陷跨轮复现时（wait 不看 date）应引用脚本 mtime 作为「未修」的硬证据，比重复措辞有力；③订单级 sl 陈旧应逐张与 actual_cost×0.92 对表，本轮据此把上轮的 WARN 降为 INFO（仅 1 张活单偏差 1.06%）。
+
+## 2026-11-19（第十九次运行，成功；当日 21:00 触发，流水线 20:34 收官）
+- 交易日确认：trade_cal SSE 20261119 is_open=1（下一交易日 20261120，11-21/22 休市）。数据基准 data/daily_20261119 齐备 12 文件、无滞后、degraded=true；依赖 position_manager 首次 wait 即 ready，预算 0 消耗。
+- 结论：**2 CRITICAL + 9 WARN + 7 INFO**。check_pipeline --date 20261119 退出码 1 FAIL，唯一项 market_overview.json: empty（第 9 日）；8 任务 done + position_builder undo；11 个状态断面全 PASS（positions 勾稽差 0.00、nav 20 条、trades 27 行无悬空 id）；17 张买单 sl/tp 缺项 0（2 张卖单豁免）。
+- **regime 首次进 heavy（本轮核心）**：bear/light(cap60) → bear/heavy(score -8, conf 0.85, cd 10, cap 20, eff 20261120)，switched=false（仅档位升级）。唯一增量是量能 78.94% 首破 80%（双口径同解）→ heavy 由主口径独立达成，11-17/11-18 悬置的 P24 板块代理争议被绕开（采信则 -10，回退 light 物理不可能）。
+- **C-2 明日必做**：heavy 降仓 35.30pp ≈ 348,679 元 / 63,800 股，7 只全部由 7.27~8.83% 降至约 2.857%。列为 critical 的理由是「未执行即违规」，非流水线故障。
+- **新增 P27（本轮最有价值发现）**：heavy_target_pct=20 与 min_single_weight_pct=3 直接冲突（20/8=2.5%、20/7=2.857% 均 <3）→ heavy 到位必然违反单票下限。二选一：min_single 仅约束新建仓，或 heavy 下 min_holdings 下调至 ≤6。明日执行前须裁定。
+- W-1 第 3 个连续 0 单周期：pb 仍 undo @20261115；复核源码 `task_status.py`（mtime 2026-10-25）`cmd_wait` 仍 `read_status(d) != "done"` 不看 date，第 5 周未修；orders 0 pending/0 planned 第 5 日；11-22 00:10 为下一窗口。
+- 新 W：W-2 orders 头部 planned_* 残值第 4 日（holdings_before=0 实际 7、planned_new=9 实际 0、weight 70>base 60）；W-3 pool/watchlist 停 20261113 滞后 4 日且持仓 7<8；W-4 指数链路 as_of 20261117 滞后 2 日（第 9 轮）；W-5 中航机载 low 距止损 +2.99%；W-6 topup 5.03pp 闲置第 8 日（明日 cap20 后自然失效）；W-7 数据员 20:01 取数第 7 日；W-8 拥挤度 42.8557% 距 45 余 2.14pp；W-9=P27。
+- 当日：0 买 0 卖（第 5 个零成交日，成因「账面无可执行买单」）；总资产 987,600、当日 -0.2123% vs 上证 -0.2847%（超额 +0.0724pp）、累计 -1.2400% vs 基准 -3.0581%（超额 +1.8181pp）、仓位 55.03%、7 只、回撤 -2.3812% 熔断未触发。
+- 产出：reports/daily_20261119.md（10.9 K 字符）+ reports/mail_inspect_20261119.html（23.5 KB），邮件 SENT（queued=true），commit 1306420 **push 成功**。
+- 经验：①参数自洽性应每次跨段核对（heavy_target ÷ min_holdings vs min_single），本轮 P27 就是「两条各自正确的参数在极端档位下互斥」，只看单条永远发现不了；②severity 档位切换虽非方向切换，但 cap 落差 40pp 远大于方向切换的 10pp，报告里应按 regime 级事件处理并命中会商规则；③「未执行即违规」的强制动作也算 critical，不能因为「不是故障」就降级为 warn。
