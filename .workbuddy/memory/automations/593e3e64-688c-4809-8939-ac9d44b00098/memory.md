@@ -244,3 +244,26 @@
 - 当日：0 买 0 卖（第 5 个零成交日，成因「账面无可执行买单」）；总资产 987,600、当日 -0.2123% vs 上证 -0.2847%（超额 +0.0724pp）、累计 -1.2400% vs 基准 -3.0581%（超额 +1.8181pp）、仓位 55.03%、7 只、回撤 -2.3812% 熔断未触发。
 - 产出：reports/daily_20261119.md（10.9 K 字符）+ reports/mail_inspect_20261119.html（23.5 KB），邮件 SENT（queued=true），commit 1306420 **push 成功**。
 - 经验：①参数自洽性应每次跨段核对（heavy_target ÷ min_holdings vs min_single），本轮 P27 就是「两条各自正确的参数在极端档位下互斥」，只看单条永远发现不了；②severity 档位切换虽非方向切换，但 cap 落差 40pp 远大于方向切换的 10pp，报告里应按 regime 级事件处理并命中会商规则；③「未执行即违规」的强制动作也算 critical，不能因为「不是故障」就降级为 warn。
+
+## 2026-11-20（第二十次运行，成功；当日 21:00 触发，流水线 20:35 收官）
+- 交易日确认：`mcp__tushare__trade_cal` **未注入**（本轮 tushare 掉线），改 `westock/data_trade_calendar` → 20261120 isTrading=true，本地三源交叉一致；下一交易日 20261123。数据基准 data/daily_20261120 齐备 10 文件、无滞后；依赖 position_manager 首次 wait 即 ready。
+- 结论：**0 CRITICAL + 10 WARN + 6 INFO**。`check_pipeline --date 20261120` **退出码 0 PASS**（自 11-06 以来首次），唯一告警是 crowding 落后 1 日。9 任务 8 done + position_builder undo；7 个状态文件 + trades.jsonl(34 行，0 悬空) 全 PASS；17 张买单订单级 sl/tp 缺项 0（9 张卖单豁免）。
+- **三处历史 critical 同日解除（本轮核心）**：①westock 401 五文件空壳 11-09~11-19 连续 9 个交易日后**首次恢复**（8/15/50/20/15），market_overview 8 维、sector 124 类；②11-19 预案的 **heavy 降仓按期执行**，7 只部分减仓 63,600 股/344,176 元，仓位 54.70%→19.71%，实现 -3,010.45（-0.867%），`trades.jsonl`/`orders.execution`/`positions` 三方逐笔一致；③订单侧零缺失。
+- 连接器**角色反转**：westock 恢复、tushare 掉线 → warehouse/daily/20261120 未生成、northbound missing、indices/dragon_tiger 走 westock 降级通道（pre_close 逐项校验一致）。仅当日单日缺失，未达「连续 2 日」门槛，记 W-4 不升 critical。
+- 三项升级规则**全部不触发**（0 缺止损订单 / 数据未连续 2 日缺失 / `switched=false` bear+heavy 第 2 日），本轮**不追加建议实时会商**。
+- 当日：0 买 7 卖；总资产 981,829、当日 -0.5844% vs 上证 -1.2251%（超额 +0.64pp）、累计 -1.8171% vs -4.25%（超额 +2.43pp）、仓位 19.71%、7 只、回撤 -3.1577% 熔断未触发。全市场涨股比 5.61%、20 日新低 4437 只（79.5%）、仅 12/124 板块上涨。
+- **W-6 新证据（本轮最有价值发现）**：P27 不只参数互斥——`build_orders_live.py:178` `base_pct < min_single_weight_pct` 会在 cap 20 下直接判「无可用仓位」输出 0 单，即**修好 wait 也建不出新单**；与 R-001 同向故本日无实际损害，但需定性为「规则巧合」还是「预期设计」。
+- 新 W：W-7 长源电力 low 3.49 vs 止损 3.48（**+0.29%**，建仓以来最紧，已创 52 周新低）、W-8 中航机载 +1.45%、W-2 orders 头部残值第 5 日、W-3 pool/watchlist 停 20261113 滞后 5 日、W-5 拥挤度停 42.8557%/11-19、W-9 指数链 as_of 20261118（第 10 轮）、W-10 标签 1 conflict+3 partial + margin 空 + valuation T-1 + 20:07 取数第 8 日。
+- 产出：reports/daily_20261120.md（约 12 KB）+ mail_inspect_20261120.html（26.3 KB），邮件 SENT（queued=true），commit b12d4de **push 成功**，inspector 置 done(20261120, ok)。
+- 经验：①连接器交替失效时，交易日校验要先用可用源（westock）而非直接判“无法校验”，本地三源交叉仍是兜底；②历史 critical 解除要在报告里写明「解除依据+剩余降级项」，否则读者会把「PASS」误读为「数据完全恢复」；③参数冲突要用源码行号坐实影响路径（本轮 build_orders_live.py:178），只写“参数互斥”永远推不动拍板。
+
+## 2026-11-23（第二十一次运行，成功；当日 21:00 触发，流水线 20:36 收官）
+- 交易日确认：trade_cal SSE 20261123 is_open=1（下一交易日 20261124）。数据基准 data/daily_20261123 齐备 12 文件、无滞后、degraded=false；依赖 position_manager 首次 wait 即 ready，预算 0 消耗。
+- 结论：**2 CRITICAL + 8 WARN + 6 INFO**。`check_pipeline --date 20261123` **退出码 0 PASS**（连续第 2 日）；9 任务 8 done + position_builder undo；7 个状态断面全 PASS；10 张买单订单级 sl/tp 缺项 0（11 张卖单 trigger/reason 齐全）。
+- **C-1（本轮核心，明日前必裁）**：regime severity heavy→light，cap 20→60，eff 20261124 → 明日 topup `room=45.82pp`、`target=12%/只`、5 只缺口各约 9.1pp ≥ min_gap → 脚本将单日买入约 **45 万元**。但分析师 pending_human_action 明写「cap 60 是上限不是目标、缺口不得买入」，脚本只读 cap 不读 severity。叠加周报：topup 管道本周 8 批 / 24.5% NAV 全负（-8,082 元），限速器 D-08 仍未拍板。
+- **C-2**：R-037 规则连续第 2 周不可验证 —— positions.json 无 `twenty_day_low`/`quality_score`，今日日报 R-037 出现 0 次。巡检侧用 warehouse 自算 20 日窗口核实**当日无漏执行**（5 只收盘均高于 20 日收盘低点，001391 最紧 +0.77%），故定性为「规则不可判定」而非「漏减仓」。
+- 当日：0 买 2 卖（600372 中航机载 2600@10.38、000966 长源电力 7800@3.48，均 low≤止损、成交价=min(open,stop)，机械止损）；仓位 19.71%→14.18%、持仓 7→5；总资产 981,630、当日 -0.0203% vs 上证 +0.1459%（-0.1662pp）、累计 -1.837% vs -4.11%（超额 +2.2689pp）、回撤 -3.1773% 熔断未触发。
+- 三项升级规则：0 缺止损订单 / 数据未连续缺失 / switched=false，但 severity 档位切换按 11-19 先例按 regime 级事件处理 → 报告末尾追加「建议实时会商」三议程（P29 topup 闸门 / R-037 双修 / 建仓链路修复与补跑）。
+- 新记录：W-1 pb 第 4 个连续 0 单周期（undo @20261121，picker 20:04 → pb 21:14 → researcher 21:43，wait 仍不看 date，脚本 mtime 2026-10-25），orders pending/planned 双 0 第 9 个交易日；W-2 build_orders_live 破坏性写盘第 4 次复现（mtime 2026-10-29）；W-3 orders 头部残值第 6 日；W-4 订单级 sl 4/5 陈旧；W-5 持仓 5<8 且单票 <3%；W-7 指数链路无 20261123 计划、as_of 停 20261119（第 11 轮）。
+- 产出：reports/daily_20261123.md（约 15 KB）+ mail_inspect_20261123.html（24.5 KB），邮件 SENT（queued=true），inspector 置 done(20261123, ok)。
+- 经验：①severity 松绑（cap 20→60）比收紧更危险——收紧由脚本强制、松绑由脚本自动放量，巡检必须把「明日脚本会自动做什么」算出来，不能只核「今日做了什么」；②规则不可验证与规则被违反要分开表述（本轮 R-037 是前者），否则会把「未触发」误读成「未执行」；③周报的下游结论（L-007 topup 成本闸门、8 批全负）是判断当日风险的现成弹药，应主动回读而非只扫当日产物。
