@@ -267,3 +267,27 @@
 - 新记录：W-1 pb 第 4 个连续 0 单周期（undo @20261121，picker 20:04 → pb 21:14 → researcher 21:43，wait 仍不看 date，脚本 mtime 2026-10-25），orders pending/planned 双 0 第 9 个交易日；W-2 build_orders_live 破坏性写盘第 4 次复现（mtime 2026-10-29）；W-3 orders 头部残值第 6 日；W-4 订单级 sl 4/5 陈旧；W-5 持仓 5<8 且单票 <3%；W-7 指数链路无 20261123 计划、as_of 停 20261119（第 11 轮）。
 - 产出：reports/daily_20261123.md（约 15 KB）+ mail_inspect_20261123.html（24.5 KB），邮件 SENT（queued=true），inspector 置 done(20261123, ok)。
 - 经验：①severity 松绑（cap 20→60）比收紧更危险——收紧由脚本强制、松绑由脚本自动放量，巡检必须把「明日脚本会自动做什么」算出来，不能只核「今日做了什么」；②规则不可验证与规则被违反要分开表述（本轮 R-037 是前者），否则会把「未触发」误读成「未执行」；③周报的下游结论（L-007 topup 成本闸门、8 批全负）是判断当日风险的现成弹药，应主动回读而非只扫当日产物。
+
+## 2026-11-24（第二十二次运行，成功；当日 21:00 触发，流水线 20:36 收官）
+- 交易日确认：trade_cal SSE 20261124 is_open=1（下一交易日 20261125）。数据基准 data/daily_20261124 齐备 12 文件、无滞后、degraded=false；依赖 position_manager 首次 wait 即 ready，预算 0 消耗。
+- 结论：**1 CRITICAL + 8 WARN + 5 INFO**。`check_pipeline --date 20261124` 退出码 0 PASS（连续第 3 日）；9 任务 8 done + position_builder undo；7 个状态断面全 PASS（positions 勾稽差 0、nav 21 条已追加当日、trades 36 行 0 悬空）；17 张买单订单级 sl/tp 缺项 0（11 张卖单豁免）。
+- **C-1 性质转换（本轮核心）**：P29 第 2 日未裁。11-23 是「脚本会自动放量 46pp/45 万元」的超限风险；11-24 持仓管家**主动挂起 topup 未 apply**（只跑 dry-run），风险已被人为拦截，转为「每日一次未授权偏离」（提示词第 4 步要求 apply）。挂起三依据可核：replay L1258 的 `regime != "bear"` 闸门、分析师明写「缺口不得买入」、46pp 不可逆。需 11-25 09:30 前三选一（补闸门 / 照执行 / ≤10pp 限速）。
+- **W-1 failure mode 变了**：position_builder 第 5 个连续 0 单周期，但本轮 `undo reason=upstream-not-ready`，**不是** stale-watchlist（watchlist 已 11-21 21:43 刷至 20261120，前两周陈旧问题解除）。真因纯环节倒置：pb 21:11 早于 researcher 21:43，`task_status.py wait` 仍只看 status 不看 date（mtime 2026-10-25，第 6 周未修）。业务 0 单合规（R-001 bear 禁建仓），状态语义应记 done(regime-blocked)。
+- **新增可执行断言建议**：`check_pipeline` 应加「expired 订单不得含 pending 档」（现 7 张 expired 仍留 12 档 pending）与「filled 买单 actual_cost 必须非空」（现 A001~A007 七张 actual_cost/actual_shares=null，A007 连 actual_amount_cny 亦 null；pm 报告所称「回填完成」指 tranche 级 fill_amount_cny，非订单级字段，易误读）。
+- 当日：0 买 0 卖（第 8 次「账面无可执行买单」，连续第 6 日）；总资产 979,639、当日 -0.2028% vs 上证 +0.2662%（超额 -0.469pp）、累计 -2.0361% vs -3.85%（超额 +1.8145pp）、仓位 14.00%、5 只、回撤 -3.3737% 熔断未触发；国货航单只贡献 -936（占 47%），超额 -2.20pp 分位 0/47，但「连续2日+量能2倍」未成立 → 不卖。
+- 三项升级规则全不触发（sl/tp 齐、数据未连续缺失、switched=false，bear/light 且 score -2/cd 13），本轮不追加会商；C-1 属需 昴 拍板的裁定，已列入下一步动作第 1 条并写截止时点。
+- 产出：reports/daily_20261124.md + reports/mail_inspect_20261124.html（20.9 KB），邮件 SENT（queued=true），inspector 置 done(20261124, ok)，commit e8c27ee **push 成功**。
+- 经验：①同一 critical 跨轮要重新定性而非照抄——本轮 P29 由「超限风险」变「未授权偏离」，写法不同才推得动拍板；②判定「未修」要引脚本 mtime（task_status.py 停在 2026-10-25），比重复措辞有力；③上游报告里的「已回填」要落到具体字段核对（订单级 vs tranche 级），否则会漏掉 7 张 actual_cost=null。
+
+## 2026-11-25（第二十三次运行，成功；当日 21:00 触发，流水线 20:36 收官）
+- 交易日确认：tushare **再次未注入**（11-23/24 双通后反转），改用 `westock/data_trade_calendar` → 20261125 isTrading=true，本地三源交叉一致；下一交易日 11-26，11-28/29 休市。数据基准 data/daily_20261125 齐备 **10 文件**（11-24 为 12），无滞后；依赖 position_manager 首次 wait 即 ready，预算 0 消耗。
+- 结论：**1 CRITICAL + 10 WARN + 8 INFO**。`check_pipeline --date 20261125` **退出码 0 PASS**（连续第 4 日）；9 任务 8 done + position_builder undo；7 个状态断面全 PASS（positions 勾稽差 0、nav 22 条含当日、trades 36 行 1 条历史 order_id=null）；17 张买单订单级 sl/tp 缺项 0（11 张卖单豁免、trigger/reason 全齐）。
+- **C-1 延续（第 2 个挂起日，P29 提出第 3 日）**：topup dry-run 5 只 46.11pp/451,109 元，持仓管家再次挂起未 apply（未留草稿单）。定性未变（未授权偏离），已逾期 1 个交易日，deadline 推到 11-26 09:30。
+- **W-6 新增（本轮最有价值发现）**：跌停家数四源三值——limitdn_days/limitdn_seal_volume/updown CNT_REACH_DNLIMIT 均 **1**，data_changedist `downLimitCount=49`。分析师裁定采信 1（板块级榜单为空 + 5 只极端下跌股均未封停 + 同日 upLimit 58 与真涨停一致，说明其后桶为「跌幅≤-9.8%」粗口径）。若判 49 → 情绪 -2 → score -8 → heavy；因仓位 13.89%<20 无需卖出，仅 cap 60→20 并关闭 topup 通道。建议接入 tushare stk_limit 官方口径。
+- **W-7 数据 half-blind 第 1 日**：warehouse/daily/20261125.csv 未生成（update_warehouse 报 no tushare MCP）→ 派生件 industry_derived/same_day_derived 缺 2、宽度无自算复核、拥挤度停 11-24（42.9359%，overlay=none，cap 直接取 base 60）、北向 missing。持仓管家以 prev_close 5/5 比对确认个券 OHLC 可信。单日缺失，未达「连续 2 日」门槛。
+- **W-8 新判据**：news.json **连续 2 个交易日 items=0**（11-24/25，11-23 为 50 条）。按「非核心 + 有 hot_news/hot_board/dragon_tiger 替代（0 命中）」记 warn 不升 critical，并在报告写明「11-26 仍空则按源端故障处理」——避免了把非核心缺失硬套「连续 2 日」升级规则。
+- **W-1 无新周期**：position_builder 仍 undo @20261121，本日非周度窗口；第 5 个连续 0 单周期，wait 的 date 判定第 7 周未修（mtime 2026-10-25，L97 仍只判 status），下一窗口 11-29 00:10 为第 6 次。
+- 当日：0 买 0 卖（第 9 次「账面无可执行买单」、连续第 7 日）；总资产 978,333、当日 **-0.1333% vs 上证 -2.03%（超额 +1.8967pp，建仓以来单日最高）**、累计 -2.1667% vs -5.80%（超额 +3.6333pp）、仓位 13.89%、5 只、回撤 -3.5025% 熔断未触发。行情极端：深证/创业板/中证500 收盘即 52 周最低、上证破 11-23 收盘低点、涨股比 10.50%、板块 13/124、risk_level 升 high。
+- regime 未切换（bear/light，score -2→-4，conf 0.73 第 9 次被 0.75 拦截，cd 14，cap 60，eff 20261126）；三项升级规则全不触发，本轮不追加会商。
+- 产出：reports/daily_20261125.md（21.0 KB）+ reports/mail_inspect_20261125.html（28.0 KB），邮件 SENT（queued=true），inspector 置 done(20261125, ok)。
+- 经验：①非核心文件连续缺失时，先查是否有替代源与下游是否已绕过，再决定是否套「连续 2 日」升级规则，否则会把快讯空壳误升成 critical；②新增口径分歧要在报告里给出「采信依据 + 采信代价 + 谁来裁定」三件套（本轮 W-6 若判 49 的唯一后果是 cap 关闭 topup，而仓位早已低于 heavy_target，故不升 critical）；③状态文件头部残值这类老 W 要换角度写（本轮新增「顶层 date 未刷新」这一具体后果），重复同一句会失去推动力。
