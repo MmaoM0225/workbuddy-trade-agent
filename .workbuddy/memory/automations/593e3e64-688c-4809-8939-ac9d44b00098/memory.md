@@ -291,3 +291,29 @@
 - regime 未切换（bear/light，score -2→-4，conf 0.73 第 9 次被 0.75 拦截，cd 14，cap 60，eff 20261126）；三项升级规则全不触发，本轮不追加会商。
 - 产出：reports/daily_20261125.md（21.0 KB）+ reports/mail_inspect_20261125.html（28.0 KB），邮件 SENT（queued=true），inspector 置 done(20261125, ok)，commit 86d780b **push 成功**。
 - 经验：①非核心文件连续缺失时，先查是否有替代源与下游是否已绕过，再决定是否套「连续 2 日」升级规则，否则会把快讯空壳误升成 critical；②新增口径分歧要在报告里给出「采信依据 + 采信代价 + 谁来裁定」三件套（本轮 W-6 若判 49 的唯一后果是 cap 关闭 topup，而仓位早已低于 heavy_target，故不升 critical）；③状态文件头部残值这类老 W 要换角度写（本轮新增「顶层 date 未刷新」这一具体后果），重复同一句会失去推动力。
+
+## 2026-11-26（第二十四次运行，成功；当日 21:00 触发，流水线 20:40 收官）
+- 交易日确认：trade_cal SSE 20261126 is_open=1（tushare 恢复正常），下一交易日 11-27，11-28/29 休市。数据基准 data/daily_20261126 齐备 **12 文件**、无滞后、degraded=false；依赖 position_manager 首次 wait 即 ready，预算 0 消耗。
+- 结论：**1 CRITICAL + 9 WARN + 10 INFO**。`check_pipeline --date 20261126` **退出码 0 PASS 且无 WARN**（连续第 5 日）；9 任务 8 done + position_builder undo；8 个状态断面全 PASS（positions 勾稽差 0、nav 25 条含当日、trades 36 行 1 条历史 null）；17 张买单订单级 sl/tp 缺项 0（11 张卖单 trigger/reason 全齐）。
+- **C-1 延续第 3 个挂起日（P29 提出第 4 日）**：topup dry-run 5 只 46.13pp/451,240 元，再次挂起未 apply、未留草稿；新增量化对照——本轮计划买入比 11-20 heavy 降仓卖出（344,176）**多 107,064 元（+31.1%）**。deadline 推至 11-27 09:30，已逾期 2 个交易日。
+- **W-1 无新周期**：pb 仍 undo @20261121（第 5 个连续 0 单周期），非周度窗口；`task_status.py:97` wait 仍只判 status 不看 date，mtime 2026-10-25（32 天未修），下一窗口 11-29 00:10。
+- **上轮 W-7（数据 half-blind）已解除**：warehouse/daily/20261125.csv（5573 行）与 20261126.csv（5578 行）双补，两个派生件恢复、拥挤度更新至当日（42.8742%，mtd 19 日，距 warn 2.1258pp）。
+- **W-6 news 连续第 3 日空 → 按 11-25 承诺定性为源端故障**，但不升 critical（非核心 + hot_news/hot_board/龙虎榜替代有效 + 下游 0 命中），转入「换源」动作项。
+- 当日：0 买 0 卖（连续第 8 日、第 10 次「账面无可执行买单」）；总资产 978,191、当日 **-0.0145% vs 上证 +0.0118%（超额 -0.0263pp）**、累计 -2.1809% vs -5.7877%（超额 +3.6068pp）、仓位 13.87%、5 只、回撤 -3.5165% 熔断未触发。行情：五指数高开→盘中齐创 52 周新低→尾盘拉回，指数几乎收平但 **20 日新低 2652 只 = 47.52%（本轮 bear 最高）**、涨股比 31.64%、中位 -0.80%、成交 13,173.77 亿 = 20 日均 81.89%（地量）。
+- regime 未切换（bear/light，score -4 两日同分但驱动因子整套换掉：板块 10.48%→41.13% 修复、情绪 +2→0 因跌停 1→9 恶化；conf 0.73 第 10 次被 0.75 拦、cd 15、cap 60、eff 20261127）；三项升级规则全不触发，本轮不追加会商。
+- 产出：reports/daily_20261126.md（20.4 KB）+ reports/mail_inspect_20261126.html（27.6 KB），邮件 SENT（queued=true），inspector 置 done(20261126, ok)，commit d3dedf1 **push 成功**。
+- 经验：①同一 score 跨日不代表同一状态——本轮 -4 与上日 -4 的六维构成完全不同（两处相互抵消），报告必须拆到维度层否则会误判「无变化」；②逾期类 critical 每轮都要补一个新量化维度（本轮 +31.1% 的超买回幅度），重复原措辞推不动拍板；③上轮自己写下的升级条件（news 第 3 日空则按源端故障）要在本轮显式兑现，否则规则会随轮次软化。
+
+## 2026-11-28（第二十五次运行，成功；周六 14:58 补跑 20261127）
+- **补跑判定**：触发日 11-28 为周六非交易日（westock `data_trade_calendar` isTrading=false），但 20261127（周五、本周最后交易日）数据与四环节产物齐备、position_manager done@20261127 20:34，而 `reports/daily_20261127.md` 缺失 → 按「存在未巡检交易日即出报告」补跑，报告名与 task_status date 均取 20261127，未写 skip_log（沿用 10-27/10-30/11-06/11-13 先例）。下一交易日 20261130（亦为 11 月最后交易日）。
+- 交易日校验：tushare 未注入（connector-status=unavailable），改用 westock 交易日历单源 + 本地三源交叉（meta.trading_day / warehouse 5576 行 / regime.data_basis）。依赖 position_manager 首次 wait 即 ready，预算 0 消耗。
+- 结论：**2 CRITICAL + 11 WARN + 7 INFO**。`check_pipeline --date 20261127` **退出码 0 PASS 且无 WARN 输出**（连续第 6 日）；9 任务 8 done + position_builder undo；5 核心状态文件 + trades.jsonl(36 行 0 悬空) + nav(26 条含当日) 全 PASS；17 张买单 sl/tp 缺项 0（11 张卖单 trigger/reason 全齐）。
+- **C-1（本轮核心，P30 首次入巡检）**：regime 一翻 neutral，P29 三条挂起理由中「bear 闸门」「light 禁新建仓」两条**自动失效** → 11-30 topup 将由 45.94pp/450,372 元放大到 **55.94pp/548,362 元**，一次性把仓位从 14.06% 拉到 70%，且脚本无 regime/severity/单日限速闸门（回测 L1258 有 `regime != "bear"`）。已挂起第 5 日，属未授权偏离累积，必须 11-30 09:30 前三选一。
+- **C-2**：regime 方向切换 bear/light → neutral（score −4→+8、conf 0.85、cd 15→1、cap 60→70、eff 20261130、risk high→medium）。**唯一敏感项是宽度口径**：收盘 212/16 → +2 → 切换；盘中 161/698 → −2 → conf 0.73 被拦、维持 bear。分析师取收盘口径（新低全在开盘 30 分钟、收盘仅 0.29%、与 96.43% 涨股比矛盾）合理，但规则层仍空白。whipsaw 先例：1105 同条件切 neutral、1106 即切回。
+- **W-1 性质已变（下轮升级条件已写死）**：pb 第 5 个连续 0 单周期（undo @20261121 upstream-not-ready），`task_status.py` mtime 2026-10-25（34 天未修，第 7 周）、周六环节倒置（pb 早于 researcher 29 分钟）。前 5 周期 0 单合规（R-001 bear 禁买），但 **11-29 00:10 是 neutral 下首次有新建仓权限**，若再现 0 单则不再是合规 → 下轮升 critical。
+- 其他新 W：W-2 pool/watchlist 停 20261120 滞后 5 日（今晚 21:30 唯一刷新窗口）；W-3 orders 头部残值第 6 日且 `regime=bear/base 60` 与当下 neutral/70 **方向相反**；W-4 订单级 sl 4/5 陈旧（方向全保守，执行读 positions）；W-5 A001~A007 actual_cost/actual_shares=null；W-6 5 只全 <min_single 3%；W-7 国货航 low 3.64 vs 止损 3.63（**+0.28%**，建仓最紧）；W-8 news 连续第 4 日空（持仓报告写「第 5 日」属 off-by-one）；W-9 margin 连续缺失；W-10 指数链 as_of 20261125（第 12 轮）；**W-11 P24/P26/P27/P29/P30 全部未登记进 params.pending_decisions（仅 10 项 P1~P10），待拍板真源再次散落**。
+- 当日：0 买 0 卖（第 11 次「账面无可执行买单」、连续第 9 日）；总资产 980,353、**当日 +0.2210% vs 上证 +3.7276%（超额 −3.5066pp，建仓以来单日最差）**、累计 −1.9647% vs −2.28%（**累计超额由 +3.6068pp 塌至 +0.3114pp**）、仓位 14.06%、5 只、回撤 −3.5165% 熔断未触发。行情：涨股比 96.43%、中位 +6.90%、成交 19,997.94 亿（20 日均 123.07%、环比 +52.13%）、涨停 439/跌停 1、科创50 +15.07%、创业板 +11.61%、北证50 +13.20%。
+- 三项升级规则中仅「regime 当日切换」命中 → 报告末尾追加「建议实时会商」三议程（P30 闸门 / 宽度口径与切回处置 / 今夜建仓链路兜底）。
+- 产出：reports/daily_20261127.md（约 17 KB）+ mail_inspect_20261127.html（29.6 KB），邮件 SENT（queued=true，已核验含会商段与 P30 共 6 处），inspector 置 done(20261127, ok)，commit d365453 **push 成功**。
+- 经验：①**regime 切换会瞬间让旧 critical 的「免责理由」失效**——P29 挂起 5 天靠的是 bear/light 两条禁令，一翻 neutral 就只剩「人未裁」一条，巡检必须重算理由链而非沿用；②同一份数据里「订单 0 张」既可能是合规（bear 禁买）也可能是失效（neutral 该买），判性质只能看**当下权限**，不能看历史结论；③补跑时要把「今天是否交易日」与「有未巡检交易日」分开判，后者优先（第 4 次复用）。
+
